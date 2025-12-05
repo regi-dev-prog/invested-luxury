@@ -3,7 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-
+import ComingSoon from "@/components/ComingSoon";
 export const metadata: Metadata = {
   title: {
     default: "InvestedLuxury | Curated Luxury Fashion & Lifestyle",
@@ -81,7 +81,9 @@ export default function RootLayout({
         </Script>
       </head>
       <body className="min-h-screen flex flex-col">
+        <ComingSoon />
         <Header />
+      
         <main className="flex-1">{children}</main>
         <Footer />
       </body>
