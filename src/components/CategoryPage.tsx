@@ -1,26 +1,41 @@
 import Link from 'next/link';
+import Image from 'next/image';
+import { urlFor } from '@/sanity/lib/image';
 
 interface Article {
-  id: string;
+  id?: string;
+  _id?: string;
   title: string;
-  excerpt: string;
+  excerpt?: string;
   slug: string;
-  date: string;
-  readTime: string;
+  date?: string;
+  publishedAt?: string;
+  readTime?: string;
   featured?: boolean;
+  mainImage?: any;
 }
 
 interface CategoryPageProps {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   description: string;
-  breadcrumb: {
+  breadcrumb?: {
     parent: string;
     parentHref: string;
     current: string;
   };
   articles: Article[];
-  categorySlug: string;
+  categorySlug?: string;
+}
+
+// Helper to format date
+function formatDate(dateString?: string) {
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 }
 
 export default function CategoryPage({
@@ -32,43 +47,51 @@ export default function CategoryPage({
   categorySlug,
 }: CategoryPageProps) {
   const featuredArticle = articles.find(a => a.featured) || articles[0];
-  const otherArticles = articles.filter(a => a.id !== featuredArticle?.id);
+  const otherArticles = articles.filter(a => (a.id || a._id) !== (featuredArticle?.id || featuredArticle?._id));
 
   return (
     <>
       {/* Hero Section */}
       <section className="bg-cream">
         <div className="container-luxury py-12 lg:py-16">
-          {/* Breadcrumb */}
-          <nav className="mb-8">
-            <ol className="flex items-center gap-2 text-sm text-charcoal-light">
-              <li>
-                <Link href="/" className="hover:text-gold transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li>/</li>
-              <li>
-                <Link href={breadcrumb.parentHref} className="hover:text-gold transition-colors">
-                  {breadcrumb.parent}
-                </Link>
-              </li>
-              <li>/</li>
-              <li className="text-charcoal">{breadcrumb.current}</li>
-            </ol>
-          </nav>
+        {/* Breadcrumb */}
+          {breadcrumb && (
+            <nav className="mb-8">
+              <ol className="flex items-center gap-2 text-sm text-charcoal-light">
+                <li>
+                  <Link href="/" className="hover:text-gold transition-colors">
+                    Home
+                  </Link>
+                </li>
+                <li>/</li>
+                <li>
+                  <Link href={breadcrumb.parentHref} className="hover:text-gold transition-colors">
+                    {breadcrumb.parent}
+                  </Link>
+                </li>
+                <li>/</li>
+                <li className="text-charcoal">{breadcrumb.current}</li>
+              </ol>
+            </nav>
+          )}
 
           {/* Title */}
           <div className="max-w-3xl">
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-black mb-4">
-              {title}
-            </h1>
-            <p className="text-xl md:text-2xl font-serif italic text-charcoal mb-6">
-              {subtitle}
-            </p>
-            <p className="text-charcoal leading-relaxed">
-              {description}
-            </p>
+            {title && (
+              <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-black mb-4">
+                {title}
+              </h1>
+            )}
+            {subtitle && (
+              <p className="text-xl md:text-2xl font-serif italic text-charcoal mb-6">
+                {subtitle}
+              </p>
+            )}
+            {description && (
+              <p className="text-charcoal leading-relaxed">
+                {description}
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -84,9 +107,18 @@ export default function CategoryPage({
               <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
                 {/* Image */}
                 <div className="relative aspect-[4/3] bg-cream overflow-hidden">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-charcoal-light text-sm">Featured Image</span>
-                  </div>
+                  {featuredArticle.mainImage ? (
+                    <Image
+                      src={urlFor(featuredArticle.mainImage).width(800).height(600).url()}
+                      alt={featuredArticle.mainImage.alt || featuredArticle.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-charcoal-light text-sm">Featured Image</span>
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
                 </div>
 
@@ -102,9 +134,13 @@ export default function CategoryPage({
                     {featuredArticle.excerpt}
                   </p>
                   <div className="flex items-center gap-3 text-sm text-charcoal-light">
-                    <time>{featuredArticle.date}</time>
-                    <span className="w-1 h-1 bg-charcoal-light rounded-full" />
-                    <span>{featuredArticle.readTime}</span>
+                    <time>{formatDate(featuredArticle.date || featuredArticle.publishedAt)}</time>
+                    {featuredArticle.readTime && (
+                      <>
+                        <span className="w-1 h-1 bg-charcoal-light rounded-full" />
+                        <span>{featuredArticle.readTime}</span>
+                      </>
+                    )}
                   </div>
                   <div className="mt-6">
                     <span className="inline-flex items-center text-sm font-medium uppercase tracking-wider text-black group-hover:text-gold transition-colors">
@@ -130,13 +166,22 @@ export default function CategoryPage({
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {otherArticles.map((article) => (
-              <article key={article.id} className="group">
+              <article key={article.id || article._id || article.slug} className="group">
                 <Link href={`/${categorySlug}/${article.slug}`}>
                   {/* Image */}
                   <div className="relative aspect-[4/3] overflow-hidden mb-5 bg-cream">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-charcoal-light text-sm">Image</span>
-                    </div>
+                    {article.mainImage ? (
+                      <Image
+                        src={urlFor(article.mainImage).width(500).height(375).url()}
+                        alt={article.mainImage.alt || article.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-charcoal-light text-sm">Image</span>
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
                   </div>
                   {/* Content */}
@@ -144,13 +189,19 @@ export default function CategoryPage({
                     <h3 className="font-serif text-xl text-black group-hover:text-charcoal transition-colors leading-snug">
                       {article.title}
                     </h3>
-                    <p className="text-sm text-charcoal line-clamp-2">
-                      {article.excerpt}
-                    </p>
+                    {article.excerpt && (
+                      <p className="text-sm text-charcoal line-clamp-2">
+                        {article.excerpt}
+                      </p>
+                    )}
                     <div className="flex items-center gap-2 text-xs text-charcoal-light pt-1">
-                      <time>{article.date}</time>
-                      <span>·</span>
-                      <span>{article.readTime}</span>
+                      <time>{formatDate(article.date || article.publishedAt)}</time>
+                      {article.readTime && (
+                        <>
+                          <span>·</span>
+                          <span>{article.readTime}</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </Link>
@@ -159,7 +210,7 @@ export default function CategoryPage({
           </div>
 
           {/* Empty State */}
-          {otherArticles.length === 0 && (
+          {otherArticles.length === 0 && !featuredArticle && (
             <div className="text-center py-12">
               <p className="text-charcoal">More articles coming soon.</p>
             </div>

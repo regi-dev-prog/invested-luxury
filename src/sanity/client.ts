@@ -9,13 +9,12 @@ export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: true,
+  useCdn: false,
 });
 
 // Image URL builder
 const builder = imageUrlBuilder(client);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function urlFor(source: any) {
   return builder.image(source);
 }

@@ -11,6 +11,7 @@ export default defineType({
     {name: 'affiliate', title: 'Affiliate Links'},
     {name: 'investment', title: 'Investment'},
     {name: 'automation', title: 'Automation'},
+    {name: 'seo', title: 'SEO'},
   ],
   fields: [
     // ============ BASIC INFO ============
@@ -102,7 +103,7 @@ export default defineType({
           {title: 'GBP (£)', value: 'GBP'},
         ],
       },
-      initialValue: 'EUR',
+      initialValue: 'USD',
     }),
     defineField({
       name: 'originalPrice',
@@ -148,13 +149,20 @@ export default defineType({
       title: 'Specifications',
       type: 'array',
       group: 'details',
+      description: 'Product specs like Size, Material, Made in, etc.',
       of: [
         {
           type: 'object',
           fields: [
-            {name: 'label', type: 'string', title: 'Label'},
-            {name: 'value', type: 'string', title: 'Value'},
+            {name: 'label', type: 'string', title: 'Label (e.g., Size, Material)'},
+            {name: 'value', type: 'string', title: 'Value (e.g., 15" W x 10" H)'},
           ],
+          preview: {
+            select: {
+              title: 'label',
+              subtitle: 'value',
+            },
+          },
         },
       ],
     }),
@@ -175,6 +183,7 @@ export default defineType({
       title: 'Affiliate Links',
       type: 'array',
       group: 'affiliate',
+      description: 'Add retailers where this product can be purchased',
       of: [
         {
           type: 'object',
@@ -183,8 +192,10 @@ export default defineType({
               name: 'retailer',
               type: 'string',
               title: 'Retailer',
+              validation: (Rule) => Rule.required(),
               options: {
                 list: [
+                  {title: 'Brand Direct', value: 'direct'},
                   {title: 'Net-a-Porter', value: 'net-a-porter'},
                   {title: 'Mytheresa', value: 'mytheresa'},
                   {title: 'SSENSE', value: 'ssense'},
@@ -193,19 +204,76 @@ export default defineType({
                   {title: 'Bergdorf Goodman', value: 'bergdorf'},
                   {title: 'Neiman Marcus', value: 'neiman'},
                   {title: 'Saks Fifth Avenue', value: 'saks'},
-                  {title: 'Brand Direct', value: 'direct'},
+                  {title: 'Nordstrom', value: 'nordstrom'},
                   {title: 'The RealReal', value: 'realreal'},
                   {title: 'Vestiaire Collective', value: 'vestiaire'},
                   {title: 'Rebag', value: 'rebag'},
+                  {title: '1stDibs', value: '1stdibs'},
                   {title: 'Other', value: 'other'},
                 ],
               },
             },
-            {name: 'url', type: 'url', title: 'Affiliate URL'},
-            {name: 'price', type: 'number', title: 'Price at Retailer'},
-            {name: 'inStock', type: 'boolean', title: 'In Stock', initialValue: true},
-            {name: 'lastChecked', type: 'datetime', title: 'Last Checked'},
+            {
+              name: 'retailerName',
+              type: 'string',
+              title: 'Display Name',
+              description: 'Custom name to display (optional, uses retailer name if empty)',
+            },
+            {
+              name: 'url',
+              type: 'url',
+              title: 'Affiliate URL',
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'price',
+              type: 'number',
+              title: 'Price at Retailer',
+              description: 'Leave empty to use main product price',
+            },
+            {
+              name: 'isResale',
+              type: 'boolean',
+              title: 'Resale/Pre-owned',
+              description: 'Is this a resale/consignment platform?',
+              initialValue: false,
+            },
+            {
+              name: 'isPrimary',
+              type: 'boolean',
+              title: 'Primary Retailer',
+              description: 'Show this as the main CTA button',
+              initialValue: false,
+            },
+            {
+              name: 'inStock',
+              type: 'boolean',
+              title: 'In Stock',
+              initialValue: true,
+            },
+            {
+              name: 'lastChecked',
+              type: 'datetime',
+              title: 'Last Checked',
+            },
           ],
+          preview: {
+            select: {
+              title: 'retailer',
+              price: 'price',
+              isResale: 'isResale',
+              isPrimary: 'isPrimary',
+            },
+            prepare({title, price, isResale, isPrimary}) {
+              const badges = []
+              if (isPrimary) badges.push('⭐ Primary')
+              if (isResale) badges.push('♻️ Resale')
+              return {
+                title: title?.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
+                subtitle: `${price ? `$${price}` : 'No price'} ${badges.join(' ')}`,
+              }
+            },
+          },
         },
       ],
     }),
@@ -242,7 +310,31 @@ export default defineType({
       description: 'Why is this a good/bad investment?',
     }),
 
-    // ============ AUTOMATION (NEW) ============
+    // ============ SEO ============
+    defineField({
+      name: 'seo',
+      title: 'SEO Settings',
+      type: 'object',
+      group: 'seo',
+      fields: [
+        {
+          name: 'metaTitle',
+          type: 'string',
+          title: 'Meta Title',
+          description: 'Leave empty to use product name',
+          validation: (Rule) => Rule.max(60),
+        },
+        {
+          name: 'metaDescription',
+          type: 'text',
+          title: 'Meta Description',
+          rows: 2,
+          validation: (Rule) => Rule.max(160),
+        },
+      ],
+    }),
+
+    // ============ AUTOMATION ============
     defineField({
       name: 'sourcePlatform',
       title: 'Source Platform',
@@ -251,12 +343,12 @@ export default defineType({
       description: 'Where was this product scraped from?',
       options: {
         list: [
+          {title: 'Manual Entry', value: 'manual'},
           {title: 'Farfetch', value: 'farfetch'},
           {title: 'Net-a-Porter', value: 'net-a-porter'},
           {title: 'SSENSE', value: 'ssense'},
           {title: 'Mytheresa', value: 'mytheresa'},
           {title: 'MatchesFashion', value: 'matchesfashion'},
-          {title: 'Manual Entry', value: 'manual'},
         ],
       },
       initialValue: 'manual',
@@ -311,6 +403,12 @@ export default defineType({
       title: 'Published At',
       type: 'datetime',
     }),
+    defineField({
+      name: 'updatedAt',
+      title: 'Last Updated',
+      type: 'datetime',
+      description: 'When was product info last updated',
+    }),
   ],
   preview: {
     select: {
@@ -327,7 +425,7 @@ export default defineType({
       const autoTag = autoGenerated ? ' 🤖' : ''
       return {
         title: `${title}${autoTag}`,
-        subtitle: `${brand} - ${currencySymbol}${price?.toLocaleString()} • ${status}`,
+        subtitle: `${brand || 'No brand'} - ${currencySymbol}${price?.toLocaleString() || '0'} • ${status || 'draft'}`,
         media: media,
       }
     },

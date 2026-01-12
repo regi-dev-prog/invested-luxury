@@ -60,6 +60,32 @@ export default defineType({
       type: 'boolean',
       initialValue: false,
     }),
+    defineField({
+      name: 'seo',
+      title: 'SEO Settings',
+      type: 'object',
+      fields: [
+        {
+          name: 'metaTitle',
+          type: 'string',
+          title: 'Meta Title',
+          description: 'Leave empty to use category name',
+          validation: (Rule) => Rule.max(60),
+        },
+        {
+          name: 'metaDescription',
+          type: 'text',
+          title: 'Meta Description',
+          rows: 2,
+          validation: (Rule) => Rule.max(160),
+        },
+        {
+          name: 'focusKeyword',
+          type: 'string',
+          title: 'Focus Keyword',
+        },
+      ],
+    }),
   ],
   preview: {
     select: {

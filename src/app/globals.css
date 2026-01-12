@@ -164,3 +164,65 @@
     text-wrap: balance;
   }
 }
+/* ============================================
+   ADD THIS TO THE END OF globals.css
+   ============================================ */
+
+/* Article Page Animations */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+/* Article Content Typography */
+.article-content {
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+.article-content p:first-of-type::first-letter {
+  font-family: var(--font-serif);
+  font-size: 3.5rem;
+  font-weight: 400;
+  float: left;
+  line-height: 1;
+  margin-right: 0.5rem;
+  margin-top: 0.1rem;
+  color: #C9A227;
+}
+
+/* Smooth scroll for TOC */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar on sticky bar mobile */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
