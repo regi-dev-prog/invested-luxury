@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 
 export default function ComingSoon() {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   // Check if we should hide the overlay (for development)
   useEffect(() => {
