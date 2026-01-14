@@ -272,6 +272,8 @@ export default async function ArticlePage({ params }: Props) {
   
   const isReview = article.articleType === 'review'
   const productData = transformProductData(article.primaryProduct)
+  // Show affiliate buttons on ANY article type that has a product (not just reviews)
+  const showAffiliateButtons = !!article.primaryProduct
   
   const canonicalUrl = `${siteUrl}/${params.category}/${params.subcategory}/${params.slug}`
   const ogImage = article.mainImage 
@@ -514,8 +516,8 @@ export default async function ArticlePage({ params }: Props) {
 
         {/* Content */}
         <div className="max-w-4xl mx-auto px-4 py-12">
-          {/* Quick Buy Card for Reviews */}
-          {isReview && productData && productData.retailers.length > 0 && (
+          {/* Quick Buy Card - Shows on any article with a product */}
+          {showAffiliateButtons && productData && productData.retailers.length > 0 && (
             <QuickBuyCard
               productName={productData.name}
               price={productData.price}
@@ -538,8 +540,8 @@ export default async function ArticlePage({ params }: Props) {
             />
           </div>
 
-          {/* Product Specs Box */}
-          {isReview && productData && productData.retailers.length > 0 && (
+          {/* Product Specs Box - Shows on any article with a product */}
+          {showAffiliateButtons && productData && productData.retailers.length > 0 && (
             <ProductSpecsBox
               productName={productData.name}
               brand={productData.brand}
@@ -602,8 +604,8 @@ export default async function ArticlePage({ params }: Props) {
           </section>
         )}
 
-        {/* Sticky Buy Bar for Mobile */}
-        {isReview && productData && productData.retailers[0] && (
+        {/* Sticky Buy Bar for Mobile - Shows on any article with a product */}
+        {showAffiliateButtons && productData && productData.retailers[0] && (
   <StickyBuyBar
     productName={productData.name}
     price={productData.price}
