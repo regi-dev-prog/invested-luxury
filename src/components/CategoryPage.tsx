@@ -41,6 +41,13 @@ function formatDate(dateString?: string) {
 
 // Helper to build article URL with subcategory
 function getArticleUrl(categorySlug: string | undefined, article: Article): string {
+  // If categorySlug already contains "/" (e.g., "fashion/bags"), it's from a sub-category page
+  // Don't add the subcategory again
+  if (categorySlug?.includes('/')) {
+    return `/${categorySlug}/${article.slug}`;
+  }
+  
+  // From parent category page (e.g., "fashion"), need to add subcategory
   const subCategory = article.categories?.[0] || 'article';
   return `/${categorySlug}/${subCategory}/${article.slug}`;
 }
