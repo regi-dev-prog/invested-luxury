@@ -13,6 +13,7 @@ interface Article {
   readTime?: string;
   featured?: boolean;
   mainImage?: any;
+  categories?: string[]; // Array of category slugs
 }
 
 interface CategoryPageProps {
@@ -36,6 +37,12 @@ function formatDate(dateString?: string) {
     month: 'long',
     day: 'numeric',
   });
+}
+
+// Helper to build article URL with subcategory
+function getArticleUrl(categorySlug: string | undefined, article: Article): string {
+  const subCategory = article.categories?.[0] || 'article';
+  return `/${categorySlug}/${subCategory}/${article.slug}`;
 }
 
 export default function CategoryPage({
@@ -101,7 +108,7 @@ export default function CategoryPage({
         <section className="py-12 bg-white border-b border-gray-100">
           <div className="container-luxury">
             <Link 
-              href={`/${categorySlug}/${featuredArticle.slug}`}
+              href={getArticleUrl(categorySlug, featuredArticle)}
               className="block group"
             >
               <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
@@ -167,7 +174,7 @@ export default function CategoryPage({
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {otherArticles.map((article) => (
               <article key={article.id || article._id || article.slug} className="group">
-                <Link href={`/${categorySlug}/${article.slug}`}>
+                <Link href={getArticleUrl(categorySlug, article)}>
                   {/* Image */}
                   <div className="relative aspect-[4/3] overflow-hidden mb-5 bg-cream">
                     {article.mainImage ? (
