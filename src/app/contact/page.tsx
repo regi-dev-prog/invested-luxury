@@ -1,11 +1,24 @@
-import type { Metadata } from 'next';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Contact',
-  description: 'Get in touch with InvestedLuxury. We would love to hear from you.',
-};
+import { useState } from 'react';
 
 export default function ContactPage() {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Simulate form submission delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // TODO: Add actual form submission logic here (e.g., API call)
+    
+    setIsSubmitting(false);
+    setIsSubmitted(true);
+  };
+
   return (
     <>
       {/* Hero */}
@@ -25,7 +38,7 @@ export default function ContactPage() {
       <section className="py-20 bg-white">
         <div className="container-luxury">
           <div className="max-w-2xl mx-auto">
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-charcoal mb-2">
@@ -37,6 +50,7 @@ export default function ContactPage() {
                     name="firstName"
                     className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
                     required
+                    disabled={isSubmitted}
                   />
                 </div>
                 <div>
@@ -49,6 +63,7 @@ export default function ContactPage() {
                     name="lastName"
                     className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
                     required
+                    disabled={isSubmitted}
                   />
                 </div>
               </div>
@@ -63,6 +78,7 @@ export default function ContactPage() {
                   name="email"
                   className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
                   required
+                  disabled={isSubmitted}
                 />
               </div>
 
@@ -75,6 +91,7 @@ export default function ContactPage() {
                   name="subject"
                   className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors bg-white"
                   required
+                  disabled={isSubmitted}
                 >
                   <option value="">Select a subject</option>
                   <option value="general">General Inquiry</option>
@@ -95,14 +112,31 @@ export default function ContactPage() {
                   rows={6}
                   className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors resize-none"
                   required
+                  disabled={isSubmitted}
                 />
               </div>
 
               <div className="text-center">
-                <button type="submit" className="btn-primary">
-                  Send Message
+                <button 
+                  type="submit" 
+                  className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isSubmitting || isSubmitted}
+                >
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                 </button>
               </div>
+
+              {/* Success Message */}
+              {isSubmitted && (
+                <div className="text-center pt-4">
+                  <p className="text-charcoal font-serif text-lg">
+                    Thank you for reaching out.
+                  </p>
+                  <p className="text-charcoal/70 text-sm mt-1">
+                    We'll be in touch soon.
+                  </p>
+                </div>
+              )}
             </form>
 
             <div className="mt-16 pt-16 border-t border-gray-100">
@@ -111,6 +145,8 @@ export default function ContactPage() {
                   <h3 className="font-serif text-title text-black mb-2">Email</h3>
                   <a 
                     href="mailto:hello@investedluxury.com" 
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-charcoal hover:text-gold transition-colors"
                   >
                     hello@investedluxury.com

@@ -29,7 +29,7 @@ export default function AboutPage() {
             <h2 className="font-serif text-headline text-black mb-6">Our Philosophy</h2>
             <div className="article-content">
               <p>
-                In a world of fast fashion and fleeting trends, InvestedLuxury stands as a beacon for those who seek more. We believe that the pieces we choose to bring into our lives should bring joy not just today, but for years to come — and ideally, hold or increase their value along the way.
+                In a world of fast fashion and fleeting trends, InvestedLuxury stands as a beacon for those who seek more. We believe that the pieces we choose to bring into our lives should bring joy not just today, but for years to come - and ideally, hold or increase their value along the way.
               </p>
               <p>
                 Our editorial team combines deep industry expertise with a genuine passion for quality craftsmanship. Every guide, review, and recommendation is crafted with one question in mind: Is this truly worth the investment?
@@ -37,12 +37,12 @@ export default function AboutPage() {
 
               <h2>What We Cover</h2>
               <p>
-                From the timeless appeal of a Hermès Birkin to the quiet sophistication of The Row, from vintage Rolex watches to emerging jewelry designers, we explore the full spectrum of investment-worthy luxury. Our coverage extends beyond fashion to encompass the broader luxury lifestyle — the hotels that create lasting memories, the art that appreciates in value, and the wellness practices that invest in your most valuable asset: yourself.
+                From the timeless appeal of a Hermès Birkin to the quiet sophistication of The Row, from vintage Rolex watches to emerging jewelry designers, we explore the full spectrum of investment-worthy luxury. Our coverage extends beyond fashion to encompass the broader luxury lifestyle - the hotels that create lasting memories, the art that appreciates in value, and the wellness practices that invest in your most valuable asset: yourself.
               </p>
 
               <h2>Our Promise</h2>
               <p>
-                Every piece of content on InvestedLuxury is created with integrity. We conduct thorough research, consult industry experts, and share our honest opinions — even when that means recommending against a popular piece. Our readers trust us because we tell them what they need to hear, not what brands want us to say.
+                Every piece of content on InvestedLuxury is created with integrity. We conduct thorough research, consult industry experts, and share our honest opinions - even when that means recommending against a popular piece. Our readers trust us because we tell them what they need to hear, not what brands want us to say.
               </p>
 
               <h2 id="affiliate-disclosure">Affiliate Disclosure</h2>

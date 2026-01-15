@@ -31,7 +31,7 @@ export const PARENT_CATEGORIES: Record<string, ParentCategory> = {
   fashion: {
     slug: 'fashion',
     title: 'Fashion',
-    description: 'Investment pieces that stand the test of time. From heritage bags to quiet luxury essentials—discover fashion worth investing in.',
+    description: 'Investment pieces that stand the test of time. From heritage bags to quiet luxury essentials - discover fashion worth investing in.',
     metaTitle: 'Investment Fashion | InvestedLuxury',
     metaDescription: 'Expert guides to luxury fashion investments. Designer bags, shoes, watches, jewelry, and timeless pieces that hold their value.',
     path: '/fashion',
@@ -51,7 +51,7 @@ export const PARENT_CATEGORIES: Record<string, ParentCategory> = {
   wellness: {
     slug: 'wellness',
     title: 'Wellness',
-    description: 'Invest in your most valuable asset—your health. From longevity science to transformative retreats.',
+    description: 'Invest in your most valuable asset your health. From longevity science to transformative retreats.',
     metaTitle: 'Luxury Wellness | InvestedLuxury',
     metaDescription: 'Premium wellness guides. Longevity treatments, luxury retreats, and biohacking for optimal health.',
     path: '/wellness',
@@ -79,7 +79,7 @@ export const SUB_CATEGORIES: Record<string, SubCategory> = {
   bags: {
     slug: 'bags',
     title: 'Investment Bags',
-    description: 'The complete guide to designer bags worth investing in. From heritage houses like Hermès and Chanel to modern favorites like The Row—discover which bags hold their value, how to authenticate, and where to buy.',
+    description: 'The complete guide to designer bags worth investing in. From heritage houses like Hermès and Chanel to modern favorites like The Row - discover which bags hold their value, how to authenticate, and where to buy.',
     metaTitle: 'Investment Bags | InvestedLuxury',
     metaDescription: 'Discover the best designer bags that hold their value. Expert reviews, resale analysis, and buying guides for Hermès, Chanel, The Row, and more.',
     parentSlug: 'fashion',
@@ -89,7 +89,7 @@ export const SUB_CATEGORIES: Record<string, SubCategory> = {
   shoes: {
     slug: 'shoes',
     title: 'Investment Shoes',
-    description: 'Designer shoes that combine timeless style with lasting value. From classic pumps to modern loafers—expert reviews on craftsmanship, comfort, and investment potential.',
+    description: 'Designer shoes that combine timeless style with lasting value. From classic pumps to modern loafers expert reviews on craftsmanship, comfort, and investment potential.',
     metaTitle: 'Investment Shoes | InvestedLuxury',
     metaDescription: 'Expert guides to designer shoes worth investing in. Reviews of Manolo Blahnik, Roger Vivier, The Row, and more luxury footwear.',
     parentSlug: 'fashion',
@@ -99,7 +99,7 @@ export const SUB_CATEGORIES: Record<string, SubCategory> = {
   'quiet-luxury': {
     slug: 'quiet-luxury',
     title: 'Quiet Luxury',
-    description: 'The art of understated elegance. Discover brands and pieces that embody sophisticated style without logos—where quality speaks louder than branding.',
+    description: 'The art of understated elegance. Discover brands and pieces that embody sophisticated style without logos - where quality speaks louder than branding.',
     metaTitle: 'Quiet Luxury Fashion | InvestedLuxury',
     metaDescription: 'Master the quiet luxury aesthetic. Expert guides to understated elegance, old money style, and logo-free designer pieces.',
     parentSlug: 'fashion',
@@ -109,7 +109,7 @@ export const SUB_CATEGORIES: Record<string, SubCategory> = {
   watches: {
     slug: 'watches',
     title: 'Investment Watches',
-    description: 'Timepieces that transcend trends. Expert analysis of luxury watches as investments—from Rolex and Patek Philippe to independent watchmakers.',
+    description: 'Timepieces that transcend trends. Expert analysis of luxury watches as investments, from Rolex and Patek Philippe to independent watchmakers.',
     metaTitle: 'Investment Watches | InvestedLuxury',
     metaDescription: 'Luxury watch investment guides. Expert reviews of Rolex, Patek Philippe, and collectible timepieces with resale value analysis.',
     parentSlug: 'fashion',
@@ -119,7 +119,7 @@ export const SUB_CATEGORIES: Record<string, SubCategory> = {
   jewelry: {
     slug: 'jewelry',
     title: 'Investment Jewelry',
-    description: 'Fine jewelry that holds its value across generations. From Van Cleef & Arpels to Cartier—discover pieces worth investing in.',
+    description: 'Fine jewelry that holds its value across generations. From Van Cleef & Arpels to Cartier, discover pieces worth investing in.',
     metaTitle: 'Investment Jewelry | InvestedLuxury',
     metaDescription: 'Expert guides to fine jewelry investments. Reviews of Cartier, Van Cleef, and luxury jewelry with lasting value.',
     parentSlug: 'fashion',
@@ -139,7 +139,7 @@ export const SUB_CATEGORIES: Record<string, SubCategory> = {
   accessories: {
     slug: 'accessories',
     title: 'Luxury Accessories',
-    description: 'The finishing touches that elevate any look. From silk scarves to designer sunglasses—accessories worth investing in.',
+    description: 'The finishing touches that elevate any look. From silk scarves to designer sunglasses accessories worth investing in.',
     metaTitle: 'Luxury Accessories | InvestedLuxury',
     metaDescription: 'Expert guides to luxury accessories. Reviews of designer scarves, sunglasses, belts, and investment-worthy finishing touches.',
     parentSlug: 'fashion',
@@ -162,7 +162,7 @@ export const SUB_CATEGORIES: Record<string, SubCategory> = {
   travel: {
     slug: 'travel',
     title: 'Luxury Travel',
-    description: 'Travel experiences that create lasting memories. From first-class flights to private tours—guides to elevated travel.',
+    description: 'Travel experiences that create lasting memories. From first-class flights to private tours guides to elevated travel.',
     metaTitle: 'Luxury Travel Guides | InvestedLuxury',
     metaDescription: 'Expert guides to luxury travel. First class reviews, destination guides, and travel experiences worth the investment.',
     parentSlug: 'lifestyle',
@@ -172,7 +172,7 @@ export const SUB_CATEGORIES: Record<string, SubCategory> = {
   'art-photography': {
     slug: 'art-photography',
     title: 'Art & Photography',
-    description: 'Collecting art and capturing moments. From emerging artists to investment-grade cameras—guides for the aesthetically minded.',
+    description: 'Collecting art and capturing moments. From emerging artists to investment-grade cameras guides for the aesthetically minded.',
     metaTitle: 'Art & Photography | InvestedLuxury',
     metaDescription: 'Guides to art collecting and photography. Camera reviews, art investment tips, and visual storytelling.',
     parentSlug: 'lifestyle',
@@ -185,7 +185,7 @@ export const SUB_CATEGORIES: Record<string, SubCategory> = {
   longevity: {
     slug: 'longevity',
     title: 'Longevity',
-    description: 'The science of living well, longer. From NAD+ therapy to cutting-edge treatments—evidence-based guides to optimizing healthspan.',
+    description: 'The science of living well, longer. From NAD+ therapy to cutting-edge treatments evidence-based guides to optimizing healthspan.',
     metaTitle: 'Longevity & Anti-Aging | InvestedLuxury',
     metaDescription: 'Science-backed longevity guides. NAD+ therapy, supplements, and treatments for optimizing healthspan.',
     parentSlug: 'wellness',
@@ -205,7 +205,7 @@ export const SUB_CATEGORIES: Record<string, SubCategory> = {
   biohacking: {
     slug: 'biohacking',
     title: 'Biohacking',
-    description: 'Optimize your biology with the latest in health technology. From red light therapy to cold plunges—evidence-based guides to enhancement.',
+    description: 'Optimize your biology with the latest in health technology. From red light therapy to cold plunges evidence-based guides to enhancement.',
     metaTitle: 'Biohacking Guides | InvestedLuxury',
     metaDescription: 'Expert biohacking guides. Red light therapy, cold plunges, and health optimization technology reviews.',
     parentSlug: 'wellness',

@@ -3,8 +3,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { client } from '@/sanity/lib/client';
 import { urlFor } from '@/sanity/lib/image';
+
 // Add this line after the imports
 export const revalidate = 60; // Revalidate every 60 seconds
+
 // ============================================================================
 // METADATA
 // ============================================================================
@@ -62,9 +64,9 @@ async function getLatestArticles(limit: number = 3) {
   return await client.fetch(query);
 }
 
-// Fetch featured products
+// Fetch featured products for "Currently Coveting" section
 async function getFeaturedProducts(limit: number = 6) {
-  const query = `*[_type == "product" && featured == true] | order(_createdAt desc) [0...${limit}] {
+  const query = `*[_type == "product" && featured == true && status == "published"] | order(displayOrder asc, _createdAt desc) [0...${limit}] {
     _id,
     name,
     price,
@@ -72,7 +74,8 @@ async function getFeaturedProducts(limit: number = 6) {
     "slug": slug.current,
     "brand": brand->name,
     "image": images[0],
-    "affiliateLink": affiliateLinks[0].url
+    "affiliateUrl": affiliateLinks[0].url,
+    "retailer": affiliateLinks[0].retailer
   }`;
   return await client.fetch(query);
 }
@@ -92,7 +95,7 @@ function formatDate(dateString?: string) {
 
 function formatPrice(price: number, currency: string = 'USD') {
   const symbols: Record<string, string> = { USD: '$', EUR: '€', GBP: '£' };
-  return `${symbols[currency] || '$'}${price.toLocaleString()}`;
+  return `${symbols[currency] || '$'}${price?.toLocaleString() || '0'}`;
 }
 
 function getArticleUrl(article: any) {
@@ -121,7 +124,7 @@ const categories = [
 export default async function Home() {
   const [heroArticle, latestArticles, featuredProducts] = await Promise.all([
     getHeroArticle(),
-    getLatestArticles(3),
+    getLatestArticles(4),
     getFeaturedProducts(6),
   ]);
 
@@ -232,7 +235,8 @@ export default async function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {(otherArticles.length > 0 ? otherArticles : latestArticles).map((article: any) => (
+           {(otherArticles.length > 0 ? otherArticles : latestArticles).slice(0, 3).map((article: any) => (
+
               <article key={article._id} className="group">
                 <Link href={getArticleUrl(article)}>
                   <div className="relative aspect-[3/4] overflow-hidden mb-5 bg-cream">
@@ -277,7 +281,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Most Wanted Section */}
+      {/* Currently Coveting Section (Featured Products) */}
       {featuredProducts.length > 0 && (
         <section className="py-12 md:py-16 bg-white border-t border-gray-100">
           <div className="container-luxury">
@@ -285,14 +289,14 @@ export default async function Home() {
               <div>
                 <p className="text-sm text-charcoal mb-1">Fashion&apos;s Most-Wanted—Seen Here First.</p>
                 <h2 className="font-serif text-2xl md:text-3xl italic text-black">
-                  Editor&apos;s Picks
+                  Currently Coveting
                 </h2>
               </div>
               <Link 
                 href="/fashion"
                 className="hidden md:inline-block px-5 py-2.5 border border-black text-xs uppercase tracking-wider text-black hover:bg-black hover:text-white transition-colors"
               >
-                Shop Trending Now
+                Shop All
               </Link>
             </div>
 
@@ -301,7 +305,7 @@ export default async function Home() {
                 {featuredProducts.map((product: any) => (
                   <a 
                     key={product._id}
-                    href={product.affiliateLink || '#'}
+                    href={product.affiliateUrl || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-shrink-0 w-[160px] md:w-auto group"
@@ -348,7 +352,7 @@ export default async function Home() {
                 href="/fashion"
                 className="inline-block px-6 py-2.5 border border-black text-xs uppercase tracking-wider text-black"
               >
-                Shop All Trending
+                Shop All
               </Link>
             </div>
           </div>

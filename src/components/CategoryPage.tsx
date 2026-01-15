@@ -63,52 +63,57 @@ export default function CategoryPage({
   const featuredArticle = articles.find(a => a.featured) || articles[0];
   const otherArticles = articles.filter(a => (a.id || a._id) !== (featuredArticle?.id || featuredArticle?._id));
 
+  // Check if hero section should be shown
+  const showHeroSection = title || subtitle || description || breadcrumb;
+
   return (
     <>
-      {/* Hero Section */}
-      <section className="bg-cream">
-        <div className="container-luxury py-12 lg:py-16">
-        {/* Breadcrumb */}
-          {breadcrumb && (
-            <nav className="mb-8">
-              <ol className="flex items-center gap-2 text-sm text-charcoal-light">
-                <li>
-                  <Link href="/" className="hover:text-gold transition-colors">
-                    Home
-                  </Link>
-                </li>
-                <li>/</li>
-                <li>
-                  <Link href={breadcrumb.parentHref} className="hover:text-gold transition-colors">
-                    {breadcrumb.parent}
-                  </Link>
-                </li>
-                <li>/</li>
-                <li className="text-charcoal">{breadcrumb.current}</li>
-              </ol>
-            </nav>
-          )}
+      {/* Hero Section - Only render if there's content */}
+      {showHeroSection && (
+        <section className="bg-cream">
+          <div className="container-luxury py-12 lg:py-16">
+          {/* Breadcrumb */}
+            {breadcrumb && (
+              <nav className="mb-8">
+                <ol className="flex items-center gap-2 text-sm text-charcoal-light">
+                  <li>
+                    <Link href="/" className="hover:text-gold transition-colors">
+                      Home
+                    </Link>
+                  </li>
+                  <li>/</li>
+                  <li>
+                    <Link href={breadcrumb.parentHref} className="hover:text-gold transition-colors">
+                      {breadcrumb.parent}
+                    </Link>
+                  </li>
+                  <li>/</li>
+                  <li className="text-charcoal">{breadcrumb.current}</li>
+                </ol>
+              </nav>
+            )}
 
-          {/* Title */}
-          <div className="max-w-3xl">
-            {title && (
-              <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-black mb-4">
-                {title}
-              </h1>
-            )}
-            {subtitle && (
-              <p className="text-xl md:text-2xl font-serif italic text-charcoal mb-6">
-                {subtitle}
-              </p>
-            )}
-            {description && (
-              <p className="text-charcoal leading-relaxed">
-                {description}
-              </p>
-            )}
+            {/* Title */}
+            <div className="max-w-3xl">
+              {title && (
+                <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-black mb-4">
+                  {title}
+                </h1>
+              )}
+              {subtitle && (
+                <p className="text-xl md:text-2xl font-serif italic text-charcoal mb-6">
+                  {subtitle}
+                </p>
+              )}
+              {description && (
+                <p className="text-charcoal leading-relaxed">
+                  {description}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Featured Article */}
       {featuredArticle && (
