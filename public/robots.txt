@@ -1,0 +1,10 @@
+# robots.txt for InvestedLuxury.com
+
+User-agent: *
+Allow: /
+
+# Block product pages from indexing
+Disallow: /products/
+
+# Allow sitemap
+Sitemap: https://investedluxury.com/sitemap.xml

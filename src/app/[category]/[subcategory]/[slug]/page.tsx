@@ -132,12 +132,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: [ogImage],
       creator: '@investedluxury',
     },
-    robots: {
-      index: true,
-      follow: true,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
+      robots: params.subcategory === 'products' 
+      ? { index: false, follow: false }
+      : {
+          index: true,
+          follow: true,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
   }
 }
 
