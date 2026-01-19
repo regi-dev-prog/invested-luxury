@@ -217,12 +217,12 @@ export default async function SubCategoryPage({ params }: Props) {
       </nav>
       
       {/* Articles Grid - NO breadcrumb prop to avoid duplicate */}
-      <CategoryPage
-        title=""
-        description=""
-        articles={articles}
-        categorySlug={params.subcategory}
-      />
+    <CategoryPage
+  title=""
+  description=""
+  articles={articles}
+  categorySlug={`${params.category}/${params.subcategory}`}
+/>
     </main>
   )
 }
