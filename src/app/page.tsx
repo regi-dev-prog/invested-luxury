@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { client } from '@/sanity/lib/client';
 import { urlFor } from '@/sanity/lib/image';
+import NewsletterForm from '@/components/NewsletterForm';
 
 // Add this line after the imports
 export const revalidate = 60; // Revalidate every 60 seconds
@@ -386,35 +387,20 @@ export default async function Home() {
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-20 bg-white">
-        <div className="container-luxury">
-          <div className="max-w-xl mx-auto text-center">
-            <h2 className="font-serif text-3xl md:text-4xl text-black mb-4">
-              The Inner Circle
-            </h2>
-            <p className="text-charcoal mb-8">
-              Curated insights on investment-worthy pieces, delivered weekly.
-            </p>
-            <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="flex-1 px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors text-sm"
-                required
-              />
-              <button 
-                type="submit"
-                className="px-6 py-3 bg-black text-white text-sm font-medium uppercase tracking-wider hover:bg-charcoal transition-colors"
-              >
-                Subscribe
-              </button>
-            </form>
-            <p className="text-xs text-charcoal-light mt-4">
-              No spam. Unsubscribe anytime.
-            </p>
-          </div>
-        </div>
-      </section>
+<section className="py-16 bg-cream">
+  <div className="max-w-4xl mx-auto px-4 text-center">
+    <h2 className="font-display text-2xl md:text-3xl text-charcoal mb-4">
+      Join Our Inner Circle
+    </h2>
+    <p className="text-charcoal-light mb-6 max-w-lg mx-auto">
+      Be the first to know about investment-worthy pieces, exclusive guides, and insider insights.
+    </p>
+    <NewsletterForm />
+    <p className="text-xs text-charcoal-light mt-4">
+      No spam. Unsubscribe anytime.
+    </p>
+  </div>
+</section>
     </>
   );
 }

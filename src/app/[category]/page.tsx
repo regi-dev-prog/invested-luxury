@@ -163,6 +163,7 @@ export default async function ParentCategoryPage({ params }: Props) {
         title=""
         description=""
         articles={articles}
+        categorySlug={params.category}
       />
     </main>
   )
