@@ -3,35 +3,20 @@
 import { useState } from 'react';
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setStatus('loading');
-
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        setStatus('success');
-        setFormData({ firstName: '', lastName: '', email: '', subject: '', message: '' });
-      } else {
-        setStatus('error');
-      }
-    } catch {
-      setStatus('error');
-    }
+    setIsSubmitting(true);
+    
+    // Simulate form submission delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // TODO: Add actual form submission logic here (e.g., API call)
+    
+    setIsSubmitting(false);
+    setIsSubmitted(true);
   };
 
   return (
@@ -53,145 +38,139 @@ export default function ContactPage() {
       <section className="py-20 bg-white">
         <div className="container-luxury">
           <div className="max-w-2xl mx-auto">
-            {status === 'success' ? (
-              <div className="text-center py-12">
-                <h2 className="font-serif text-2xl text-black mb-4">Thank You!</h2>
-                <p className="text-charcoal">Your message has been sent. We will get back to you soon.</p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="firstName" className="block text-sm font-medium text-charcoal mb-2">
-                      First Name *
-                    </label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      value={formData.firstName}
-                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="lastName" className="block text-sm font-medium text-charcoal mb-2">
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      value={formData.lastName}
-                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
-                    />
-                  </div>
-                </div>
-
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid sm:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-charcoal mb-2">
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-charcoal mb-2">
-                    Subject
+                  <label htmlFor="firstName" className="block text-sm font-medium text-charcoal mb-2">
+                    First Name
                   </label>
                   <input
                     type="text"
-                    id="subject"
-                    value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    id="firstName"
+                    name="firstName"
                     className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
+                    required
+                    disabled={isSubmitted}
                   />
                 </div>
-
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-charcoal mb-2">
-                    Message *
+                  <label htmlFor="lastName" className="block text-sm font-medium text-charcoal mb-2">
+                    Last Name
                   </label>
-                  <textarea
-                    id="message"
-                    rows={6}
-                    value={formData.message}
-cat > src/app/api/newsletter/route.ts << 'EOF'
-import { Resend } from 'resend';
-import { NextResponse } from 'next/server';
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
+                    disabled={isSubmitted}
+                  />
+                </div>
+              </div>
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-charcoal mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
+                  required
+                  disabled={isSubmitted}
+                />
+              </div>
 
-export async function POST(request: Request) {
-  try {
-    const { email } = await request.json();
+              <div>
+                <label htmlFor="subject" className="block text-sm font-medium text-charcoal mb-2">
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
+                  disabled={isSubmitted}
+                />
+              </div>
 
-    // Validate email
-    if (!email || !email.includes('@')) {
-      return NextResponse.json(
-        { error: 'Valid email is required' },
-        { status: 400 }
-      );
-    }
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-charcoal mb-2">
+                  Message
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={6}
+                  className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors resize-none"
+                  required
+                  disabled={isSubmitted}
+                />
+              </div>
 
-    // Send confirmation email to subscriber
-    await resend.emails.send({
-      from: 'InvestedLuxury <noreply@investedluxury.com>',
-      to: email,
-      subject: 'Welcome to InvestedLuxury',
-      html: `
-        <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-          <h1 style="color: #1a1a1a; font-size: 24px; font-weight: normal; margin-bottom: 20px;">
-            Welcome to InvestedLuxury
-          </h1>
-          <p style="color: #4a4a4a; line-height: 1.6; margin-bottom: 20px;">
-            Thank you for subscribing to our newsletter. You'll be the first to know about:
-          </p>
-          <ul style="color: #4a4a4a; line-height: 1.8; margin-bottom: 20px;">
-            <li>New investment-worthy pieces we've discovered</li>
-            <li>Exclusive guides and buying advice</li>
-            <li>Resale market insights and trends</li>
-          </ul>
-          <p style="color: #4a4a4a; line-height: 1.6;">
-            In the meantime, explore our latest articles at 
-            <a href="https://investedluxury.com" style="color: #C9A962;">investedluxury.com</a>
-          </p>
-          <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;" />
-          <p style="color: #888; font-size: 12px;">
-            You're receiving this because you subscribed at investedluxury.com.<br/>
-            <a href="https://investedluxury.com/unsubscribe" style="color: #888;">Unsubscribe</a>
-          </p>
+              <div className="text-center">
+                <button
+                  type="submit"
+                  disabled={isSubmitting || isSubmitted}
+                  className="px-12 py-4 bg-charcoal text-white font-medium tracking-wider uppercase hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
+                </button>
+              </div>
+
+              {/* Success Message */}
+              {isSubmitted && (
+                <div className="text-center pt-4">
+                  <p className="text-charcoal font-serif text-lg">
+                    Thank you for reaching out.
+                  </p>
+                  <p className="text-charcoal/70 text-sm mt-1">
+                    We'll be in touch soon.
+                  </p>
+                </div>
+              )}
+            </form>
+
+            <div className="mt-16 pt-16 border-t border-gray-100">
+              <div className="grid sm:grid-cols-2 gap-8 text-center">
+                <div>
+                  <h3 className="font-serif text-title text-black mb-2">Email</h3>
+                  <a 
+                    href="mailto:hello@investedluxury.com" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-charcoal hover:text-gold transition-colors"
+                  >
+                    hello@investedluxury.com
+                  </a>
+                </div>
+                <div>
+                  <h3 className="font-serif text-title text-black mb-2">Follow Us</h3>
+                  <div className="flex justify-center gap-4">
+                    <a 
+                      href="https://pinterest.com" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-charcoal hover:text-gold transition-colors"
+                    >
+                      Pinterest
+                    </a>
+                    <span className="text-gray-300">|</span>
+                    <a 
+                      href="https://instagram.com" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-charcoal hover:text-gold transition-colors"
+                    >
+                      Instagram
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      `,
-    });
-
-    // Send notification to you
-    await resend.emails.send({
-      from: 'InvestedLuxury <noreply@investedluxury.com>',
-      to: 'regidev.prog@gmail.com',
-      subject: '📬 New Newsletter Subscriber',
-      html: `
-        <div style="font-family: Georgia, serif; padding: 20px;">
-          <h2 style="color: #1a1a1a;">New Newsletter Subscription</h2>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
-        </div>
-      `,
-    });
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Newsletter signup error:', error);
-    return NextResponse.json(
-      { error: 'Failed to subscribe' },
-      { status: 500 }
-    );
-  }
+      </section>
+    </>
+  );
 }
