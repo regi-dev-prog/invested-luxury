@@ -1,12 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Turnstile from './Turnstile';
 
 export default function NewsletterForm() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
+  // Stable callbacks - won't cause re-renders
+  const handleVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
+
+  const handleExpire = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
+
+  const handleError = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +40,7 @@ export default function NewsletterForm() {
       if (response.ok) {
         setStatus('success');
         setEmail('');
+        setTurnstileToken(null);
       } else {
         setStatus('error');
       }
@@ -65,10 +79,13 @@ export default function NewsletterForm() {
         </button>
       </div>
       
-      <Turnstile 
-        onVerify={(token) => setTurnstileToken(token)}
-        onExpire={() => setTurnstileToken(null)}
-      />
+      <div className="mt-4 flex justify-center">
+        <Turnstile 
+          onVerify={handleVerify}
+          onExpire={handleExpire}
+          onError={handleError}
+        />
+      </div>
       
       {status === 'error' && (
         <p className="text-red-500 text-sm mt-2 text-center">
