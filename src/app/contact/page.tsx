@@ -5,18 +5,41 @@ import { useState } from 'react';
 export default function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError('');
     
-    // Simulate form submission delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // TODO: Add actual form submission logic here (e.g., API call)
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      firstName: formData.get('firstName'),
+      lastName: formData.get('lastName'),
+      email: formData.get('email'),
+      subject: formData.get('subject'),
+      message: formData.get('message'),
+    };
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      setIsSubmitted(true);
+    } catch (err) {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -117,6 +140,13 @@ export default function ContactPage() {
                   {isSubmitting ? 'Sending...' : 'Send Message'}
                 </button>
               </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="text-center pt-4">
+                  <p className="text-red-600 text-sm">{error}</p>
+                </div>
+              )}
 
               {/* Success Message */}
               {isSubmitted && (
