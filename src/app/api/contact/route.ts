@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     // Send email to you (the site owner)
     await resend.emails.send({
       from: 'InvestedLuxury <noreply@investedluxury.com>',
-      to: 'regev.studio@gmail.com', // Your email
+      to: 'investedlux@gmail.com', // Your email
       subject: `Contact Form: ${subject || 'New Message'} from ${firstName}`,
       html: `
         <h2>New Contact Form Submission</h2>

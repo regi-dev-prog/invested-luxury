@@ -5,202 +5,119 @@ import { useState } from 'react';
 export default function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError('');
-    
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      firstName: formData.get('firstName'),
-      lastName: formData.get('lastName'),
-      email: formData.get('email'),
-      subject: formData.get('subject'),
-      message: formData.get('message'),
-    };
 
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to send message');
+      if (response.ok) {
+        setIsSubmitted(true);
+      } else {
+        alert('Failed to send message. Please try again.');
       }
-
-      setIsSubmitted(true);
-    } catch (err) {
-      setError('Something went wrong. Please try again.');
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to send message. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  return (
-    <>
-      {/* Hero */}
-      <section className="py-20 bg-cream">
-        <div className="container-luxury text-center">
-          <p className="category-badge mb-4">Contact</p>
-          <h1 className="font-serif text-display text-black mb-6">
-            Get in Touch
-          </h1>
-          <p className="text-body-lg text-charcoal max-w-xl mx-auto">
-            Have a question, suggestion, or partnership inquiry? We would love to hear from you.
-          </p>
+  if (isSubmitted) {
+    return (
+      <main className="min-h-screen bg-cream pt-32 pb-20">
+        <div className="max-w-2xl mx-auto px-6 text-center">
+          <h1 className="font-cormorant text-4xl text-charcoal mb-6">Thank You</h1>
+          <p className="text-charcoal/70">Your message has been sent. We'll be in touch soon.</p>
         </div>
-      </section>
+      </main>
+    );
+  }
 
-      {/* Contact Form */}
-      <section className="py-20 bg-white">
-        <div className="container-luxury">
-          <div className="max-w-2xl mx-auto">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid sm:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-charcoal mb-2">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    name="firstName"
-                    className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
-                    required
-                    disabled={isSubmitted}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-charcoal mb-2">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
-                    disabled={isSubmitted}
-                  />
-                </div>
-              </div>
+  return (
+    <main className="min-h-screen bg-cream pt-32 pb-20">
+      <div className="max-w-2xl mx-auto px-6">
+        <h1 className="font-cormorant text-4xl md:text-5xl text-charcoal mb-4 text-center">Contact Us</h1>
+        <p className="text-charcoal/70 text-center mb-12">We'd love to hear from you</p>
 
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-charcoal mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
-                  required
-                  disabled={isSubmitted}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-charcoal mb-2">
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
-                  disabled={isSubmitted}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-charcoal mb-2">
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={6}
-                  className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors resize-none"
-                  required
-                  disabled={isSubmitted}
-                />
-              </div>
-
-              <div className="text-center">
-                <button
-                  type="submit"
-                  disabled={isSubmitting || isSubmitted}
-                  className="px-12 py-4 bg-charcoal text-white font-medium tracking-wider uppercase hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
-                </button>
-              </div>
-
-              {/* Error Message */}
-              {error && (
-                <div className="text-center pt-4">
-                  <p className="text-red-600 text-sm">{error}</p>
-                </div>
-              )}
-
-              {/* Success Message */}
-              {isSubmitted && (
-                <div className="text-center pt-4">
-                  <p className="text-charcoal font-serif text-lg">
-                    Thank you for reaching out.
-                  </p>
-                  <p className="text-charcoal/70 text-sm mt-1">
-                    We'll be in touch soon.
-                  </p>
-                </div>
-              )}
-            </form>
-
-            <div className="mt-16 pt-16 border-t border-gray-100">
-              <div className="grid sm:grid-cols-2 gap-8 text-center">
-                <div>
-                  <h3 className="font-serif text-title text-black mb-2">Email</h3>
-                  <a 
-                    href="mailto:hello@investedluxury.com" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-charcoal hover:text-gold transition-colors"
-                  >
-                    hello@investedluxury.com
-                  </a>
-                </div>
-                <div>
-                  <h3 className="font-serif text-title text-black mb-2">Follow Us</h3>
-                  <div className="flex justify-center gap-4">
-                    <a 
-                      href="https://pinterest.com" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-charcoal hover:text-gold transition-colors"
-                    >
-                      Pinterest
-                    </a>
-                    <span className="text-gray-300">|</span>
-                    <a 
-                      href="https://instagram.com" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-charcoal hover:text-gold transition-colors"
-                    >
-                      Instagram
-                    </a>
-                  </div>
-                </div>
-              </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm text-charcoal mb-2">First Name *</label>
+              <input
+                type="text"
+                required
+                value={formData.firstName}
+                onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                className="w-full px-4 py-3 border border-charcoal/20 bg-white focus:border-gold focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-charcoal mb-2">Last Name</label>
+              <input
+                type="text"
+                value={formData.lastName}
+                onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                className="w-full px-4 py-3 border border-charcoal/20 bg-white focus:border-gold focus:outline-none"
+              />
             </div>
           </div>
-        </div>
-      </section>
-    </>
+
+          <div>
+            <label className="block text-sm text-charcoal mb-2">Email *</label>
+            <input
+              type="email"
+              required
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              className="w-full px-4 py-3 border border-charcoal/20 bg-white focus:border-gold focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm text-charcoal mb-2">Subject</label>
+            <input
+              type="text"
+              value={formData.subject}
+              onChange={(e) => setFormData({...formData, subject: e.target.value})}
+              className="w-full px-4 py-3 border border-charcoal/20 bg-white focus:border-gold focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm text-charcoal mb-2">Message *</label>
+            <textarea
+              required
+              rows={6}
+              value={formData.message}
+              onChange={(e) => setFormData({...formData, message: e.target.value})}
+              className="w-full px-4 py-3 border border-charcoal/20 bg-white focus:border-gold focus:outline-none resize-none"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-charcoal text-white py-4 hover:bg-charcoal/90 transition-colors disabled:opacity-50"
+          >
+            {isSubmitting ? 'Sending...' : 'Send Message'}
+          </button>
+        </form>
+      </div>
+    </main>
   );
 }
