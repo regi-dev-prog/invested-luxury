@@ -102,20 +102,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 bg-black">
-        <div className="container-luxury text-center">
-          <h2 className="font-serif text-headline text-white mb-4">
-            Ready to Invest Wisely?
-          </h2>
-          <p className="text-body-lg text-white/70 mb-8 max-w-xl mx-auto">
-            Join our community of discerning collectors and receive curated insights delivered to your inbox.
-          </p>
-          <Link href="/contact" className="btn-gold inline-block">
-            Get in Touch
-          </Link>
-        </div>
-      </section>
+     
     </>
   );
 }
