@@ -386,21 +386,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Newsletter Section */}
-<section className="py-16 bg-cream">
-  <div className="max-w-4xl mx-auto px-4 text-center">
-    <h2 className="font-display text-2xl md:text-3xl text-charcoal mb-4">
-      Join Our Inner Circle
-    </h2>
-    <p className="text-charcoal-light mb-6 max-w-lg mx-auto">
-      Be the first to know about investment-worthy pieces, exclusive guides, and insider insights.
-    </p>
-    <NewsletterForm />
-    <p className="text-xs text-charcoal-light mt-4">
-      No spam. Unsubscribe anytime.
-    </p>
-  </div>
-</section>
+    
     </>
   );
 }
