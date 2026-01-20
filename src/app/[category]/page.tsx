@@ -1,8 +1,9 @@
 // =============================================================================
-// PARENT CATEGORY PAGE - VOGUE-INSPIRED DESIGN
+// PARENT CATEGORY PAGE - VOGUE-INSPIRED DESIGN (FIXED)
 // =============================================================================
 // Route: /fashion, /lifestyle, /wellness, /guides
 // Design: Clean, minimal spacing, editorial underline navigation
+// FIXES: Thin underline (h-px), horizontal scroll on mobile
 // =============================================================================
 
 import { notFound } from 'next/navigation'
@@ -124,17 +125,19 @@ export default async function ParentCategoryPage({ params }: Props) {
       </section>
       
       {/* Sub-Category Navigation - VOGUE STYLE */}
+      {/* FIXED: Now matches sub-category page styling */}
       <nav className="border-b border-gray-200 bg-white sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 py-4">
+        <div className="max-w-6xl mx-auto">
+          {/* FIXED: Horizontal scroll on mobile, wrap on desktop */}
+          <div className="flex overflow-x-auto scrollbar-hide gap-x-6 py-4 px-4 md:flex-wrap md:justify-center md:overflow-visible">
             {/* "View All" link - always first */}
             <Link
               href={`/${params.category}`}
-              className="relative px-1 py-2 text-xs font-medium tracking-widest uppercase text-charcoal transition-colors group"
+              className="relative flex-shrink-0 px-1 py-2 text-xs font-medium tracking-widest uppercase text-charcoal transition-colors group"
             >
               View All
-              {/* Active underline */}
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gold transform origin-left transition-transform duration-200" />
+              {/* FIXED: Active underline - thin h-px instead of h-0.5 */}
+              <span className="absolute bottom-0 left-0 w-full h-px bg-gold transform origin-left transition-transform duration-200" />
             </Link>
             
             {/* Sub-category links */}
@@ -142,7 +145,7 @@ export default async function ParentCategoryPage({ params }: Props) {
               <Link
                 key={sub.slug}
                 href={sub.path}
-                className="relative px-1 py-2 text-xs font-medium tracking-widest uppercase text-charcoal/60 hover:text-charcoal transition-colors group"
+                className="relative flex-shrink-0 px-1 py-2 text-xs font-medium tracking-widest uppercase text-charcoal/60 hover:text-charcoal transition-colors group"
               >
                 {sub.title}
                 {articleCounts[sub.slug] > 0 && (
@@ -150,8 +153,8 @@ export default async function ParentCategoryPage({ params }: Props) {
                     ({articleCounts[sub.slug]})
                   </span>
                 )}
-                {/* Hover underline */}
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gold transform scale-x-0 origin-left transition-transform duration-200 group-hover:scale-x-100" />
+                {/* FIXED: Hover underline - thin h-px instead of h-0.5 */}
+                <span className="absolute bottom-0 left-0 w-full h-px bg-gold transform scale-x-0 origin-left transition-transform duration-200 group-hover:scale-x-100" />
               </Link>
             ))}
           </div>
