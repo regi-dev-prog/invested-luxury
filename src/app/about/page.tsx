@@ -37,7 +37,10 @@ export default function AboutPage() {
 
               <h2>What We Cover</h2>
               <p>
-                From the timeless appeal of a Hermès Birkin to the quiet sophistication of The Row, from vintage Rolex watches to emerging jewelry designers, we explore the full spectrum of investment-worthy luxury. Our coverage extends beyond fashion to encompass the broader luxury lifestyle - the hotels that create lasting memories, the art that appreciates in value, and the wellness practices that invest in your most valuable asset: yourself.
+                From designer handbags and timepieces to quiet luxury essentials, our <Link href="/fashion" className="text-gold hover:underline">fashion coverage</Link> explores the full spectrum of investment-worthy pieces. We go beyond clothing to encompass the broader luxury <Link href="/lifestyle" className="text-gold hover:underline">lifestyle</Link> - the hotels that create lasting memories, the art that appreciates in value, and the <Link href="/wellness" className="text-gold hover:underline">wellness practices</Link> that invest in your most valuable asset: yourself.
+              </p>
+              <p>
+                Whether you're new to luxury or a seasoned collector, our <Link href="/guides" className="text-gold hover:underline">in-depth guides</Link> provide the insights you need to make informed decisions.
               </p>
 
               <h2>Our Promise</h2>
@@ -50,7 +53,7 @@ export default function AboutPage() {
                 InvestedLuxury is reader-supported. When you purchase through links on our site, we may earn an affiliate commission at no additional cost to you. This helps us maintain our editorial independence and continue providing the in-depth content our readers expect.
               </p>
               <p>
-                Our affiliate relationships never influence our editorial content. We recommend products based solely on their merit and investment potential, regardless of whether we have an affiliate partnership with the brand.
+                Our affiliate relationships never influence our editorial content. We recommend products based solely on their merit and investment potential, regardless of whether we have an affiliate partnership with the brand. For more details, see our <Link href="/privacy-policy" className="text-gold hover:underline">privacy policy</Link> and <Link href="/terms" className="text-gold hover:underline">terms of service</Link>.
               </p>
             </div>
           </div>
