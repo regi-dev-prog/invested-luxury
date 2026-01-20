@@ -5,7 +5,30 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    const { firstName, lastName, email, subject, message } = await request.json();
+    const { firstName, lastName, email, subject, message, turnstileToken } = await request.json();
+
+    // Verify Turnstile token
+    if (turnstileToken) {
+      const verifyResponse = await fetch(
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            secret: process.env.TURNSTILE_SECRET_KEY || '',
+            response: turnstileToken,
+          }),
+        }
+      );
+      const verifyResult = await verifyResponse.json();
+      
+      if (!verifyResult.success) {
+        return NextResponse.json(
+          { error: 'Bot verification failed' },
+          { status: 400 }
+        );
+      }
+    }
 
     // Validation
     if (!firstName || !email || !message) {
@@ -18,7 +41,7 @@ export async function POST(request: Request) {
     // Send email to you (the site owner)
     await resend.emails.send({
       from: 'InvestedLuxury <noreply@investedluxury.com>',
-      to: 'investedlux@gmail.com', // Your email
+      to: 'investedlux@gmail.com',
       subject: `Contact Form: ${subject || 'New Message'} from ${firstName}`,
       html: `
         <h2>New Contact Form Submission</h2>

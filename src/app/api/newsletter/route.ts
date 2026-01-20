@@ -5,7 +5,30 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    const { email } = await request.json();
+    const { email, turnstileToken } = await request.json();
+
+    // Verify Turnstile token
+    if (turnstileToken) {
+      const verifyResponse = await fetch(
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            secret: process.env.TURNSTILE_SECRET_KEY || '',
+            response: turnstileToken,
+          }),
+        }
+      );
+      const verifyResult = await verifyResponse.json();
+      
+      if (!verifyResult.success) {
+        return NextResponse.json(
+          { error: 'Bot verification failed' },
+          { status: 400 }
+        );
+      }
+    }
 
     if (!email || !email.includes('@')) {
       return NextResponse.json(
