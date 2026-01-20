@@ -1,210 +1,221 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Turnstile from '@/components/Turnstile';
 
 export default function ContactPage() {
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
     subject: '',
     message: '',
   });
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  // Stable callback - won't cause re-renders
+  const handleVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+    setErrorMessage('');
+  }, []);
+
+  const handleError = useCallback(() => {
+    setTurnstileToken(null);
+    setErrorMessage('Verification failed. Please refresh the page.');
+  }, []);
+
+  const handleExpire = useCallback(() => {
+    setTurnstileToken(null);
+    setErrorMessage('Verification expired. Please verify again.');
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!turnstileToken) {
-      setError('Please complete the verification');
+      setErrorMessage('Please complete the verification');
       return;
     }
-    
-    setIsSubmitting(true);
-    setError(null);
+
+    setStatus('loading');
+    setErrorMessage('');
 
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, turnstileToken }),
+        body: JSON.stringify({
+          ...formData,
+          turnstileToken,
+        }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        setIsSubmitted(true);
+        setStatus('success');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        setTurnstileToken(null);
       } else {
-        setError('Failed to send message. Please try again.');
+        setStatus('error');
+        setErrorMessage(data.error || 'Something went wrong');
       }
-    } catch {
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+    } catch (error) {
+      setStatus('error');
+      setErrorMessage('Failed to send message. Please try again.');
     }
   };
 
   return (
-    <>
-      {/* Hero */}
-      <section className="py-20 bg-cream">
-        <div className="container-luxury text-center">
-          <p className="category-badge mb-4">Contact</p>
-          <h1 className="font-serif text-display text-black mb-6">
-            Get in Touch
-          </h1>
-          <p className="text-body-lg text-charcoal max-w-xl mx-auto">
-            Have a question, suggestion, or partnership inquiry? We would love to hear from you.
-          </p>
+    <main className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <section className="bg-cream py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <h1 className="font-serif text-4xl md:text-5xl text-black mb-6">
+              Get in Touch
+            </h1>
+            <p className="text-charcoal text-lg">
+              Have a question about luxury investments? We'd love to hear from you.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Contact Form */}
-      <section className="py-20 bg-white">
-        <div className="container-luxury">
-          <div className="max-w-2xl mx-auto">
-            {isSubmitted ? (
-              <div className="text-center py-12">
-                <p className="text-charcoal font-serif text-xl mb-2">
-                  Thank you for reaching out.
+      {/* Contact Form Section */}
+      <section className="py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="max-w-xl mx-auto">
+            {status === 'success' ? (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-8 text-center">
+                <svg className="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <h2 className="font-serif text-2xl text-black mb-2">Message Sent!</h2>
+                <p className="text-charcoal mb-6">
+                  Thank you for reaching out. We'll get back to you soon.
                 </p>
-                <p className="text-charcoal/70">
-                  We'll be in touch soon.
-                </p>
+                <button
+                  onClick={() => setStatus('idle')}
+                  className="text-gold hover:text-black transition-colors"
+                >
+                  Send another message
+                </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="firstName" className="block text-sm font-medium text-charcoal mb-2">
-                      First Name *
-                    </label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      value={formData.firstName}
-                      onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="lastName" className="block text-sm font-medium text-charcoal mb-2">
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      value={formData.lastName}
-                      onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
-                    />
-                  </div>
+                {/* Name */}
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-black mb-2">
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold transition-colors"
+                    placeholder="Your name"
+                  />
                 </div>
 
+                {/* Email */}
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-charcoal mb-2">
+                  <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
                     Email *
                   </label>
                   <input
                     type="email"
                     id="email"
+                    name="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
+                    onChange={handleChange}
                     required
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold transition-colors"
+                    placeholder="your@email.com"
                   />
                 </div>
 
+                {/* Subject */}
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-charcoal mb-2">
-                    Subject
+                  <label htmlFor="subject" className="block text-sm font-medium text-black mb-2">
+                    Subject *
                   </label>
-                  <input
-                    type="text"
+                  <select
                     id="subject"
+                    name="subject"
                     value={formData.subject}
-                    onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors"
-                  />
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold transition-colors bg-white"
+                  >
+                    <option value="">Select a subject</option>
+                    <option value="general">General Inquiry</option>
+                    <option value="collaboration">Collaboration</option>
+                    <option value="press">Press</option>
+                    <option value="feedback">Feedback</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
 
+                {/* Message */}
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-charcoal mb-2">
+                  <label htmlFor="message" className="block text-sm font-medium text-black mb-2">
                     Message *
                   </label>
                   <textarea
                     id="message"
-                    rows={6}
+                    name="message"
                     value={formData.message}
-                    onChange={(e) => setFormData({...formData, message: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-200 focus:border-gold focus:outline-none transition-colors resize-none"
+                    onChange={handleChange}
                     required
+                    rows={6}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-gold transition-colors resize-none"
+                    placeholder="Your message..."
                   />
                 </div>
 
-                <Turnstile 
-                  onVerify={(token) => setTurnstileToken(token)}
-                  onExpire={() => setTurnstileToken(null)}
-                  onError={() => setError('Verification failed. Please refresh and try again.')}
-                />
+                {/* Turnstile */}
+                <div className="flex justify-center">
+                  <Turnstile
+                    onVerify={handleVerify}
+                    onError={handleError}
+                    onExpire={handleExpire}
+                  />
+                </div>
 
-                {error && (
-                  <p className="text-red-500 text-sm text-center">{error}</p>
+                {/* Error Message */}
+                {errorMessage && (
+                  <p className="text-red-600 text-sm text-center">{errorMessage}</p>
                 )}
 
-                <div className="text-center">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting || !turnstileToken}
-                    className="px-12 py-4 bg-charcoal text-white font-medium tracking-wider uppercase hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? 'Sending...' : 'Send Message'}
-                  </button>
-                </div>
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={status === 'loading' || !turnstileToken}
+                  className="w-full bg-black text-white py-4 px-8 text-sm tracking-wider hover:bg-charcoal transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {status === 'loading' ? 'SENDING...' : 'SEND MESSAGE'}
+                </button>
+
+                {!turnstileToken && status !== 'loading' && (
+                  <p className="text-charcoal text-xs text-center">
+                    Please complete the verification above
+                  </p>
+                )}
               </form>
             )}
-
-            <div className="mt-16 pt-16 border-t border-gray-100">
-              <div className="grid sm:grid-cols-2 gap-8 text-center">
-                <div>
-                  <h3 className="font-serif text-title text-black mb-2">Email</h3>
-                  <a 
-                    href="mailto:hello@investedluxury.com" 
-                    className="text-charcoal hover:text-gold transition-colors"
-                  >
-                    hello@investedluxury.com
-                  </a>
-                </div>
-                <div>
-                  <h3 className="font-serif text-title text-black mb-2">Follow Us</h3>
-                  <div className="flex justify-center gap-4">
-                    <a 
-                      href="https://pinterest.com" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-charcoal hover:text-gold transition-colors"
-                    >
-                      Pinterest
-                    </a>
-                    <span className="text-gray-300">|</span>
-                    <a 
-                      href="https://instagram.com" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-charcoal hover:text-gold transition-colors"
-                    >
-                      Instagram
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 }
