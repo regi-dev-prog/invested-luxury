@@ -4,6 +4,7 @@
 // Route: /fashion/bags/[slug], /lifestyle/hotels/[slug], etc.
 // =============================================================================
 
+
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { client } from '@/sanity/lib/client'
@@ -19,6 +20,8 @@ import {
   ProductSpecsBox,
 } from '@/components/article'
 import { getSubCategory, getParentCategory } from '@/lib/categories'
+import SocialShare from '@/components/SocialShare'
+
 export const revalidate = 60;
 const siteUrl = 'https://investedluxury.com'
 
@@ -584,6 +587,14 @@ export default async function ArticlePage({ params }: Props) {
             InvestedLuxury may earn a commission at no additional cost to you. We only recommend 
             products we genuinely believe in.
           </p>
+
+          {/* Social Share */}
+          <SocialShare 
+            url={`https://www.investedluxury.com/${params.category}/${params.subcategory}/${params.slug}`}
+            title={article.title}
+            description={article.excerpt || ''}
+            image={article.mainImage ? urlFor(article.mainImage).width(1200).url() : ''}
+          />
 
           {/* Author Box */}
           {article.author && (

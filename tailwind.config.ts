@@ -51,6 +51,15 @@ const config: Config = {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
+        animation: {
+  'fade-in-up': 'fadeInUp 0.3s ease-out',
+},
+keyframes: {
+  fadeInUp: {
+    '0%': { opacity: '0', transform: 'translateX(-50%) translateY(10px)' },
+    '100%': { opacity: '1', transform: 'translateX(-50%) translateY(0)' },
+  },
+},
         slideUp: {
           "0%": { opacity: "0", transform: "translateY(20px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
