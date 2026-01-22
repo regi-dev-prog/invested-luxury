@@ -132,15 +132,38 @@ interface Article {
   relatedArticles?: any[]
 }
 
+// =============================================================================
+// SAFE FETCH WRAPPER - Handles network failures gracefully
+// =============================================================================
+async function fetchArticle(slug: string): Promise<Article | null> {
+  try {
+    const article = await client.fetch(articleQuery, { slug })
+    return article
+  } catch (error) {
+    console.error('Failed to fetch article:', error)
+    return null
+  }
+}
+
+async function fetchSlugs(): Promise<string[]> {
+  try {
+    const slugs = await client.fetch(slugsQuery)
+    return slugs || []
+  } catch (error) {
+    console.error('Failed to fetch slugs:', error)
+    return []
+  }
+}
+
 // Generate static params for all articles
 export async function generateStaticParams() {
-  const slugs: string[] = await client.fetch(slugsQuery)
-  return slugs.map((slug) => ({ slug }))
+  const slugs = await fetchSlugs()
+  return slugs.filter(Boolean).map((slug) => ({ slug }))
 }
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const article: Article = await client.fetch(articleQuery, { slug: params.slug })
+  const article = await fetchArticle(params.slug)
   
   if (!article) {
     return { title: 'Article Not Found' }
@@ -171,13 +194,18 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-// Format date
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+// Format date - with null safety
+function formatDate(dateString?: string | null): string {
+  if (!dateString) return ''
+  try {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  } catch {
+    return ''
+  }
 }
 
 // Calculate read time
@@ -211,20 +239,29 @@ function extractHeadings(body: any[]): { id: string; text: string; isBuySection?
   return headings
 }
 
-// Format price with currency symbol
-function formatPrice(price: number, currency: string = 'USD'): string {
+// Format price with currency symbol - with null safety
+function formatPrice(price?: number | null, currency: string = 'USD'): string {
+  if (price == null) return 'Price on request'
+  
   const symbols: Record<string, string> = {
     USD: '$',
     EUR: '€',
     GBP: '£',
   }
   const symbol = symbols[currency] || '$'
-  return `${symbol}${price.toLocaleString()}`
+  try {
+    return `${symbol}${price.toLocaleString()}`
+  } catch {
+    return `${symbol}${price}`
+  }
 }
 
-// Get display name for retailer
-function getRetailerDisplayName(retailer: string, customName?: string): string {
+// Get display name for retailer - FIXED: with null safety
+function getRetailerDisplayName(retailer?: string | null, customName?: string): string {
   if (customName) return customName
+  
+  // FIX: Handle null/undefined retailer
+  if (!retailer) return 'Shop Now'
   
   const names: Record<string, string> = {
     'direct': 'Brand Direct',
@@ -256,7 +293,7 @@ function transformProductData(product: Product | undefined) {
     .filter(link => !link.isResale && link.inStock !== false)
     .map(link => ({
       name: getRetailerDisplayName(link.retailer, link.retailerName),
-      url: link.url,
+      url: link.url || '#',
       price: link.price,
       isPrimary: link.isPrimary,
     }))
@@ -265,7 +302,7 @@ function transformProductData(product: Product | undefined) {
     .filter(link => link.isResale && link.inStock !== false)
     .map(link => ({
       name: getRetailerDisplayName(link.retailer, link.retailerName),
-      url: link.url,
+      url: link.url || '#',
       isResale: true,
     }))
 
@@ -273,7 +310,7 @@ function transformProductData(product: Product | undefined) {
   const primaryRetailer = retailers.find(r => r.isPrimary) || retailers[0]
 
   return {
-    name: product.name,
+    name: product.name || 'Unknown Product',
     price: formatPrice(product.price, product.currency),
     image: product.images?.[0] ? urlFor(product.images[0]).width(400).height(400).url() : undefined,
     specs: product.specifications || [],
@@ -289,22 +326,25 @@ function transformProductData(product: Product | undefined) {
 // Portable Text components for rendering rich content
 const createPortableTextComponents = (headingIndex: { current: number }) => ({
   types: {
-    image: ({ value }: { value: any }) => (
-      <figure className="my-12">
-        <Image
-          src={urlFor(value).width(900).url()}
-          alt={value.alt || ''}
-          width={900}
-          height={600}
-          className="w-full"
-        />
-        {value.caption && (
-          <figcaption className="text-center text-sm text-gray-500 mt-3 italic">
-            {value.caption}
-          </figcaption>
-        )}
-      </figure>
-    ),
+    image: ({ value }: { value: any }) => {
+      if (!value?.asset) return null
+      return (
+        <figure className="my-12">
+          <Image
+            src={urlFor(value).width(900).url()}
+            alt={value.alt || ''}
+            width={900}
+            height={600}
+            className="w-full"
+          />
+          {value.caption && (
+            <figcaption className="text-center text-sm text-gray-500 mt-3 italic">
+              {value.caption}
+            </figcaption>
+          )}
+        </figure>
+      )
+    },
     callToAction: ({ value }: { value: any }) => {
       const isPrimary = value.style === 'primary'
       return (
@@ -409,7 +449,7 @@ const createPortableTextComponents = (headingIndex: { current: number }) => ({
 })
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const article: Article = await client.fetch(articleQuery, { slug: params.slug })
+  const article = await fetchArticle(params.slug)
 
   if (!article) {
     notFound()
@@ -497,7 +537,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
               {article.categories && article.categories[0] && (
                 <>
                   <Link 
-                    href={`/${article.categories[0].slug.current}`}
+                    href={`/${article.categories[0].slug?.current || ''}`}
                     className="hover:text-[#C9A227] transition-colors"
                   >
                     {article.categories[0].name}
@@ -509,11 +549,13 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             </nav>
 
             {/* Category Badge */}
-            <div className="mb-6">
-              <span className="inline-block px-4 py-1.5 text-xs font-medium bg-black text-white uppercase tracking-widest">
-                {article.articleType}
-              </span>
-            </div>
+            {article.articleType && (
+              <div className="mb-6">
+                <span className="inline-block px-4 py-1.5 text-xs font-medium bg-black text-white uppercase tracking-widest">
+                  {article.articleType}
+                </span>
+              </div>
+            )}
 
             {/* Title - Large, Dramatic */}
             <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-black leading-[1.1] mb-5 text-balance">
@@ -583,7 +625,11 @@ export default async function ArticlePage({ params }: { params: { slug: string }
 
           {/* Body Content */}
           <div id="full-review" className="article-content">
-            <PortableText value={article.body} components={portableTextComponents} />
+            {article.body ? (
+              <PortableText value={article.body} components={portableTextComponents} />
+            ) : (
+              <p className="text-gray-500">Content coming soon...</p>
+            )}
           </div>
 
           {/* Affiliate Disclosure - Subtle */}
@@ -623,15 +669,15 @@ export default async function ArticlePage({ params }: { params: { slug: string }
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {article.relatedArticles.map((related: any) => (
                   <Link
-                    key={related.slug.current}
-                    href={`/article/${related.slug.current}`}
+                    key={related.slug?.current || related._id}
+                    href={`/article/${related.slug?.current || ''}`}
                     className="group bg-white"
                   >
                     {related.mainImage && (
                       <div className="aspect-[4/3] relative overflow-hidden">
                         <Image
                           src={urlFor(related.mainImage).width(500).height(375).url()}
-                          alt={related.title}
+                          alt={related.title || ''}
                           fill
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
