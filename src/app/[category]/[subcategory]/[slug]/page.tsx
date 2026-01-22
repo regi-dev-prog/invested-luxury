@@ -82,10 +82,23 @@ interface Props {
 }
 
 // =============================================================================
+// SAFE FETCH WRAPPER - Handles network failures gracefully
+// =============================================================================
+async function fetchArticle(slug: string) {
+  try {
+    const article = await client.fetch(articleQuery, { slug })
+    return article
+  } catch (error) {
+    console.error('Failed to fetch article:', error)
+    return null
+  }
+}
+
+// =============================================================================
 // GENERATE METADATA FOR SEO
 // =============================================================================
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const article = await client.fetch(articleQuery, { slug: params.slug })
+  const article = await fetchArticle(params.slug)
   
   if (!article) {
     return { title: 'Article Not Found' }
@@ -147,18 +160,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // HELPER FUNCTIONS
 // =============================================================================
 
-function formatDate(dateString?: string) {
+function formatDate(dateString?: string | null) {
   if (!dateString) return ''
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+  try {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  } catch {
+    return ''
+  }
 }
 
-function formatPrice(price: number, currency: string = 'USD') {
+function formatPrice(price?: number | null, currency: string = 'USD') {
+  // FIX: Handle null/undefined price
+  if (price == null) return 'Price on request'
+  
   const symbols: Record<string, string> = { USD: '$', EUR: '€', GBP: '£' }
-  return `${symbols[currency] || '$'}${price.toLocaleString()}`
+  try {
+    return `${symbols[currency] || '$'}${price.toLocaleString()}`
+  } catch {
+    return `${symbols[currency] || '$'}${price}`
+  }
 }
 
 // Transform Sanity product data for components
@@ -169,7 +193,7 @@ function transformProductData(product: any) {
   const resaleRetailers = product.affiliateLinks?.filter((link: any) => link.isResale) || []
   
   return {
-    name: product.name,
+    name: product.name || 'Unknown Product',
     brand: product.brand?.name,
     price: formatPrice(product.price, product.currency),
     image: product.images?.[0] ? urlFor(product.images[0]).width(400).height(400).url() : undefined,
@@ -179,13 +203,13 @@ function transformProductData(product: any) {
     })) || [],
     allSpecs: product.specifications || [],
     retailers: retailers.map((link: any) => ({
-      name: link.retailerName || link.retailer,
+      name: link.retailerName || link.retailer || 'Shop Now',
       url: link.url,
       price: link.price ? formatPrice(link.price, product.currency) : undefined,
       isResale: false,
     })),
     resaleRetailers: resaleRetailers.map((link: any) => ({
-      name: link.retailerName || link.retailer,
+      name: link.retailerName || link.retailer || 'Shop Now',
       url: link.url,
       isResale: true,
     })),
@@ -263,7 +287,7 @@ const portableTextComponents = {
 // PAGE COMPONENT
 // =============================================================================
 export default async function ArticlePage({ params }: Props) {
-  const article = await client.fetch(articleQuery, { slug: params.slug })
+  const article = await fetchArticle(params.slug)
   
   if (!article) {
     notFound()
