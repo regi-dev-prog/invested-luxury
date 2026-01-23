@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import { getLatestArticles } from '@/lib/queries/queries'
-
+import { getLatestArticles } from '@/lib/queries'
 export default async function NotFound() {
   // Fetch 3 latest articles
   const latestArticles = await getLatestArticles(3)
