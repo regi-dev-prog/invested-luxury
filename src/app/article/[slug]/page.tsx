@@ -465,7 +465,9 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   // Transform product data from Sanity - NO MORE HARDCODED DATA!
   const productData = transformProductData(article.primaryProduct)
 
-  // JSON-LD Schema
+  // =============================================================================
+  // JSON-LD Schema - FIXED: Now includes offers to satisfy Google requirements
+  // =============================================================================
   const jsonLd: any = {
     '@context': 'https://schema.org',
     '@type': article.schemaMarkup === 'review' ? 'Review' : 'Article',
@@ -491,21 +493,95 @@ export default async function ArticlePage({ params }: { params: { slug: string }
     }
   }
 
-  // Enhanced review schema with itemReviewed
+  // Enhanced review schema with itemReviewed - FIXED: Handles all edge cases
   if (article.schemaMarkup === 'review' && article.primaryProduct) {
-    jsonLd.itemReviewed = {
+    const product = article.primaryProduct
+    const affiliateLinks = product.affiliateLinks || []
+    
+    // Build offers array from affiliate links - only include those with valid URLs
+    const validOffers = affiliateLinks
+      .filter(link => !link.isResale && link.inStock !== false && link.url)
+      .map(link => ({
+        '@type': 'Offer' as const,
+        url: link.url,
+        priceCurrency: product.currency || 'USD',
+        // Use link price, fall back to product price
+        price: link.price || product.price,
+        availability: 'https://schema.org/InStock',
+        seller: {
+          '@type': 'Organization',
+          name: getRetailerDisplayName(link.retailer, link.retailerName),
+        },
+      }))
+
+    // Get all valid prices for AggregateOffer calculation
+    const validPrices = validOffers
+      .map(o => o.price)
+      .filter((p): p is number => typeof p === 'number' && p > 0)
+
+    // Build the Product schema
+    const productSchema: any = {
       '@type': 'Product',
-      name: article.primaryProduct.name,
-      brand: {
-        '@type': 'Brand',
-        name: article.primaryProduct.brand?.name,
-      },
+      name: product.name,
+      description: product.description || article.excerpt,
     }
+
+    // Add brand if available
+    if (product.brand?.name) {
+      productSchema.brand = {
+        '@type': 'Brand',
+        name: product.brand.name,
+      }
+    }
+
+    // Add image if available
+    if (product.images?.[0]) {
+      productSchema.image = urlFor(product.images[0]).width(800).url()
+    }
+
+    // CRITICAL: Build offers based on what data we have
+    if (validOffers.length > 1 && validPrices.length > 0) {
+      // Multiple offers WITH prices -> AggregateOffer
+      productSchema.offers = {
+        '@type': 'AggregateOffer',
+        lowPrice: Math.min(...validPrices),
+        highPrice: Math.max(...validPrices),
+        priceCurrency: product.currency || 'USD',
+        offerCount: validOffers.length,
+        availability: 'https://schema.org/InStock',
+        offers: validOffers,
+      }
+    } else if (validOffers.length === 1 && validPrices.length > 0) {
+      // Single offer with price -> simple Offer
+      productSchema.offers = validOffers[0]
+    } else if (product.price && product.price > 0) {
+      // No affiliate links but product has base price -> simple Offer
+      productSchema.offers = {
+        '@type': 'Offer',
+        price: product.price,
+        priceCurrency: product.currency || 'USD',
+        availability: 'https://schema.org/InStock',
+      }
+    } else if (validOffers.length > 0) {
+      // Has offers but no prices -> use first offer without price
+      productSchema.offers = {
+        '@type': 'Offer',
+        url: validOffers[0].url,
+        availability: 'https://schema.org/InStock',
+        seller: validOffers[0].seller,
+      }
+    }
+    // If none of the above, don't add offers (Google will show warning but won't error)
+
+    jsonLd.itemReviewed = productSchema
+    
+    // Add review rating if exists
     if (article.productRating) {
       jsonLd.reviewRating = {
         '@type': 'Rating',
         ratingValue: article.productRating,
         bestRating: 5,
+        worstRating: 1,
       }
     }
   }
