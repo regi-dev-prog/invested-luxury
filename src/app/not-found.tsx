@@ -1,8 +1,12 @@
 import Link from 'next/link'
+import { getLatestArticles } from '@/lib/queries/queries'
 
-export default function NotFound() {
+export default async function NotFound() {
+  // Fetch 3 latest articles
+  const latestArticles = await getLatestArticles(3)
+
   return (
-    <main className="min-h-screen bg-cream flex items-center justify-center px-6">
+    <main className="min-h-screen bg-cream flex items-center justify-center px-6 py-20">
       <div className="max-w-2xl mx-auto text-center animate-fade-in">
         {/* Elegant 404 Display */}
         <p className="font-sans text-gold text-caption uppercase tracking-[0.3em] mb-6">
@@ -26,38 +30,53 @@ export default function NotFound() {
           Return Home
         </Link>
 
-        {/* Divider */}
-        <div className="flex items-center justify-center gap-4 mb-12">
-          <div className="h-px w-16 bg-gold/40" />
-          <span className="font-sans text-caption text-charcoal-light uppercase tracking-wider">
-            or explore
-          </span>
-          <div className="h-px w-16 bg-gold/40" />
-        </div>
+        {/* Latest Articles Section */}
+        {latestArticles && latestArticles.length > 0 && (
+          <>
+            {/* Divider */}
+            <div className="flex items-center justify-center gap-4 mb-10">
+              <div className="h-px w-16 bg-gold/40" />
+              <span className="font-sans text-caption text-charcoal-light uppercase tracking-wider">
+                or read our latest
+              </span>
+              <div className="h-px w-16 bg-gold/40" />
+            </div>
 
-        {/* Category Links */}
-        <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4">
-          {[
-            { name: 'Bags', href: '/bags' },
-            { name: 'Shoes', href: '/shoes' },
-            { name: 'Jewelry', href: '/jewelry' },
-            { name: 'Watches', href: '/watches' },
-            { name: 'Travel', href: '/travel' },
-          ].map((category) => (
-            <Link
-              key={category.name}
-              href={category.href}
-              className="font-serif text-title text-black hover:text-gold transition-colors duration-300"
-            >
-              {category.name}
-            </Link>
-          ))}
-        </nav>
+            {/* Articles List */}
+            <div className="space-y-6 text-left">
+              {latestArticles.map((article: {
+                _id: string
+                title: string
+                slug: string
+                excerpt?: string
+                categories?: string[]
+              }) => (
+                <Link
+                  key={article._id}
+                  href={`/article/${article.slug}`}
+                  className="block group p-6 bg-white hover:bg-white/80 transition-colors duration-300"
+                >
+                  <h3 className="font-serif text-title text-black group-hover:text-gold transition-colors duration-300 mb-2">
+                    {article.title}
+                  </h3>
+                  {article.excerpt && (
+                    <p className="font-sans text-caption text-charcoal line-clamp-2">
+                      {article.excerpt}
+                    </p>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
 
-        {/* Subtle Brand Element */}
-        <div className="mt-16 pt-8 border-t border-gold/20">
+        {/* Contact Footer */}
+        <div className="mt-12 pt-8 border-t border-gold/20">
           <p className="font-sans text-caption text-charcoal-light">
-            Need help? <Link href="/contact" className="text-gold hover:text-gold-dark transition-colors">Contact us</Link>
+            Need help?{' '}
+            <Link href="/contact" className="text-gold hover:text-gold-dark transition-colors">
+              Contact us
+            </Link>
           </p>
         </div>
       </div>
