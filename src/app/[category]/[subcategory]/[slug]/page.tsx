@@ -345,8 +345,90 @@ export default async function ArticlePage({ params }: Props) {
     ],
   }
 
-  // Article Schema
-  const articleSchema = {
+  // =============================================================================
+  // FIXED: Build Product Schema with proper offers handling
+  // =============================================================================
+  let productSchemaForReview: any = null
+  
+  if (article.primaryProduct) {
+    const product = article.primaryProduct
+    const affiliateLinks = product.affiliateLinks || []
+    
+    // Filter valid offers (non-resale, in stock, with URL)
+    const validOffers = affiliateLinks
+      .filter((link: any) => !link.isResale && link.inStock !== false && link.url)
+      .map((link: any) => ({
+        "@type": "Offer",
+        url: link.url,
+        price: link.price || product.price,
+        priceCurrency: product.currency || "USD",
+        availability: "https://schema.org/InStock",
+        seller: {
+          "@type": "Organization",
+          name: link.retailerName || link.retailer || "Retailer",
+        },
+      }))
+
+    // Get valid prices for AggregateOffer
+    const validPrices = validOffers
+      .map((o: any) => o.price)
+      .filter((p: any) => typeof p === 'number' && p > 0)
+
+    // Build product schema
+    productSchemaForReview = {
+      "@type": "Product",
+      name: product.name,
+      description: product.description || article.excerpt,
+      image: product.images?.[0] 
+        ? urlFor(product.images[0]).width(800).url()
+        : ogImage,
+    }
+
+    // Add brand if available
+    if (product.brand?.name) {
+      productSchemaForReview.brand = {
+        "@type": "Brand",
+        name: product.brand.name,
+      }
+    }
+
+    // CRITICAL: Build offers based on available data
+    if (validOffers.length > 1 && validPrices.length > 0) {
+      // Multiple offers with prices -> AggregateOffer
+      productSchemaForReview.offers = {
+        "@type": "AggregateOffer",
+        lowPrice: Math.min(...validPrices),
+        highPrice: Math.max(...validPrices),
+        priceCurrency: product.currency || "USD",
+        offerCount: validOffers.length,
+        availability: "https://schema.org/InStock",
+        offers: validOffers,
+      }
+    } else if (validOffers.length === 1 && validPrices.length > 0) {
+      // Single offer with price -> simple Offer
+      productSchemaForReview.offers = validOffers[0]
+    } else if (product.price && product.price > 0) {
+      // No affiliate links but product has base price
+      productSchemaForReview.offers = {
+        "@type": "Offer",
+        price: product.price,
+        priceCurrency: product.currency || "USD",
+        availability: "https://schema.org/InStock",
+      }
+    } else if (validOffers.length > 0) {
+      // Has offers but no prices -> use first offer
+      productSchemaForReview.offers = {
+        "@type": "Offer",
+        url: validOffers[0].url,
+        availability: "https://schema.org/InStock",
+        seller: validOffers[0].seller,
+      }
+    }
+    // If none of the above, offers will be undefined (warning but not error)
+  }
+
+  // Article/Review Schema - FIXED: Uses productSchemaForReview with proper offers
+  const articleSchema: any = {
     "@context": "https://schema.org",
     "@type": isReview ? "Review" : "Article",
     headline: article.title,
@@ -374,74 +456,25 @@ export default async function ArticlePage({ params }: Props) {
       "@type": "WebPage",
       "@id": canonicalUrl,
     },
-    ...(isReview && article.primaryProduct && {
-      itemReviewed: {
-        "@type": "Product",
-        name: article.primaryProduct.name,
-        brand: {
-          "@type": "Brand",
-          name: article.primaryProduct.brand?.name,
-        },
-      },
-      reviewRating: article.productRating ? {
+  }
+
+  // Add itemReviewed with proper offers for reviews
+  if (isReview && productSchemaForReview) {
+    articleSchema.itemReviewed = productSchemaForReview
+    
+    if (article.productRating) {
+      articleSchema.reviewRating = {
         "@type": "Rating",
         ratingValue: article.productRating,
         bestRating: 5,
-      } : undefined,
-    }),
+        worstRating: 1,
+      }
+    }
   }
-
-  // Product Schema (if review with product)
-  const productSchema = article.primaryProduct ? {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: article.primaryProduct.name,
-    description: article.primaryProduct.description || article.excerpt,
-    image: article.primaryProduct.images?.[0] 
-      ? urlFor(article.primaryProduct.images[0]).width(800).url()
-      : ogImage,
-    brand: {
-      "@type": "Brand",
-      name: article.primaryProduct.brand?.name,
-    },
-    offers: article.primaryProduct.affiliateLinks?.length > 0 ? {
-      "@type": "AggregateOffer",
-      lowPrice: article.primaryProduct.price,
-      priceCurrency: article.primaryProduct.currency || "USD",
-      offerCount: article.primaryProduct.affiliateLinks.length,
-      offers: article.primaryProduct.affiliateLinks.map((link: any) => ({
-        "@type": "Offer",
-        url: link.url,
-        price: link.price || article.primaryProduct.price,
-        priceCurrency: article.primaryProduct.currency || "USD",
-        availability: link.inStock 
-          ? "https://schema.org/InStock" 
-          : "https://schema.org/OutOfStock",
-        seller: {
-          "@type": "Organization",
-          name: link.retailerName || link.retailer,
-        },
-      })),
-    } : undefined,
-    ...(article.productRating && {
-      review: {
-        "@type": "Review",
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: article.productRating,
-          bestRating: 5,
-        },
-        author: {
-          "@type": "Organization",
-          name: "InvestedLuxury",
-        },
-      },
-    }),
-  } : null
 
   return (
     <>
-      {/* JSON-LD Schemas */}
+      {/* JSON-LD Schemas - FIXED: Only 2 schemas now (Breadcrumb + Article/Review) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
@@ -450,12 +483,6 @@ export default async function ArticlePage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
-      {productSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
-        />
-      )}
 
       <article className="min-h-screen">
         {/* Hero Section */}
