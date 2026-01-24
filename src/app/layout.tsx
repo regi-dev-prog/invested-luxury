@@ -107,6 +107,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta name="p:domain_verify" content="e9193475d2f8aacdc5222b6ca882ca0e"/>
         {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-1KKR1BB7GW"
