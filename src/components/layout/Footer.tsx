@@ -177,7 +177,7 @@ export default function Footer() {
             {/* Social Links */}
             <div className="flex items-center space-x-6">
               <a 
-                href="https://pinterest.com" 
+                href="https://pinterest.com/investedlux/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-white/70 hover:text-gold transition-colors"
@@ -188,7 +188,7 @@ export default function Footer() {
                 </svg>
               </a>
               <a 
-                href="https://instagram.com" 
+                href="https://www.instagram.com/invested_luxury/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-white/70 hover:text-gold transition-colors"
