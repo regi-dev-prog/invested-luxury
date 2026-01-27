@@ -1,5 +1,5 @@
 import Link from 'next/link';
-
+import FooterNewsletterForm from '@/components/FooterNewsletterForm';
 const footerLinks = {
   fashion: [
     { label: 'Bags', href: '/fashion/bags' },
@@ -49,20 +49,7 @@ export default function Footer() {
             <p className="text-white/70 mb-8">
               Receive curated insights on investment-worthy pieces, exclusive access to luxury guides, and early previews of our latest editorial content.
             </p>
-            <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="flex-1 px-4 py-3 bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:border-gold transition-colors"
-                required
-              />
-              <button 
-                type="submit"
-                className="btn-gold whitespace-nowrap"
-              >
-                Subscribe
-              </button>
-            </form>
+            <FooterNewsletterForm />
             <p className="text-caption text-white/50 mt-4">
               By subscribing, you agree to our Privacy Policy.
             </p>
