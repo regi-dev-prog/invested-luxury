@@ -71,7 +71,7 @@ export async function POST(request: Request) {
 
     await resend.emails.send({
       from: 'InvestedLuxury <contact@investedluxury.com>',
-      to: ['hello@investedluxury.com'],
+      to: ['investedlux@gmail.com'],
       replyTo: email,
       subject: emailSubject,
       html: `
