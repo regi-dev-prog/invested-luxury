@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   keywords: ['luxury fashion blog', 'investment pieces', 'honest luxury reviews', 'quiet luxury', 'designer bag reviews', 'luxury lifestyle'],
   openGraph: {
     title: 'About Regi | InvestedLuxury',
-    description: 'Not here to convince you to buy anything. Just here to tell you the truth about what I did — and didn\'t.',
+    description: 'Not here to convince you to buy anything. Just here to tell you the truth about what I did - and didn\'t.',
     type: 'website',
   },
 };
@@ -23,7 +23,7 @@ export default function AboutPage() {
             The Art of <span className="text-gold">Invested</span> Living
           </h1>
           <p className="text-body-lg text-charcoal max-w-2xl mx-auto">
-            Not here to convince you to buy anything. Just here to tell you the truth about what I did — and didn't.
+            Not here to convince you to buy anything. Just here to tell you the truth about what I did - and didn't.
           </p>
         </div>
       </section>
@@ -43,7 +43,7 @@ export default function AboutPage() {
 
               <h2>Why This Site Exists</h2>
               <p>
-                In a world of fast fashion and fleeting trends, I wanted a space for people who think differently about what they buy. People who understand that the pieces we choose should bring joy not just today, but for years to come — and ideally, hold or increase their value along the way.
+                In a world of fast fashion and fleeting trends, I wanted a space for people who think differently about what they buy. People who understand that the pieces we choose should bring joy not just today, but for years to come, and ideally, hold or increase their value along the way.
               </p>
               <p>
                 I got tired of luxury content that reads like advertising. Reviews from people who never actually lived with what they're recommending. "Investment piece" thrown around for things that won't hold value past next season.
@@ -54,7 +54,7 @@ export default function AboutPage() {
 
               <h2>What You'll Find Here</h2>
               <p>
-                From <Link href="/fashion/bags" className="text-gold hover:underline">designer handbags</Link> and <Link href="/fashion/watches" className="text-gold hover:underline">timepieces</Link> to <Link href="/fashion/quiet-luxury" className="text-gold hover:underline">quiet luxury essentials</Link> — the full spectrum of pieces that are actually worth your money. I go beyond <Link href="/fashion" className="text-gold hover:underline">fashion</Link> to cover the broader luxury <Link href="/lifestyle" className="text-gold hover:underline">lifestyle</Link>: <Link href="/lifestyle/hotels" className="text-gold hover:underline">hotels</Link> that create lasting memories, <Link href="/lifestyle/art-photography" className="text-gold hover:underline">art</Link> that appreciates in value, and the <Link href="/wellness" className="text-gold hover:underline">wellness practices</Link> that invest in your most valuable asset — yourself.
+                From <Link href="/fashion/bags" className="text-gold hover:underline">designer handbags</Link> and <Link href="/fashion/watches" className="text-gold hover:underline">timepieces</Link> to <Link href="/fashion/quiet-luxury" className="text-gold hover:underline">quiet luxury essentials</Link> - the full spectrum of pieces that are actually worth your money. I go beyond <Link href="/fashion" className="text-gold hover:underline">fashion</Link> to cover the broader luxury <Link href="/lifestyle" className="text-gold hover:underline">lifestyle</Link>: <Link href="/lifestyle/hotels" className="text-gold hover:underline">hotels</Link> that create lasting memories, <Link href="/lifestyle/art-photography" className="text-gold hover:underline">art</Link> that appreciates in value, and the <Link href="/wellness" className="text-gold hover:underline">wellness practices</Link> that invest in your most valuable asset - yourself.
               </p>
               <p>
                 Every guide, review, and recommendation is written with one question in mind: Is this truly worth it?
@@ -71,10 +71,10 @@ export default function AboutPage() {
                 I use affiliate links. I'm not going to pretend otherwise. What I won't do is recommend something just because it pays well.
               </p>
               <p>
-                I conduct thorough research, and I share my honest opinions — even when that means recommending against a popular piece. You can trust me because I tell you what you need to hear, not what brands want me to say.
+                I conduct thorough research, and I share my honest opinions, even when that means recommending against a popular piece. You can trust me because I tell you what you need to hear, not what brands want me to say.
               </p>
               <p className="text-charcoal">
-                — R.
+                - R.
               </p>
 
               <h2 id="affiliate-disclosure">Affiliate Disclosure</h2>
@@ -146,7 +146,7 @@ export default function AboutPage() {
               Investment Bags
             </Link>
             <Link 
-              href="/guides/investment" 
+              href="/guides" 
               className="px-6 py-3 border border-black text-black font-medium hover:bg-cream transition-colors"
             >
               Investment Guides
