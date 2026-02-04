@@ -243,6 +243,49 @@ const portableTextComponents = {
         </figure>
       )
     },
+    table: ({ value }: any) => {
+      if (!value?.rows?.length) return null
+      const headerRows = value.rows.filter((r: any) => r.isHeader)
+      const bodyRows = value.rows.filter((r: any) => !r.isHeader)
+
+      return (
+        <figure className="my-8 overflow-x-auto">
+          <table className="w-full text-left text-sm border-collapse">
+            {headerRows.length > 0 && (
+              <thead>
+                {headerRows.map((row: any, i: number) => (
+                  <tr key={row._key || `h${i}`} className="border-b-2 border-[#C9A227]">
+                    {row.cells?.map((cell: string, j: number) => (
+                      <th key={j} className="px-4 py-3 font-semibold text-black bg-[#FAF9F6]">
+                        {cell}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+            )}
+            {bodyRows.length > 0 && (
+              <tbody>
+                {bodyRows.map((row: any, i: number) => (
+                  <tr key={row._key || `b${i}`} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                    {row.cells?.map((cell: string, j: number) => (
+                      <td key={j} className="px-4 py-3 text-gray-700">
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            )}
+          </table>
+          {value.caption && (
+            <figcaption className="text-center text-sm text-gray-500 mt-2">
+              {value.caption}
+            </figcaption>
+          )}
+        </figure>
+      )
+    },
   },
   marks: {
     link: ({ children, value }: any) => {
