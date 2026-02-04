@@ -123,6 +123,49 @@ export default defineType({
             {name: 'answer', type: 'text', title: 'Answer'},
           ],
         },
+        {
+          type: 'object',
+          name: 'table',
+          title: 'Table',
+          fields: [
+            {
+              name: 'rows',
+              title: 'Rows',
+              type: 'array',
+              of: [
+                {
+                  type: 'object',
+                  name: 'row',
+                  fields: [
+                    {
+                      name: 'cells',
+                      title: 'Cells',
+                      type: 'array',
+                      of: [{type: 'string'}],
+                    },
+                    {
+                      name: 'isHeader',
+                      title: 'Header Row',
+                      type: 'boolean',
+                      initialValue: false,
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              name: 'caption',
+              title: 'Caption',
+              type: 'string',
+            },
+          ],
+          preview: {
+            select: {caption: 'caption'},
+            prepare({caption}: {caption?: string}) {
+              return {title: caption || 'Table'}
+            },
+          },
+        },
       ],
     }),
 
