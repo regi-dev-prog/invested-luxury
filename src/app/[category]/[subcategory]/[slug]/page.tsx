@@ -43,6 +43,7 @@ const articleQuery = `*[_type == "article" && slug.current == $slug][0]{
   "categories": categories[]->{title, slug, parentCategory},
   "seo": seo,
   schemaMarkup,
+  faqSchema,
   productRating,
   "primaryProduct": primaryProduct->{
     _id,
@@ -522,6 +523,12 @@ export default async function ArticlePage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
+      {article.faqSchema && (
+       <script
+         type="application/ld+json"
+         dangerouslySetInnerHTML={{ __html: JSON.stringify(article.faqSchema) }}
+      />
+     )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
