@@ -2,36 +2,26 @@
 // DYNAMIC SITEMAP FOR INVESTEDLUXURY.COM
 // =============================================================================
 // Location: src/app/sitemap.ts
-// Auto-updates when content is added/changed in Sanity
-// Optimized for SEO with proper priority and changefreq settings
+// Fixed: Feb 2026 - Only includes published articles, no product pages
 // =============================================================================
 
 import { MetadataRoute } from 'next'
 import { createClient } from '@sanity/client'
 
-// =============================================================================
-// REVALIDATION SETTING
-// =============================================================================
-// The sitemap will automatically regenerate every hour without needing a deploy
-// Change this value based on how often you publish new content
-// 3600 = 1 hour | 86400 = 1 day | 604800 = 1 week
 export const revalidate = 3600
 
-// Sanity client configuration
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '4b3ap7pf',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: '2024-01-01',
-  useCdn: false, // Set to false for fresh data on build
+  useCdn: false,
 })
 
-// Base URL for the site
 const BASE_URL = 'https://investedluxury.com'
 
 // =============================================================================
 // CATEGORY STRUCTURE
 // =============================================================================
-// This should match your lib/categories.ts structure
 
 const PARENT_CATEGORIES = [
   { slug: 'fashion', priority: 0.9 },
@@ -41,7 +31,6 @@ const PARENT_CATEGORIES = [
 ]
 
 const SUB_CATEGORIES = [
-  // Fashion
   { parent: 'fashion', slug: 'bags', priority: 0.8 },
   { parent: 'fashion', slug: 'shoes', priority: 0.8 },
   { parent: 'fashion', slug: 'watches', priority: 0.8 },
@@ -49,15 +38,12 @@ const SUB_CATEGORIES = [
   { parent: 'fashion', slug: 'clothing', priority: 0.8 },
   { parent: 'fashion', slug: 'accessories', priority: 0.8 },
   { parent: 'fashion', slug: 'quiet-luxury', priority: 0.8 },
-  // Lifestyle
   { parent: 'lifestyle', slug: 'hotels', priority: 0.8 },
   { parent: 'lifestyle', slug: 'travel', priority: 0.8 },
   { parent: 'lifestyle', slug: 'art-photography', priority: 0.8 },
-  // Wellness
   { parent: 'wellness', slug: 'longevity', priority: 0.8 },
   { parent: 'wellness', slug: 'retreats', priority: 0.8 },
   { parent: 'wellness', slug: 'biohacking', priority: 0.8 },
-  // Guides
   { parent: 'guides', slug: 'gift-guides', priority: 0.8 },
   { parent: 'guides', slug: 'beginner-guides', priority: 0.8 },
   { parent: 'guides', slug: 'seasonal-guides', priority: 0.8 },
@@ -65,24 +51,20 @@ const SUB_CATEGORIES = [
 ]
 
 // =============================================================================
-// SANITY QUERIES
+// MAPPING: subcategory slug → parent slug (for fallback)
 // =============================================================================
+const SUB_TO_PARENT: Record<string, string> = {}
+SUB_CATEGORIES.forEach(sc => { SUB_TO_PARENT[sc.slug] = sc.parent })
 
-// Query for all published articles with their slugs and dates
-const ARTICLES_QUERY = `*[_type == "article" && defined(slug.current)] {
+// =============================================================================
+// SANITY QUERY - Only published articles with proper category resolution
+// =============================================================================
+const ARTICLES_QUERY = `*[_type == "article" && status == "published" && defined(slug.current)] {
   "slug": slug.current,
-  "category": categories[0]->slug.current,
-  "parentCategory": categories[0]->parentCategory,
-  _updatedAt,
-  _createdAt,
-  publishedAt
-}`
-
-// Query for all products if you have a product schema
-const PRODUCTS_QUERY = `*[_type == "product" && defined(slug.current)] {
-  "slug": slug.current,
-  "category": category->slug.current,
-  _updatedAt
+  "category": categories[0]->{
+    "slug": slug.current,
+    "parentCategory": parentCategory
+  }
 }`
 
 // =============================================================================
@@ -90,139 +72,85 @@ const PRODUCTS_QUERY = `*[_type == "product" && defined(slug.current)] {
 // =============================================================================
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Current date for static pages
   const currentDate = new Date().toISOString()
 
-  // ==========================================================================
-  // 1. STATIC PAGES - Highest priority pages
-  // ==========================================================================
+  // 1. STATIC PAGES
   const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: BASE_URL,
-      lastModified: currentDate,
-      changeFrequency: 'daily',
-      priority: 1.0,
-    },
-    {
-      url: `${BASE_URL}/about`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${BASE_URL}/contact`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
-    {
-      url: `${BASE_URL}/privacy-policy`,
-      lastModified: currentDate,
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-    {
-      url: `${BASE_URL}/terms`,
-      lastModified: currentDate,
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-    {
-      url: `${BASE_URL}/affiliate-disclosure`,
-      lastModified: currentDate,
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
+    { url: BASE_URL, lastModified: currentDate, changeFrequency: 'daily', priority: 1.0 },
+    { url: `${BASE_URL}/about`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/contact`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${BASE_URL}/privacy-policy`, lastModified: currentDate, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${BASE_URL}/terms`, lastModified: currentDate, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${BASE_URL}/affiliate-disclosure`, lastModified: currentDate, changeFrequency: 'yearly', priority: 0.3 },
   ]
 
-  // ==========================================================================
-  // 2. PARENT CATEGORY PAGES (fashion, lifestyle, wellness, guides)
-  // ==========================================================================
-  const parentCategoryPages: MetadataRoute.Sitemap = PARENT_CATEGORIES.map(
-    (category) => ({
-      url: `${BASE_URL}/${category.slug}`,
-      lastModified: currentDate,
-      changeFrequency: 'daily' as const,
-      priority: category.priority,
-    })
-  )
+  // 2. PARENT CATEGORY PAGES
+  const parentCategoryPages: MetadataRoute.Sitemap = PARENT_CATEGORIES.map(cat => ({
+    url: `${BASE_URL}/${cat.slug}`,
+    lastModified: currentDate,
+    changeFrequency: 'daily' as const,
+    priority: cat.priority,
+  }))
 
-  // ==========================================================================
-  // 3. SUB-CATEGORY PAGES (fashion/bags, lifestyle/hotels, etc.)
-  // ==========================================================================
-  const subCategoryPages: MetadataRoute.Sitemap = SUB_CATEGORIES.map(
-    (category) => ({
-      url: `${BASE_URL}/${category.parent}/${category.slug}`,
-      lastModified: currentDate,
-      changeFrequency: 'daily' as const,
-      priority: category.priority,
-    })
-  )
+  // 3. SUB-CATEGORY PAGES
+  const subCategoryPages: MetadataRoute.Sitemap = SUB_CATEGORIES.map(cat => ({
+    url: `${BASE_URL}/${cat.parent}/${cat.slug}`,
+    lastModified: currentDate,
+    changeFrequency: 'daily' as const,
+    priority: cat.priority,
+  }))
 
-  // ==========================================================================
-  // 4. DYNAMIC ARTICLE PAGES - From Sanity CMS
-  // ==========================================================================
+  // 4. DYNAMIC ARTICLE PAGES - Only published, with verified URLs
   let articlePages: MetadataRoute.Sitemap = []
 
   try {
     const articles = await client.fetch(ARTICLES_QUERY)
 
-    articlePages = articles.map((article: {
-      slug: string
-      category: string
-      parentCategory: string
-      _updatedAt: string
-      publishedAt?: string
-    }) => {
-      // Build the full URL path: /fashion/bags/article-slug
-      const parentSlug = article.parentCategory || 'fashion'
-      const categorySlug = article.category || 'bags'
-      
-      return {
-        url: `${BASE_URL}/${parentSlug}/${categorySlug}/${article.slug}`,
-        lastModified: article._updatedAt || article.publishedAt || currentDate,
-        changeFrequency: 'weekly' as const,
-        priority: 0.7,
-      }
-    })
+    // Track URLs to prevent duplicates
+    const seenUrls = new Set<string>()
+
+    articlePages = articles
+      .map((article: {
+        slug: string
+        category: { slug: string; parentCategory: string } | null
+      }) => {
+        if (!article.slug || !article.category?.slug) return null
+
+        const categorySlug = article.category.slug
+        // Use parentCategory from Sanity, fallback to SUB_TO_PARENT mapping
+        const parentSlug = article.category.parentCategory || SUB_TO_PARENT[categorySlug]
+
+        if (!parentSlug) {
+          console.warn(`Sitemap: No parent found for article "${article.slug}" in category "${categorySlug}"`)
+          return null
+        }
+
+        const url = `${BASE_URL}/${parentSlug}/${categorySlug}/${article.slug}`
+
+        // Prevent duplicate URLs
+        if (seenUrls.has(url)) return null
+        seenUrls.add(url)
+
+        return {
+          url,
+          lastModified: currentDate,
+          changeFrequency: 'weekly' as const,
+          priority: 0.7,
+        }
+      })
+      .filter(Boolean) as MetadataRoute.Sitemap
+
   } catch (error) {
     console.error('Error fetching articles for sitemap:', error)
-    // Continue without articles if Sanity is unavailable
   }
 
-  // ==========================================================================
-  // 5. OPTIONAL: PRODUCT PAGES - If you have product schema
-  // ==========================================================================
-  let productPages: MetadataRoute.Sitemap = []
+  // NO PRODUCT PAGES - removed (no route exists for /products/)
 
-  try {
-    const products = await client.fetch(PRODUCTS_QUERY)
-
-    if (products && products.length > 0) {
-      productPages = products.map((product: {
-        slug: string
-        category: string
-        _updatedAt: string
-      }) => ({
-        url: `${BASE_URL}/products/${product.slug}`,
-        lastModified: product._updatedAt || currentDate,
-        changeFrequency: 'weekly' as const,
-        priority: 0.6,
-      }))
-    }
-  } catch (error) {
-    // Products might not exist, that's fine
-    console.log('No products found or products schema not configured')
-  }
-
-  // ==========================================================================
-  // COMBINE ALL PAGES
-  // ==========================================================================
   return [
     ...staticPages,
     ...parentCategoryPages,
     ...subCategoryPages,
     ...articlePages,
-    ...productPages,
   ]
 }
+
