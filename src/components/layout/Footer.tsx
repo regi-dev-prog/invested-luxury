@@ -13,7 +13,7 @@ const footerLinks = {
   lifestyle: [
     { label: 'Hotels', href: '/lifestyle/hotels' },
     { label: 'Travel', href: '/lifestyle/travel' },
-    { label: 'Art & Photography', href: '/lifestyle/art' },
+    { label: 'Art & Photography', href: '/lifestyle/art-photography' },
   ],
   wellness: [
     { label: 'Longevity', href: '/wellness/longevity' },
@@ -22,9 +22,9 @@ const footerLinks = {
   ],
   guides: [
     { label: 'Gift Guides', href: '/guides/gift-guides' },
-    { label: 'Beginner Guides', href: '/guides/beginners' },
-    { label: 'Seasonal Guides', href: '/guides/seasonal' },
-    { label: 'Investment Guides', href: '/guides/investment' },
+    { label: 'Beginner Guides', href: '/guides/beginner-guides' },
+    { label: 'Seasonal Guides', href: '/guides/seasonal-guides' },
+    { label: 'Investment Guides', href: '/guides/investment-guides' },
   ],
   company: [
     { label: 'About', href: '/about' },
