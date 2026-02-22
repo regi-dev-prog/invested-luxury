@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Terms of Service',
   description: 'InvestedLuxury Terms of Service - Terms and conditions for using our website.',
+  alternates: {
+    canonical: 'https://investedluxury.com/terms',
+  },
 };
 
 export default function TermsPage() {

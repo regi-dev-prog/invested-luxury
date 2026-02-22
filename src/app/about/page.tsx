@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: 'About Regi | InvestedLuxury - Honest Luxury Reviews & Investment Guides',
   description: 'Meet Regi, the founder of InvestedLuxury. Years of buying luxury pieces, honest opinions on what\'s worth it, and no sponsored content dressed up as advice.',
   keywords: ['luxury fashion blog', 'investment pieces', 'honest luxury reviews', 'quiet luxury', 'designer bag reviews', 'luxury lifestyle'],
+  alternates: {
+    canonical: 'https://investedluxury.com/about',
+  },
   openGraph: {
     title: 'About Regi | InvestedLuxury',
     description: 'Not here to convince you to buy anything. Just here to tell you the truth about what I did - and didn\'t.',

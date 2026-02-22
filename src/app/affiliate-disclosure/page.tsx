@@ -1,6 +1,9 @@
 export const metadata = {
   title: 'Affiliate Disclosure | InvestedLuxury',
   description: 'How InvestedLuxury.com earns money through affiliate partnerships and our commitment to editorial integrity.',
+  alternates: {
+    canonical: 'https://investedluxury.com/affiliate-disclosure',
+  },
 }
 
 export default function AffiliateDisclosurePage() {
