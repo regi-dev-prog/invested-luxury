@@ -526,7 +526,7 @@ export default async function ArticlePage({ params }: Props) {
       {article.faqSchema && (
        <script
          type="application/ld+json"
-         dangerouslySetInnerHTML={{ __html: JSON.stringify(article.faqSchema) }}
+         dangerouslySetInnerHTML={{ __html: article.faqSchema }}
       />
      )}
       <script
