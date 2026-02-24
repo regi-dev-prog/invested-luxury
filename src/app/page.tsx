@@ -68,7 +68,7 @@ async function getLatestArticles(limit: number = 10) {
 }
 
 async function getFeaturedProducts(limit: number = 6) {
-  const query = `*[_type == "product" && featured == true] | order(displayOrder asc, _createdAt desc) [0...${limit}] {
+  const query = `*[_type == "product" && featured == true && (defined(images) && count(images) > 0)] | order(displayOrder asc, _createdAt desc) [0...${limit}] {
     _id,
     name,
     price,
