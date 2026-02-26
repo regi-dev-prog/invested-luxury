@@ -11,6 +11,7 @@ import {
   TableOfContents,
   ProductSpecsBox,
 } from '@/components/article'
+import ArticleTracker from '@/components/ArticleTracker'
 
 // Query to get article by slug - with FULL product data
 const articleQuery = `*[_type == "article" && slug.current == $slug && status == "published"][0]{
@@ -593,12 +594,21 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      {/* Scroll Depth Tracker */}
+      <ArticleTracker
+        articleTitle={article.title}
+        articleSlug={params.slug}
+        category={article.categories?.[0]?.name}
+      />
+
       {/* Sticky Buy Bar - shows on scroll for reviews */}
       {isReview && productData && productData.primaryLink && (
         <StickyBuyBar
           productName={productData.name}
           price={productData.price}
           primaryLink={productData.primaryLink}
+          category={article.categories?.[0]?.name}
+          articleSlug={params.slug}
         />
       )}
 
@@ -691,6 +701,8 @@ export default async function ArticlePage({ params }: { params: { slug: string }
               productImage={productData.image}
               specs={productData.specs.slice(0, 3)} // Show max 3 specs in quick view
               retailers={[...productData.retailers, ...productData.resaleRetailers]}
+              category={article.categories?.[0]?.name}
+              articleSlug={params.slug}
             />
           )}
 
@@ -721,6 +733,8 @@ export default async function ArticlePage({ params }: { params: { slug: string }
               specs={productData.specs}
               retailers={productData.retailers}
               resaleRetailers={productData.resaleRetailers}
+              category={article.categories?.[0]?.name}
+              articleSlug={params.slug}
               lastUpdated={article.updatedAt ? formatDate(article.updatedAt) : undefined}
             />
           )}

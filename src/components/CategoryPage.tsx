@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
+import CategoryTracker from '@/components/CategoryTracker';
 
 interface Article {
   id?: string;
@@ -81,6 +82,7 @@ export default function CategoryPage({
 
   return (
     <div className="min-h-screen bg-white">
+      <CategoryTracker categoryName={title} />
       {/* Hero Section with Title */}
       {(title || description) && (
         <section className="bg-cream/30 pt-8 pb-12 px-4">
