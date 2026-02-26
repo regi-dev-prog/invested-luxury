@@ -1,6 +1,7 @@
 'use client';
 import { useState, useCallback } from 'react';
 import Turnstile from './Turnstile';
+import { trackNewsletterSignup } from '@/lib/analytics';
 
 export default function FooterNewsletterForm() {
   const [email, setEmail] = useState('');
@@ -25,6 +26,7 @@ export default function FooterNewsletterForm() {
       if (response.ok) {
         setStatus('success');
         setEmail('');
+        trackNewsletterSignup('footer');
       } else {
         setStatus('error');
       }

@@ -1,4 +1,7 @@
+'use client';
+
 import { ExternalLink } from 'lucide-react';
+import { trackAffiliateClick } from '@/lib/analytics';
 
 interface Spec {
   label: string;
@@ -17,6 +20,8 @@ interface ProductSpecsBoxProps {
   retailers?: Retailer[];
   resaleRetailers?: Retailer[];
   lastUpdated?: string;
+  category?: string;
+  articleSlug?: string;
 }
 
 export default function ProductSpecsBox({
@@ -25,11 +30,23 @@ export default function ProductSpecsBox({
   retailers = [],
   resaleRetailers = [],
   lastUpdated,
+  category,
+  articleSlug,
 }: ProductSpecsBoxProps) {
   // Safety check - don't render if no specs and no retailers
   if ((!specs || specs.length === 0) && (!retailers || retailers.length === 0)) {
     return null;
   }
+
+  const handleRetailerClick = (retailerName: string, isResale: boolean) => {
+    trackAffiliateClick({
+      productName,
+      retailer: retailerName,
+      category,
+      articleSlug,
+      position: isResale ? 'specs-box-resale' : 'specs-box',
+    });
+  };
 
   return (
     <div id="where-to-buy" className="bg-[#FAF9F6] border border-gray-200 p-6 md:p-8 my-12">
@@ -61,6 +78,7 @@ export default function ProductSpecsBox({
                 target="_blank"
                 rel="noopener noreferrer sponsored"
                 className="flex items-center justify-between px-4 py-3 bg-black text-white hover:bg-[#C9A227] transition-colors"
+                onClick={() => handleRetailerClick(retailer.name, false)}
               >
                 <span className="font-medium">{retailer.name}</span>
                 <ExternalLink size={16} />
@@ -84,6 +102,7 @@ export default function ProductSpecsBox({
                 target="_blank"
                 rel="noopener noreferrer sponsored"
                 className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 hover:border-black hover:text-black transition-colors text-sm"
+                onClick={() => handleRetailerClick(retailer.name, true)}
               >
                 {retailer.name}
                 <ExternalLink size={14} />

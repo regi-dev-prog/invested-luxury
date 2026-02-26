@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ShoppingBag, X } from 'lucide-react';
+import { trackAffiliateClick } from '@/lib/analytics';
 
 interface StickyBuyBarProps {
   productName: string;
@@ -10,6 +11,8 @@ interface StickyBuyBarProps {
     url: string;
     retailer: string;
   };
+  category?: string;
+  articleSlug?: string;
   showAfterScroll?: number;
 }
 
@@ -17,6 +20,8 @@ export default function StickyBuyBar({
   productName,
   price,
   primaryLink,
+  category,
+  articleSlug,
   showAfterScroll = 400,
 }: StickyBuyBarProps) {
   const [isVisible, setIsVisible] = useState(false);
@@ -39,6 +44,19 @@ export default function StickyBuyBar({
     return () => window.removeEventListener('scroll', handleScroll);
   }, [showAfterScroll, isDismissed]);
 
+  const handleShopClick = () => {
+    if (primaryLink) {
+      trackAffiliateClick({
+        productName,
+        price,
+        retailer: primaryLink.retailer,
+        category,
+        articleSlug,
+        position: 'sticky-bar',
+      });
+    }
+  };
+
   // Safety check - don't render if no link or not visible
   if (!primaryLink || !primaryLink.url || !isVisible || isDismissed) return null;
 
@@ -57,6 +75,7 @@ export default function StickyBuyBar({
               target="_blank"
               rel="noopener noreferrer sponsored"
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-black text-white text-sm font-medium hover:bg-[#C9A227] transition-colors"
+              onClick={handleShopClick}
             >
               <ShoppingBag size={16} />
               Shop
@@ -90,6 +109,7 @@ export default function StickyBuyBar({
             target="_blank"
             rel="noopener noreferrer sponsored"
             className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-black text-white text-sm font-medium hover:bg-[#C9A227] transition-colors"
+            onClick={handleShopClick}
           >
             <ShoppingBag size={16} />
             Shop at {primaryLink.retailer || 'Retailer'}

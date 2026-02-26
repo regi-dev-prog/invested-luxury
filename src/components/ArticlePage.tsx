@@ -4,6 +4,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
 import { urlFor } from '@/sanity/lib/image'
+import { useScrollDepth } from '@/hooks/useScrollDepth'
+import { trackAffiliateClick } from '@/lib/analytics'
 import {
   AffiliateButton,
   QuickBuyCard,
@@ -51,6 +53,7 @@ interface TOCItem {
 interface ArticlePageProps {
   article: {
     title: string
+    slug?: string
     excerpt?: string
     body?: any
     publishedAt?: string
@@ -154,6 +157,10 @@ const portableTextComponents = {
             target="_blank"
             rel="noopener noreferrer sponsored"
             className="text-black underline underline-offset-4 decoration-[#C9A227] hover:text-[#C9A227] transition-colors"
+            onClick={() => trackAffiliateClick({
+              retailer: value.href ? new URL(value.href).hostname.replace('www.', '') : 'unknown',
+              position: 'inline-text',
+            })}
           >
             {children}
           </a>
@@ -206,13 +213,16 @@ export default function ArticlePage({ article, breadcrumb }: ArticlePageProps) {
 
   // Get primary retailer for sticky bar
   const primaryRetailer = product?.retailers?.[0]
-// DEBUG - remove later
-console.log('DEBUG ArticlePage:', {
-  hasProduct: !!product,
-  productName: product?.name,
-  retailers: product?.retailers,
-  primaryRetailer: primaryRetailer,
-})
+  const articleSlug = article.slug || ''
+  const articleCategory = breadcrumb.category || ''
+
+  // Track scroll depth
+  useScrollDepth({
+    articleTitle: article.title,
+    articleSlug,
+    category: articleCategory,
+  })
+
   return (
     <main>
       {/* Breadcrumb */}
@@ -298,6 +308,8 @@ console.log('DEBUG ArticlePage:', {
             productImage={product.image ? urlFor(product.image).width(400).url() : undefined}
             specs={product.specs}
             retailers={product.retailers}
+            category={articleCategory}
+            articleSlug={articleSlug}
           />
         )}
 
@@ -325,6 +337,8 @@ console.log('DEBUG ArticlePage:', {
             specs={product.specs || []}
             retailers={product.retailers}
             resaleRetailers={product.resaleRetailers}
+            category={articleCategory}
+            articleSlug={articleSlug}
             lastUpdated={article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
@@ -354,6 +368,8 @@ console.log('DEBUG ArticlePage:', {
             url: primaryRetailer.url,
             retailer: primaryRetailer.name,
           }}
+          category={articleCategory}
+          articleSlug={articleSlug}
         />
       )}
     </main>

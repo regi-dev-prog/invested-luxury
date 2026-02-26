@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { ShoppingBag, ChevronDown, ExternalLink } from 'lucide-react'
+import { trackAffiliateClick } from '@/lib/analytics'
 
 interface Retailer {
   name: string
@@ -22,6 +23,8 @@ interface QuickBuyCardProps {
   productImage?: string
   specs?: Spec[]
   retailers?: Retailer[]
+  category?: string
+  articleSlug?: string
 }
 
 export default function QuickBuyCard({
@@ -30,8 +33,21 @@ export default function QuickBuyCard({
   productImage,
   specs = [],
   retailers = [],
+  category,
+  articleSlug,
 }: QuickBuyCardProps) {
   const [showAllRetailers, setShowAllRetailers] = useState(false)
+
+  const handleRetailerClick = (retailerName: string, position: string) => {
+    trackAffiliateClick({
+      productName,
+      price,
+      retailer: retailerName,
+      category,
+      articleSlug,
+      position,
+    })
+  }
 
   // Safety check - don't render full card if no retailers
   if (!retailers || retailers.length === 0) {
@@ -89,6 +105,7 @@ export default function QuickBuyCard({
               target="_blank"
               rel="noopener noreferrer sponsored"
               className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 font-medium tracking-wide hover:bg-[#C9A227] transition-colors"
+              onClick={() => handleRetailerClick(primaryRetailer.name, 'quick-buy-primary')}
             >
               <ShoppingBag className="w-4 h-4" />
               Shop at {primaryRetailer.name}
@@ -120,6 +137,7 @@ export default function QuickBuyCard({
                           ? 'bg-white border border-gray-300 hover:border-[#C9A227] text-gray-700'
                           : 'bg-gray-100 hover:bg-gray-200 text-black'
                       }`}
+                      onClick={() => handleRetailerClick(retailer.name, 'quick-buy-more')}
                     >
                       <span>
                         {retailer.name}

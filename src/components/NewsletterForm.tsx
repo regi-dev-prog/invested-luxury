@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import Turnstile from './Turnstile';
+import { trackNewsletterSignup } from '@/lib/analytics';
 
 export default function NewsletterForm() {
   const [email, setEmail] = useState('');
@@ -41,6 +42,7 @@ export default function NewsletterForm() {
         setStatus('success');
         setEmail('');
         setTurnstileToken(null);
+        trackNewsletterSignup('inline');
       } else {
         setStatus('error');
       }

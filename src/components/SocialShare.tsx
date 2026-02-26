@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { trackSocialShare } from '@/lib/analytics';
 
 interface SocialShareProps {
   url: string;
@@ -41,6 +42,7 @@ export default function SocialShare({
   };
 
   const handleShare = (platform: string) => {
+    trackSocialShare({ platform, contentTitle: title });
     if (platform === 'instagram') {
       handleInstagramShare();
       return;
