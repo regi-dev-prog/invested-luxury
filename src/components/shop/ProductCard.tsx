@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { urlFor } from "@/sanity/lib/image";
 import { trackAffiliateClick } from "@/lib/analytics";
 
 export interface ProductCardData {
@@ -17,7 +16,8 @@ export interface ProductCardData {
     slug: string;
     parentSlug?: string;
   } | null;
-  image?: any;
+  imageUrl?: string | null;
+  imageAlt?: string | null;
   primaryLink?: { url: string; retailerName: string } | null;
   fallbackLink?: { url: string; retailerName: string } | null;
   investmentScore?: number;
@@ -30,12 +30,16 @@ interface ProductCardProps {
 }
 
 function formatPrice(price: number, currency: string = "USD") {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price);
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  } catch {
+    return `$${price}`;
+  }
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -58,18 +62,14 @@ export function ProductCard({ product }: ProductCardProps) {
     });
   };
 
-  const imageUrl = product.image
-    ? urlFor(product.image).width(600).height(750).quality(85).url()
-    : null;
-
   return (
     <article className="group">
       {/* Image */}
       <div className="relative mb-4 aspect-[4/5] overflow-hidden bg-[#FAF9F6]">
-        {imageUrl ? (
+        {product.imageUrl ? (
           <Image
-            src={imageUrl}
-            alt={product.image?.alt ?? `${product.brand?.name ?? ""} ${product.name}`}
+            src={product.imageUrl}
+            alt={product.imageAlt ?? product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
@@ -103,9 +103,11 @@ export function ProductCard({ product }: ProductCardProps) {
         </h3>
 
         <div className="flex items-center gap-2">
-          <span className="font-sans text-sm text-charcoal">
-            {formatPrice(product.price, product.currency)}
-          </span>
+          {product.price != null && (
+            <span className="font-sans text-sm text-charcoal">
+              {formatPrice(product.price, product.currency)}
+            </span>
+          )}
           {isOnSale && product.originalPrice && (
             <span className="font-sans text-xs text-gray-400 line-through">
               {formatPrice(product.originalPrice, product.currency)}

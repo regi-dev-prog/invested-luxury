@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { client } from "@/sanity/lib/client";
+import { client, urlFor } from "@/sanity/client";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 
 export const metadata: Metadata = {
@@ -45,10 +45,18 @@ const PRODUCTS_QUERY = `
 `;
 
 export const dynamic = "force-dynamic";
-export const revalidate = 3600;
 
 export default async function ShopPage() {
-  const products = await client.fetch(PRODUCTS_QUERY);
+  const rawProducts = await client.fetch(PRODUCTS_QUERY);
+
+  // Resolve image URLs server-side so client components don't need Sanity image builder
+  const products = (rawProducts ?? []).map((p: any) => ({
+    ...p,
+    imageUrl: p.image
+      ? urlFor(p.image).width(600).height(750).quality(85).url()
+      : null,
+    imageAlt: p.image?.alt ?? `${p.brand?.name ?? ""} ${p.name}`,
+  }));
 
   return (
     <main className="min-h-screen bg-white">
