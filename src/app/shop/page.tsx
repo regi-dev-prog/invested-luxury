@@ -1,5 +1,6 @@
 import { Metadata } from "next";
-import { client, urlFor } from "@/sanity/client";
+import { client } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 
 export const metadata: Metadata = {
@@ -47,15 +48,32 @@ const PRODUCTS_QUERY = `
 export const dynamic = "force-dynamic";
 
 export default async function ShopPage() {
-  const rawProducts = await client.fetch(PRODUCTS_QUERY);
+  let rawProducts = [];
+  try {
+    rawProducts = (await client.fetch(PRODUCTS_QUERY)) ?? [];
+  } catch (e) {
+    console.error("Failed to fetch products:", e);
+  }
 
-  // Resolve image URLs server-side so client components don't need Sanity image builder
-  const products = (rawProducts ?? []).map((p: any) => ({
-    ...p,
+  // Resolve image URLs server-side so client components don't need urlFor
+  const products = rawProducts.map((p: any) => ({
+    _id: p._id,
+    name: p.name ?? "",
+    slug: p.slug ?? "",
+    price: p.price ?? 0,
+    currency: p.currency ?? "USD",
+    originalPrice: p.originalPrice ?? null,
+    brand: p.brand ?? null,
+    category: p.category ?? null,
     imageUrl: p.image
       ? urlFor(p.image).width(600).height(750).quality(85).url()
       : null,
-    imageAlt: p.image?.alt ?? `${p.brand?.name ?? ""} ${p.name}`,
+    imageAlt: p.image?.alt ?? `${p.brand?.name ?? ""} ${p.name ?? "Product"}`,
+    primaryLink: p.primaryLink ?? null,
+    fallbackLink: p.fallbackLink ?? null,
+    investmentScore: p.investmentScore ?? null,
+    featured: p.featured ?? false,
+    tags: p.tags ?? [],
   }));
 
   return (
@@ -78,7 +96,7 @@ export default async function ShopPage() {
 
       {/* Products Section */}
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <ProductGrid products={products ?? []} />
+        <ProductGrid products={products} />
       </section>
     </main>
   );

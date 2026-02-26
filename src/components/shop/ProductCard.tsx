@@ -9,7 +9,7 @@ export interface ProductCardData {
   slug: string;
   price: number;
   currency: string;
-  originalPrice?: number;
+  originalPrice?: number | null;
   brand?: { name: string; slug: string; tier?: string } | null;
   category?: {
     name: string;
@@ -17,10 +17,10 @@ export interface ProductCardData {
     parentSlug?: string;
   } | null;
   imageUrl?: string | null;
-  imageAlt?: string | null;
+  imageAlt?: string;
   primaryLink?: { url: string; retailerName: string } | null;
   fallbackLink?: { url: string; retailerName: string } | null;
-  investmentScore?: number;
+  investmentScore?: number | null;
   featured?: boolean;
   tags?: string[];
 }
@@ -30,16 +30,12 @@ interface ProductCardProps {
 }
 
 function formatPrice(price: number, currency: string = "USD") {
-  try {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
-  } catch {
-    return `$${price}`;
-  }
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price);
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -83,7 +79,7 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
 
         {/* Investment score badge */}
-        {product.investmentScore && product.investmentScore >= 8 && (
+        {product.investmentScore != null && product.investmentScore >= 8 && (
           <span className="absolute left-3 top-3 bg-charcoal px-2 py-0.5 font-sans text-[10px] uppercase tracking-widest text-white">
             Top Investment
           </span>
@@ -103,11 +99,9 @@ export function ProductCard({ product }: ProductCardProps) {
         </h3>
 
         <div className="flex items-center gap-2">
-          {product.price != null && (
-            <span className="font-sans text-sm text-charcoal">
-              {formatPrice(product.price, product.currency)}
-            </span>
-          )}
+          <span className="font-sans text-sm text-charcoal">
+            {formatPrice(product.price, product.currency)}
+          </span>
           {isOnSale && product.originalPrice && (
             <span className="font-sans text-xs text-gray-400 line-through">
               {formatPrice(product.originalPrice, product.currency)}
