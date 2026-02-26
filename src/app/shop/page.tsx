@@ -44,7 +44,8 @@ const PRODUCTS_QUERY = `
   }
 `;
 
-export const revalidate = 3600; // revalidate every hour
+export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export default async function ShopPage() {
   const products = await client.fetch(PRODUCTS_QUERY);
