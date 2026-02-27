@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 // ============================================================================
 
 async function getHeroArticle() {
-  const query = `*[_type == "article" && featured == true] | order(publishedAt desc) [0] {
+  const query = `*[_type == "article" && featured == true] | order(coalesce(publishedAt, _createdAt) desc) [0] {
     title,
     "slug": slug.current,
     excerpt,
@@ -51,7 +51,7 @@ async function getHeroArticle() {
 }
 
 async function getLatestArticles(limit: number = 10) {
-  const query = `*[_type == "article"] | order(publishedAt desc) [0...${limit}] {
+  const query = `*[_type == "article"] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
     _id,
     title,
     "slug": slug.current,
@@ -86,7 +86,7 @@ async function getArticlesByCategory(parentCategory: string, subcategorySlug: st
   const excludeFilter = excludeIds.length > 0 
     ? `&& !(_id in [${excludeIds.map(id => `"${id}"`).join(',')}])` 
     : '';
-  const query = `*[_type == "article" && categories[0]->slug.current == "${subcategorySlug}" && categories[0]->parentCategory == "${parentCategory}" ${excludeFilter}] | order(publishedAt desc) [0...${limit}] {
+  const query = `*[_type == "article" && categories[0]->slug.current == "${subcategorySlug}" && categories[0]->parentCategory == "${parentCategory}" ${excludeFilter}] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
     _id,
     title,
     "slug": slug.current,

@@ -24,7 +24,7 @@ async function searchArticles(query: string) {
     title match $q ||
     excerpt match $q ||
     pt::text(body) match $q
-  )] | order(publishedAt desc) [0...30] {
+  )] | order(coalesce(publishedAt, _createdAt) desc) [0...30] {
     _id,
     title,
     "slug": slug.current,

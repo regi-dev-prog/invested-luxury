@@ -35,7 +35,7 @@ const articleFields = `
  * Uses: categories[] array field (NOT singular category)
  */
 export async function getArticlesBySubCategory(categorySlug: string) {
-  const query = `*[_type == "article" && "${categorySlug}" in categories[]->slug.current] | order(publishedAt desc) {
+  const query = `*[_type == "article" && "${categorySlug}" in categories[]->slug.current] | order(coalesce(publishedAt, _createdAt) desc) {
     ${articleFields}
   }`
   
@@ -46,7 +46,7 @@ export async function getArticlesBySubCategory(categorySlug: string) {
  * Get featured articles for a sub-category
  */
 export async function getFeaturedArticlesBySubCategory(categorySlug: string, limit: number = 3) {
-  const query = `*[_type == "article" && "${categorySlug}" in categories[]->slug.current && featured == true] | order(publishedAt desc) [0...${limit}] {
+  const query = `*[_type == "article" && "${categorySlug}" in categories[]->slug.current && featured == true] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
     ${articleFields}
   }`
   
@@ -73,7 +73,7 @@ export async function getArticlesByParentCategory(parentSlug: string) {
   // This checks if ANY of the article's categories match ANY of the sub-category slugs
   const slugArray = subSlugs.map(s => `"${s}"`).join(', ')
   
-  const query = `*[_type == "article" && count(categories[slug.current in [${slugArray}]]) > 0] | order(publishedAt desc) {
+  const query = `*[_type == "article" && count(categories[slug.current in [${slugArray}]]) > 0] | order(coalesce(publishedAt, _createdAt) desc) {
     ${articleFields}
   }`
   
@@ -93,7 +93,7 @@ export async function getArticlesByParentCategoryAlt(parentSlug: string) {
   // Build conditions for each sub-category
   const conditions = subSlugs.map(slug => `"${slug}" in categories[]->slug.current`).join(' || ')
   
-  const query = `*[_type == "article" && (${conditions})] | order(publishedAt desc) {
+  const query = `*[_type == "article" && (${conditions})] | order(coalesce(publishedAt, _createdAt) desc) {
     ${articleFields}
   }`
   
@@ -112,7 +112,7 @@ export async function getFeaturedArticlesByParentCategory(parentSlug: string, li
   
   const conditions = subSlugs.map(slug => `"${slug}" in categories[]->slug.current`).join(' || ')
   
-  const query = `*[_type == "article" && (${conditions}) && featured == true] | order(publishedAt desc) [0...${limit}] {
+  const query = `*[_type == "article" && (${conditions}) && featured == true] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
     ${articleFields}
   }`
   
@@ -144,7 +144,7 @@ export async function getArticleCountsByParentCategory(parentSlug: string) {
  * Get latest articles across ALL categories
  */
 export async function getLatestArticles(limit: number = 10) {
-  const query = `*[_type == "article"] | order(publishedAt desc) [0...${limit}] {
+  const query = `*[_type == "article"] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
     ${articleFields}
   }`
   
@@ -155,7 +155,7 @@ export async function getLatestArticles(limit: number = 10) {
  * Get featured articles for homepage
  */
 export async function getFeaturedArticles(limit: number = 6) {
-  const query = `*[_type == "article" && featured == true] | order(publishedAt desc) [0...${limit}] {
+  const query = `*[_type == "article" && featured == true] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
     ${articleFields}
   }`
   
@@ -259,7 +259,7 @@ export async function searchArticles(searchTerm: string, limit: number = 20) {
     title match "*${searchTerm}*" ||
     excerpt match "*${searchTerm}*" ||
     pt::text(body) match "*${searchTerm}*"
-  )] | order(publishedAt desc) [0...${limit}] {
+  )] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
     ${articleFields}
   }`
   
