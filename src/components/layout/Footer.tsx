@@ -27,6 +27,7 @@ const footerLinks = {
     { label: 'Investment Guides', href: '/guides/investment-guides' },
   ],
   company: [
+    { label: 'Shop', href: '/shop' },
     { label: 'About', href: '/about' },
     { label: 'Contact', href: '/contact' },
     { label: 'Privacy Policy', href: '/privacy-policy' },

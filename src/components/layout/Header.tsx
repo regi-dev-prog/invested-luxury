@@ -40,6 +40,7 @@ const navigation = [
     ],
   },
   { label: 'Guides', href: '/guides' },
+  { label: 'Shop', href: '/shop' },
 ];
 
 const secondaryLinks = [

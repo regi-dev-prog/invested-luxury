@@ -312,7 +312,7 @@ export default async function Home() {
                 </h2>
               </div>
               <Link
-                href="/fashion"
+                href="/shop"
                 className="hidden md:inline-block px-5 py-2.5 border border-black text-xs uppercase tracking-wider text-black hover:bg-black hover:text-white transition-colors"
               >
                 Shop All
@@ -378,7 +378,7 @@ export default async function Home() {
 
             <div className="mt-6 text-center md:hidden">
               <Link
-                href="/fashion"
+                href="/shop"
                 className="inline-block px-6 py-2.5 border border-black text-xs uppercase tracking-wider text-black"
               >
                 Shop All
