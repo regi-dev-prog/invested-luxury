@@ -71,10 +71,21 @@ export function ProductCard({ product }: ProductCardProps) {
             className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="flex h-full items-center justify-center">
-            <span className="font-serif text-sm italic text-gray-300">
-              Image coming soon
-            </span>
+          <div
+            className="flex h-full flex-col items-center justify-center"
+            style={{
+              background:
+                "linear-gradient(165deg, #FAF9F6 0%, #F0ECE4 40%, #E8E2D6 100%)",
+            }}
+          >
+            <div className="h-10 w-px bg-[#C9A227] opacity-40" />
+            <p className="mt-3.5 font-serif text-sm italic tracking-wide text-[#C9A227]">
+              {product.brand?.name ?? ""}
+            </p>
+            <div className="mt-3.5 h-10 w-px bg-[#C9A227] opacity-40" />
+            {/* Corner accents */}
+            <div className="absolute left-4 top-4 h-5 w-5 border-l border-t border-[#C9A227] opacity-30" />
+            <div className="absolute bottom-4 right-4 h-5 w-5 border-b border-r border-[#C9A227] opacity-30" />
           </div>
         )}
 
