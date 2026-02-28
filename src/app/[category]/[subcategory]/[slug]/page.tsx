@@ -256,9 +256,9 @@ const portableTextComponents = {
               <thead>
                 {headerRows.map((row: any, i: number) => (
                   <tr key={row._key || `h${i}`} className="border-b-2 border-[#C9A227]">
-                    {row.cells?.map((cell: string, j: number) => (
+                    {row.cells?.map((cell: any, j: number) => (
                       <th key={j} className="px-4 py-3 font-semibold text-black bg-[#FAF9F6]">
-                        {cell}
+                        {typeof cell === 'string' ? cell : cell?.text || ''}
                       </th>
                     ))}
                   </tr>
@@ -269,9 +269,9 @@ const portableTextComponents = {
               <tbody>
                 {bodyRows.map((row: any, i: number) => (
                   <tr key={row._key || `b${i}`} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                    {row.cells?.map((cell: string, j: number) => (
+                    {row.cells?.map((cell: any, j: number) => (
                       <td key={j} className="px-4 py-3 text-gray-700">
-                        {cell}
+                        {typeof cell === 'string' ? cell : cell?.text || ''}
                       </td>
                     ))}
                   </tr>
