@@ -35,6 +35,7 @@ export const metadata: Metadata = {
 
 async function getHeroArticle() {
   const query = `*[_type == "article" && featured == true] | order(coalesce(publishedAt, _createdAt) desc) [0] {
+    _id,
     title,
     "slug": slug.current,
     excerpt,
@@ -50,7 +51,7 @@ async function getHeroArticle() {
   return await client.fetch(query);
 }
 
-async function getLatestArticles(limit: number = 10) {
+async function getLatestArticles(limit: number = 6) {
   const query = `*[_type == "article"] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
     _id,
     title,
@@ -82,11 +83,9 @@ async function getFeaturedProducts(limit: number = 6) {
   return await client.fetch(query);
 }
 
-async function getArticlesByCategory(parentCategory: string, subcategorySlug: string, excludeIds: string[], limit: number = 4) {
-  const excludeFilter = excludeIds.length > 0 
-    ? `&& !(_id in [${excludeIds.map(id => `"${id}"`).join(',')}])` 
-    : '';
-  const query = `*[_type == "article" && categories[0]->slug.current == "${subcategorySlug}" && categories[0]->parentCategory == "${parentCategory}" ${excludeFilter}] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
+// Fetch articles for a specific category independently — no global pool competition
+async function getCategoryArticles(parentCategory: string, subcategorySlug: string, limit: number = 4) {
+  const query = `*[_type == "article" && categories[0]->slug.current == "${subcategorySlug}" && categories[0]->parentCategory == "${parentCategory}"] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
     _id,
     title,
     "slug": slug.current,
@@ -171,52 +170,29 @@ const exploreCategories = [
 // ============================================================================
 
 export default async function Home() {
-  const [heroArticle, latestArticles, featuredProducts] = await Promise.all([
+  // Fetch hero, latest, products, and ALL category sections in parallel
+  const [heroArticle, latestArticles, featuredProducts, ...categoryResults] = await Promise.all([
     getHeroArticle(),
-    getLatestArticles(30), // Fetch more to have enough for category sections
+    getLatestArticles(7), // hero + 6 latest (we'll filter hero out below)
     getFeaturedProducts(6),
+    ...categoryDefinitions.map((cat) =>
+      getCategoryArticles(cat.parent, cat.slug, 4)
+    ),
   ]);
 
-  // Separate hero from the rest
-  const otherArticles = latestArticles.filter(
-    (a: any) => a.slug !== heroArticle?.slug
-  );
+  // Separate hero from latest
+  const latestSixArticles = latestArticles
+    .filter((a: any) => a._id !== heroArticle?._id)
+    .slice(0, 6);
 
-  // First 6 articles for the "Latest" section
-  const latestSixArticles = otherArticles.slice(0, 6);
-
-  // Collect IDs of articles already shown (hero + latest 6)
-  const shownArticleIds = new Set<string>();
-  if (heroArticle?._id) shownArticleIds.add(heroArticle._id);
-  latestSixArticles.forEach((a: any) => shownArticleIds.add(a._id));
-
-  // Group remaining articles by category for category grids
-  const remainingArticles = otherArticles.filter(
-    (a: any) => !shownArticleIds.has(a._id)
-  );
-
-  // Build category sections from remaining articles
-  const categorySections: { title: string; href: string; articles: any[] }[] = [];
-  const usedInCategories = new Set<string>();
-
-  for (const cat of categoryDefinitions) {
-    const catArticles = remainingArticles.filter(
-      (a: any) =>
-        a.category?.slug === cat.slug &&
-        a.category?.parentCategory === cat.parent &&
-        !usedInCategories.has(a._id)
-    );
-
-    if (catArticles.length > 0) {
-      const toShow = catArticles.slice(0, 4);
-      toShow.forEach((a: any) => usedInCategories.add(a._id));
-      categorySections.push({
-        title: cat.title,
-        href: cat.href,
-        articles: toShow,
-      });
-    }
-  }
+  // Build category sections — each has its own independent query result
+  const categorySections = categoryDefinitions
+    .map((cat, i) => ({
+      title: cat.title,
+      href: cat.href,
+      articles: categoryResults[i] as any[],
+    }))
+    .filter((section) => section.articles.length > 0);
 
   // JSON-LD
   const jsonLd = {
@@ -297,7 +273,7 @@ export default async function Home() {
       </section>
 
       {/* ================================================================ */}
-      {/* CURRENTLY COVETING (Product Strip) — right after hero              */}
+      {/* CURRENTLY COVETING (Product Strip)                               */}
       {/* ================================================================ */}
       {featuredProducts.length > 0 && (
         <section className="py-12 md:py-16 bg-white border-t border-gray-100">
@@ -348,7 +324,6 @@ export default async function Home() {
                         <p className="text-xs font-medium uppercase tracking-wider text-black">
                           {product.brand}
                         </p>
-                        {/* Product name - NO truncation */}
                         <p className="text-sm text-charcoal leading-snug">
                           {product.name}
                         </p>
@@ -441,7 +416,7 @@ export default async function Home() {
             ))}
           </div>
 
-          {latestArticles.length === 0 && (
+          {latestSixArticles.length === 0 && (
             <div className="text-center py-12 text-charcoal-light">
               <p>No articles yet. Create some in Sanity!</p>
             </div>
@@ -450,64 +425,63 @@ export default async function Home() {
       </section>
 
       {/* ================================================================ */}
-      {/* CATEGORY ARTICLE GRIDS (no repeats)                               */}
+      {/* CATEGORY ARTICLE GRIDS — each fetched independently              */}
       {/* ================================================================ */}
-      {categorySections.length > 0 &&
-        categorySections.map((section, index) => (
-          <section
-            key={section.title}
-            className={`py-16 ${index % 2 === 0 ? 'bg-cream' : 'bg-white'}`}
-          >
-            <div className="container-luxury">
-              <div className="flex items-center justify-between mb-10">
-                <h2 className="font-serif text-2xl md:text-3xl text-black">
-                  {section.title}
-                </h2>
-                <Link
-                  href={section.href}
-                  className="text-sm font-sans font-medium uppercase tracking-wider text-charcoal hover:text-gold transition-colors"
-                >
-                  View All →
-                </Link>
-              </div>
-
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                {section.articles.map((article: any) => (
-                  <article key={article._id} className="group">
-                    <Link href={getArticleUrl(article)}>
-                      <div className="relative aspect-[3/4] overflow-hidden mb-4 bg-cream">
-                        {article.mainImage ? (
-                          <Image
-                            src={urlFor(article.mainImage).width(400).height(533).url()}
-                            alt={article.mainImage.alt || article.title}
-                            fill
-                            className="object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-charcoal-light text-sm">Image</span>
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
-                      </div>
-                      <div className="space-y-2">
-                        <span className="text-xs font-sans font-semibold uppercase tracking-wider text-gold">
-                          {article.category?.title || 'Article'}
-                        </span>
-                        <h3 className="font-serif text-lg text-black group-hover:text-charcoal transition-colors leading-snug">
-                          {article.title}
-                        </h3>
-                        <p className="text-sm text-charcoal line-clamp-2">
-                          {article.excerpt}
-                        </p>
-                      </div>
-                    </Link>
-                  </article>
-                ))}
-              </div>
+      {categorySections.map((section, index) => (
+        <section
+          key={section.title}
+          className={`py-16 ${index % 2 === 0 ? 'bg-cream' : 'bg-white'}`}
+        >
+          <div className="container-luxury">
+            <div className="flex items-center justify-between mb-10">
+              <h2 className="font-serif text-2xl md:text-3xl text-black">
+                {section.title}
+              </h2>
+              <Link
+                href={section.href}
+                className="text-sm font-sans font-medium uppercase tracking-wider text-charcoal hover:text-gold transition-colors"
+              >
+                View All →
+              </Link>
             </div>
-          </section>
-        ))}
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+              {section.articles.map((article: any) => (
+                <article key={article._id} className="group">
+                  <Link href={getArticleUrl(article)}>
+                    <div className="relative aspect-[3/4] overflow-hidden mb-4 bg-cream">
+                      {article.mainImage ? (
+                        <Image
+                          src={urlFor(article.mainImage).width(400).height(533).url()}
+                          alt={article.mainImage.alt || article.title}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-charcoal-light text-sm">Image</span>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
+                    </div>
+                    <div className="space-y-2">
+                      <span className="text-xs font-sans font-semibold uppercase tracking-wider text-gold">
+                        {article.category?.title || 'Article'}
+                      </span>
+                      <h3 className="font-serif text-lg text-black group-hover:text-charcoal transition-colors leading-snug">
+                        {article.title}
+                      </h3>
+                      <p className="text-sm text-charcoal line-clamp-2">
+                        {article.excerpt}
+                      </p>
+                    </div>
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      ))}
 
       {/* ================================================================ */}
       {/* EXPLORE BY CATEGORY                                               */}
@@ -536,8 +510,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
-
     </>
   );
 }
