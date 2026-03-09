@@ -244,22 +244,7 @@ export default defineType({
         },
       ],
     }),
-    defineField({
-      name: 'schemaMarkup',
-      title: 'Schema Markup Type',
-      type: 'string',
-      group: 'seo',
-      options: {
-        list: [
-          {title: 'Article', value: 'article'},
-          {title: 'Product Review', value: 'review'},
-          {title: 'FAQ Page', value: 'faq'},
-          {title: 'How-To', value: 'howto'},
-          {title: 'Buying Guide', value: 'guide'},
-        ],
-      },
-      initialValue: 'article',
-    }),
+
     defineField({
       name: 'faqSchema',
       title: 'FAQ Schema (JSON-LD)',
