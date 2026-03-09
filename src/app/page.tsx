@@ -425,29 +425,36 @@ export default async function Home() {
       </section>
 
       {/* ================================================================ */}
-      {/* CATEGORY ARTICLE GRIDS — each fetched independently              */}
+      {/* CATEGORY CAROUSELS — each fetched independently                  */}
       {/* ================================================================ */}
       {categorySections.map((section, index) => (
         <section
           key={section.title}
-          className={`py-16 ${index % 2 === 0 ? 'bg-cream' : 'bg-white'}`}
+          className={`py-12 md:py-16 ${index % 2 === 0 ? 'bg-cream' : 'bg-white'}`}
         >
           <div className="container-luxury">
-            <div className="flex items-center justify-between mb-10">
+            <div className="flex items-center justify-between mb-8">
               <h2 className="font-serif text-2xl md:text-3xl text-black">
                 {section.title}
               </h2>
               <Link
                 href={section.href}
-                className="text-sm font-sans font-medium uppercase tracking-wider text-charcoal hover:text-gold transition-colors"
+                className="text-sm font-sans font-medium uppercase tracking-wider text-charcoal hover:text-gold transition-colors whitespace-nowrap"
               >
                 View All →
               </Link>
             </div>
+          </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          {/* Full-width carousel — bleeds to edges on mobile */}
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-4 md:gap-6 px-4 md:px-8 lg:px-[max(2rem,calc((100vw-1280px)/2+2rem))]"
+                 style={{ width: 'max-content' }}>
               {section.articles.map((article: any) => (
-                <article key={article._id} className="group">
+                <article
+                  key={article._id}
+                  className="group flex-shrink-0 w-[260px] md:w-[300px] lg:w-[320px]"
+                >
                   <Link href={getArticleUrl(article)}>
                     <div className="relative aspect-[3/4] overflow-hidden mb-4 bg-cream">
                       {article.mainImage ? (
