@@ -77,7 +77,24 @@ const portableTextComponents = {
   types: {
     image: ({ value }: any) => {
       if (!value?.asset) return null
-      const isPortrait = value.orientation === 'portrait'
+
+      // Auto-detect portrait from asset metadata dimensions
+      // Sanity asset._ref encodes dimensions: image-{id}-{W}x{H}-{format}
+      let isPortrait = value.orientation === 'portrait'
+      if (!isPortrait) {
+        const ref: string = value.asset?._ref || ''
+        const match = ref.match(/-(\d+)x(\d+)-/)
+        if (match) {
+          const w = parseInt(match[1])
+          const h = parseInt(match[2])
+          isPortrait = h > w
+        }
+        // Also check metadata if available
+        if (!isPortrait && value.asset?.metadata?.dimensions) {
+          const { width, height } = value.asset.metadata.dimensions
+          isPortrait = height > width
+        }
+      }
 
       return (
         <figure className={`my-8 ${isPortrait ? 'flex flex-col items-center' : ''}`}>
