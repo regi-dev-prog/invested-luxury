@@ -29,6 +29,7 @@ const articleQuery = `*[_type == "article" && slug.current == $slug && status ==
   "categories": categories[]->{name, slug},
   "seo": seo,
   schemaMarkup,
+  faqSchema,
   productRating,
   "primaryProduct": primaryProduct->{
     _id,
@@ -593,6 +594,12 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {article.faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: article.faqSchema }}
+        />
+      )}
 
       {/* Scroll Depth Tracker */}
       <ArticleTracker
