@@ -77,14 +77,20 @@ const portableTextComponents = {
   types: {
     image: ({ value }: any) => {
       if (!value?.asset) return null
+      const isPortrait = value.orientation === 'portrait'
+
       return (
-        <figure className="my-8">
+        <figure className={`my-8 ${isPortrait ? 'flex flex-col items-center' : ''}`}>
           <Image
-            src={urlFor(value).width(800).url()}
+            src={
+              isPortrait
+                ? urlFor(value).width(600).height(800).url()
+                : urlFor(value).width(800).url()
+            }
             alt={value.alt || ''}
-            width={800}
-            height={500}
-            className="w-full"
+            width={isPortrait ? 600 : 800}
+            height={isPortrait ? 800 : 500}
+            className={isPortrait ? 'max-w-[320px] md:max-w-[420px] object-cover' : 'w-full'}
           />
           {value.caption && (
             <figcaption className="text-center text-sm text-gray-500 mt-2">

@@ -61,6 +61,20 @@ export default defineType({
           fields: [
             {name: 'caption', type: 'string', title: 'Caption'},
             {name: 'alt', type: 'string', title: 'Alt Text'},
+            {
+              name: 'orientation',
+              type: 'string',
+              title: 'Orientation',
+              description: 'Choose Landscape for wide images (16:9, 3:2) or Portrait for tall images (3:4, 2:3)',
+              options: {
+                list: [
+                  {title: 'Landscape (default)', value: 'landscape'},
+                  {title: 'Portrait (3:4)', value: 'portrait'},
+                ],
+                layout: 'radio',
+              },
+              initialValue: 'landscape',
+            },
           ],
         },
         {
