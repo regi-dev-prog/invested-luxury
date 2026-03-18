@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'InvestedLuxury Terms of Service - Terms and conditions for using our website.',
+  description: 'Read the InvestedLuxury Terms of Service. Learn about the terms and conditions governing your use of our luxury fashion and lifestyle website.',
   alternates: {
     canonical: 'https://investedluxury.com/terms',
   },
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     url: 'https://investedluxury.com/terms',
     siteName: 'InvestedLuxury',
     title: 'Terms of Service | InvestedLuxury',
-    description: 'InvestedLuxury Terms of Service - Terms and conditions for using our website.',
+    description: 'Read the InvestedLuxury Terms of Service. Learn about the terms and conditions governing your use of our luxury fashion and lifestyle website.',
     images: [{ url: 'https://investedluxury.com/og-image.jpg', width: 1200, height: 630, alt: 'InvestedLuxury' }],
   },
 };
