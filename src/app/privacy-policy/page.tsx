@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'InvestedLuxury Privacy Policy - How we collect, use, and protect your information.',
+  description: 'Read the InvestedLuxury Privacy Policy. Learn how we collect, use, and protect your personal information when you visit our luxury fashion website.',
   alternates: {
     canonical: 'https://investedluxury.com/privacy-policy',
   },
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     url: 'https://investedluxury.com/privacy-policy',
     siteName: 'InvestedLuxury',
     title: 'Privacy Policy | InvestedLuxury',
-    description: 'InvestedLuxury Privacy Policy - How we collect, use, and protect your information.',
+    description: 'Read the InvestedLuxury Privacy Policy. Learn how we collect, use, and protect your personal information when you visit our luxury fashion website.',
     images: [{ url: 'https://investedluxury.com/og-image.jpg', width: 1200, height: 630, alt: 'InvestedLuxury' }],
   },
 };
