@@ -75,11 +75,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: canonicalUrl,
       siteName: 'InvestedLuxury',
       type: 'website',
+      images: [{ url: 'https://investedluxury.com/og-image.jpg', width: 1200, height: 630, alt: 'InvestedLuxury' }],
     },
     twitter: {
       card: 'summary_large_image',
       title: subCategory.metaTitle,
       description: subCategory.metaDescription,
+      images: ['https://investedluxury.com/og-image.jpg'],
     },
   }
 }
