@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'About Regi | InvestedLuxury - Honest Luxury Reviews & Investment Guides',
+  title: 'About Regi: Honest Luxury Reviews & Investment Guides',
   description: 'Meet Regi, the founder of InvestedLuxury. Years of buying luxury pieces, honest opinions on what\'s worth it, and no sponsored content dressed up as advice.',
   keywords: ['luxury fashion blog', 'investment pieces', 'honest luxury reviews', 'quiet luxury', 'designer bag reviews', 'luxury lifestyle'],
   alternates: {
@@ -12,6 +12,9 @@ export const metadata: Metadata = {
     title: 'About Regi | InvestedLuxury',
     description: 'Not here to convince you to buy anything. Just here to tell you the truth about what I did - and didn\'t.',
     type: 'website',
+    url: 'https://investedluxury.com/about',
+    siteName: 'InvestedLuxury',
+    images: [{ url: 'https://investedluxury.com/og-image.jpg', width: 1200, height: 630, alt: 'InvestedLuxury' }],
   },
 };
 
