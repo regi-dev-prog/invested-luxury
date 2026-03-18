@@ -4,6 +4,14 @@ export const metadata = {
   alternates: {
     canonical: 'https://investedluxury.com/affiliate-disclosure',
   },
+  openGraph: {
+    type: 'website',
+    url: 'https://investedluxury.com/affiliate-disclosure',
+    siteName: 'InvestedLuxury',
+    title: 'Affiliate Disclosure | InvestedLuxury',
+    description: 'How InvestedLuxury.com earns money through affiliate partnerships and our commitment to editorial integrity.',
+    images: [{ url: 'https://investedluxury.com/og-image.jpg', width: 1200, height: 630, alt: 'InvestedLuxury' }],
+  },
 }
 
 export default function AffiliateDisclosurePage() {
