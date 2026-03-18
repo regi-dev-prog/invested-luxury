@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     url: "https://investedluxury.com/shop",
     siteName: "InvestedLuxury",
     type: "website",
+    images: [{ url: "https://investedluxury.com/og-image.jpg", width: 1200, height: 630, alt: "InvestedLuxury" }],
   },
 };
 
