@@ -6,6 +6,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://investedluxury.com/terms',
   },
+  openGraph: {
+    type: 'website',
+    url: 'https://investedluxury.com/terms',
+    siteName: 'InvestedLuxury',
+    title: 'Terms of Service | InvestedLuxury',
+    description: 'InvestedLuxury Terms of Service - Terms and conditions for using our website.',
+    images: [{ url: 'https://investedluxury.com/og-image.jpg', width: 1200, height: 630, alt: 'InvestedLuxury' }],
+  },
 };
 
 export default function TermsPage() {
