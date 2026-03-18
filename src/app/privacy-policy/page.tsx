@@ -6,6 +6,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://investedluxury.com/privacy-policy',
   },
+  openGraph: {
+    type: 'website',
+    url: 'https://investedluxury.com/privacy-policy',
+    siteName: 'InvestedLuxury',
+    title: 'Privacy Policy | InvestedLuxury',
+    description: 'InvestedLuxury Privacy Policy - How we collect, use, and protect your information.',
+    images: [{ url: 'https://investedluxury.com/og-image.jpg', width: 1200, height: 630, alt: 'InvestedLuxury' }],
+  },
 };
 
 export default function PrivacyPolicyPage() {
