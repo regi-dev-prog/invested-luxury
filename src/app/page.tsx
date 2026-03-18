@@ -11,7 +11,7 @@ export const revalidate = 60;
 // ============================================================================
 export const metadata: Metadata = {
   title: 'InvestedLuxury | Curated Luxury Fashion & Lifestyle',
-  description: 'Discover investment-worthy pieces in luxury fashion, watches, jewelry, and lifestyle. Expert guides, reviews, and curated recommendations for discerning collectors.',
+  description: 'Expert guides to luxury fashion, watches, jewelry, and lifestyle. Curated investment pieces, honest reviews, and buying advice for the discerning collector.',
   alternates: {
     canonical: 'https://investedluxury.com',
   },
@@ -20,7 +20,8 @@ export const metadata: Metadata = {
     description: 'Discover investment-worthy pieces in luxury fashion, watches, jewelry, and lifestyle.',
     url: 'https://investedluxury.com',
     siteName: 'InvestedLuxury',
-    type: 'website',
+    type: 'website',,
+    images: [{ url: 'https://investedluxury.com/og-image.jpg', width: 1200, height: 630, alt: 'InvestedLuxury - Curated Luxury Fashion & Lifestyle' }],
   },
   twitter: {
     card: 'summary_large_image',
