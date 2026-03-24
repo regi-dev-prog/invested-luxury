@@ -229,6 +229,7 @@ const portableTextComponents = {
       return (
         <figure className="my-8">
           <div className="relative w-full overflow-hidden bg-cream">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={urlFor(value).width(1200).url()}
               alt={value.alt || ''}
