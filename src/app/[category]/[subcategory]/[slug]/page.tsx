@@ -228,12 +228,11 @@ const portableTextComponents = {
       if (!value?.asset) return null
       return (
         <figure className="my-8">
-          <div className="relative aspect-[16/9] w-full overflow-hidden bg-cream">
-            <Image
+          <div className="relative w-full overflow-hidden bg-cream">
+            <img
               src={urlFor(value).width(1200).url()}
               alt={value.alt || ''}
-              fill
-              className="object-cover"
+              className="w-full h-auto block"
             />
           </div>
           {value.caption && (
