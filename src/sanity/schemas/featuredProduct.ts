@@ -116,7 +116,7 @@ export default defineType({
       title: 'Active',
       type: 'boolean',
       description: 'Only active products will be displayed',
-      initialValue: true,
+      initialValue: false,
     }),
     defineField({
       name: 'displayOrder',
