@@ -40,6 +40,7 @@ const navigation = [
     ],
   },
   { label: 'Guides', href: '/guides' },
+  { label: 'Who Is This For', href: '/guides/investment-guides/who-is-investedluxury-for' },
   { label: 'Shop', href: '/shop' },
 ];
 

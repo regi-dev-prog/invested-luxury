@@ -29,6 +29,7 @@ const footerLinks = {
   company: [
     { label: 'Shop', href: '/shop' },
     { label: 'About', href: '/about' },
+    { label: 'Who Is This For', href: '/guides/investment-guides/who-is-investedluxury-for' },
     { label: 'Contact', href: '/contact' },
     { label: 'Privacy Policy', href: '/privacy-policy' },
     { label: 'Terms of Service', href: '/terms' },
