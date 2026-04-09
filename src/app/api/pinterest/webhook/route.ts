@@ -18,11 +18,17 @@ const DEFAULT_BOARD = '1085297278892986966';
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const article = body.result;
-  if (!article) return NextResponse.json({ ok: true });
+  
+  console.log('Webhook received:', JSON.stringify(article, null, 2));
+  
+  if (!article?.title) {
+    return NextResponse.json({ ok: true });
+  }
 
   const category = article.categories?.[0] || '';
   const boardId = BOARD_MAP[category] || DEFAULT_BOARD;
   const siteUrl = 'https://www.investedluxury.com';
+  const imageUrl = article.mainImage?.asset?.url;
 
   const pin = await fetch('https://api.pinterest.com/v5/pins', {
     method: 'POST',
@@ -37,11 +43,13 @@ export async function POST(request: NextRequest) {
       link: `${siteUrl}/${article.slug?.current}`,
       media_source: {
         source_type: 'image_url',
-        url: article.mainImage?.asset?.url || `${siteUrl}/og-image.jpg`,
+        url: imageUrl || `${siteUrl}/og-image.jpg`,
       },
     }),
   });
 
   const pinData = await pin.json();
+  console.log('Pinterest response:', JSON.stringify(pinData, null, 2));
+  
   return NextResponse.json({ ok: true, pin: pinData });
 }
