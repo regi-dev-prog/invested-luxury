@@ -147,8 +147,6 @@ const nextConfig = {
       // --- Investment bags: not a registered subcategory → bags ---
       { source: '/fashion/investment-bags', destination: '/fashion/bags', permanent: true },
 
-      // --- Bottega Veneta: article doesn't exist → bags category ---
-      { source: '/fashion/bags/bottega-veneta-bag-guide', destination: '/fashion/bags', permanent: true },
     ]
   },
 };
