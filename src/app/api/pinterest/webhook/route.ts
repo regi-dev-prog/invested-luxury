@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
       media_source: {
         source_type: 'image_url',
         url: imageUrl ? `${imageUrl}?w=1000&h=1500&fit=crop` : `${siteUrl}/og-image.jpg`,
+      },
     }),
   });
 
