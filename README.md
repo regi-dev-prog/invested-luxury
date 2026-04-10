@@ -88,3 +88,4 @@ The site is configured for automatic deployment to Vercel. Push to `main` to dep
 ## License
 
 All rights reserved © InvestedLuxury 2025
+<!-- rebuild 2026-04-10T09:31:01.350437 -->
