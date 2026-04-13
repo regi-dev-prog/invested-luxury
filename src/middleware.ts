@@ -16,7 +16,7 @@ const BOT_UA_PATTERNS = [
   /selenium/i,
   /webdriver/i,
 
-  // Spam/scraper bots
+  // Spam/scraper bots (specific names)
   /semrushbot/i,
   /dotbot/i,
   /mj12bot/i,
@@ -25,13 +25,12 @@ const BOT_UA_PATTERNS = [
   /bytespider/i,
   /petalbot/i,
   /sogou/i,
-  /yandexbot/i,
+  /zoominfobot/i,
+  /gptbot/i,
+  /claudebot/i,
+  /ccbot/i,
 
-  // Generic patterns
-  /bot(?!tle)/i,
-  /crawl/i,
-  /spider/i,
-  /scrape/i,
+  // HTTP libraries (non-browser automated requests)
   /wget/i,
   /curl\//i,
   /python-requests/i,
@@ -40,6 +39,8 @@ const BOT_UA_PATTERNS = [
   /java\//i,
   /libwww/i,
   /lwp-trivial/i,
+  /scrapy/i,
+  /node-fetch/i,
 ]
 
 // Bots to ALLOW through (search engines, social, your tools)
@@ -47,6 +48,7 @@ const ALLOWED_BOTS = [
   /googlebot/i,
   /bingbot/i,
   /google-inspectiontool/i,
+  /google-safety/i,
   /apis-google/i,
   /mediapartners-google/i,
   /adsbot-google/i,
@@ -59,7 +61,10 @@ const ALLOWED_BOTS = [
   /telegrambot/i,
   /discordbot/i,
   /vercel/i,
-  /ahrefsbot/i,        // You use Ahrefs — keep this allowed
+  /ahrefs/i,            // Covers AhrefsBot + AhrefsSiteAudit + any Ahrefs crawler
+  /duckduckbot/i,
+  /applebot/i,
+  /yandex/i,            // Yandex is legit search engine — moved from blocked
 ]
 
 // Rate limiting (in-memory, resets on cold start)
