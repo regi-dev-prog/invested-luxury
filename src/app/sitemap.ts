@@ -71,7 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Build sub-category pages + collect unique parent slugs
     const subCategoryPages: MetadataRoute.Sitemap = categories
       .map((cat: { slug: string; parentCategory: string }) => {
-        if (!cat.slug || !cat.parentCategory) return null
+        if (!cat.slug || !cat.parentCategory || typeof cat.parentCategory !== 'string') return null
 
         parentSlugs.add(cat.parentCategory)
 
@@ -109,7 +109,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         slug: string
         category: { slug: string; parentCategory: string } | null
       }) => {
-        if (!article.slug || !article.category?.slug || !article.category?.parentCategory) return null
+        if (!article.slug || !article.category?.slug || !article.category?.parentCategory || typeof article.category.parentCategory !== 'string') return null
 
         const url = `${BASE_URL}/${article.category.parentCategory}/${article.category.slug}/${article.slug}`
 

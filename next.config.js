@@ -147,6 +147,45 @@ const nextConfig = {
       // --- Investment bags: not a registered subcategory → bags ---
       { source: '/fashion/investment-bags', destination: '/fashion/bags', permanent: true },
 
+      // =====================================================================
+      // 8. AHREFS AUDIT - APRIL 2026
+      //    404 pages: wrong parent, wrong slug, missing subcategory, [object Object]
+      // =====================================================================
+
+      // --- Articles under wrong /investment/ prefix → correct category ---
+      { source: '/investment/is-jewelry-good-investment-resale-analysis', destination: '/fashion/jewelry/is-jewelry-good-investment-resale-analysis', permanent: true },
+      { source: '/investment/best-diamond-tennis-bracelet', destination: '/fashion/jewelry/best-diamond-tennis-bracelet', permanent: true },
+      { source: '/investment/cartier-love-bracelet-guide', destination: '/fashion/jewelry/cartier-love-bracelet-guide', permanent: true },
+      { source: '/investment/ring-concierge-reviews', destination: '/fashion/jewelry/ring-concierge-reviews', permanent: true },
+      { source: '/investment/best-entry-level-luxury-watches-investment', destination: '/fashion/watches/best-entry-level-luxury-watches-investment', permanent: true },
+
+      // --- Articles under wrong /shopping/ prefix → correct category ---
+      { source: '/shopping/farfetch-promo-code', destination: '/guides/beginner-guides/farfetch-promo-code', permanent: true },
+      { source: '/shopping/mytheresa-promo-code', destination: '/guides/beginner-guides/mytheresa-promo-code', permanent: true },
+      { source: '/shopping/retailers/therealreal-vs-fashionphile-vs-vestiaire', destination: '/fashion/bags/therealreal-vs-fashionphile-vs-vestiaire-collective', permanent: true },
+
+      // --- Articles missing subcategory in path ---
+      { source: '/fashion/quiet-luxury-capsule-wardrobe', destination: '/fashion/clothing/quiet-luxury-capsule-wardrobe', permanent: true },
+      { source: '/fashion/quiet-luxury-clothing-brands-investment-guide', destination: '/fashion/clothing/quiet-luxury-clothing-brands-investment-guide', permanent: true },
+      { source: '/fashion/the-row-brand-guide', destination: '/fashion/quiet-luxury/the-row-brand-guide', permanent: true },
+
+      // --- Wrong subcategory for article ---
+      { source: '/fashion/jewelry/therealreal-vs-fashionphile-vs-vestiaire', destination: '/fashion/bags/therealreal-vs-fashionphile-vs-vestiaire-collective', permanent: true },
+
+      // --- Truncated slug ---
+      { source: '/fashion/jewelry/tiffany-t-bracelet', destination: '/fashion/jewelry/tiffany-t-bracelet-guide', permanent: true },
+
+      // --- Non-existent subcategory/category pages → closest match or home ---
+      { source: '/guides/accessories', destination: '/fashion/accessories', permanent: true },
+      { source: '/fashion/brand-guides', destination: '/fashion', permanent: true },
+      { source: '/guides/shopping', destination: '/', permanent: true },
+      { source: '/shopping/retailers', destination: '/', permanent: true },
+      { source: '/shopping', destination: '/', permanent: true },
+      { source: '/fashion/shopping', destination: '/', permanent: true },
+
+      // --- [object Object] sitemap bug (fixed in code, redirect for cached URLs) ---
+      { source: '/%5Bobject%20Object%5D/:path*', destination: '/', permanent: true },
+
     ]
   },
 };
