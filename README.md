@@ -90,3 +90,4 @@ The site is configured for automatic deployment to Vercel. Push to `main` to dep
 All rights reserved © InvestedLuxury 2025
 <!-- rebuild 2026-04-10T09:31:01.350437 -->
 <!-- rebuild 2026-04-14T09:00:44.936962 -->
+<!-- rebuild 2026-04-14T09:48:36.772346 -->
