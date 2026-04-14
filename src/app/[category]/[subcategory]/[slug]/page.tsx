@@ -28,7 +28,7 @@ const siteUrl = 'https://investedluxury.com'
 // =============================================================================
 // SANITY QUERY
 // =============================================================================
-const articleQuery = `*[_type == "article" && slug.current == $slug][0]{
+const articleQuery = `*[_type == "article" && slug.current == $slug && status == "published"][0]{
   _id,
   title,
   subtitle,
