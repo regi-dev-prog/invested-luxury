@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 // ============================================================================
 
 async function getHeroArticle() {
-  const query = `*[_type == "article" && featured == true] | order(coalesce(publishedAt, _createdAt) desc) [0] {
+  const query = `*[_type == "article" && status == "published" && featured == true] | order(coalesce(publishedAt, _createdAt) desc) [0] {
     _id,
     title,
     "slug": slug.current,
@@ -53,7 +53,7 @@ async function getHeroArticle() {
 }
 
 async function getLatestArticles(limit: number = 6) {
-  const query = `*[_type == "article"] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
+  const query = `*[_type == "article" && status == "published"] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
     _id,
     title,
     "slug": slug.current,
@@ -86,7 +86,7 @@ async function getFeaturedProducts(limit: number = 6) {
 
 // Fetch articles for a specific category independently — no global pool competition
 async function getCategoryArticles(parentCategory: string, subcategorySlug: string, limit: number = 4) {
-  const query = `*[_type == "article" && categories[0]->slug.current == "${subcategorySlug}" && categories[0]->parentCategory == "${parentCategory}"] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
+  const query = `*[_type == "article" && status == "published" && categories[0]->slug.current == "${subcategorySlug}" && categories[0]->parentCategory == "${parentCategory}"] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
     _id,
     title,
     "slug": slug.current,
