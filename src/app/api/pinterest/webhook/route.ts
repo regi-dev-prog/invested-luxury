@@ -33,7 +33,12 @@ export async function POST(request: NextRequest) {
   const category = article.categories?.[0] || '';
   const boardId = BOARD_MAP[category] || DEFAULT_BOARD;
   const siteUrl = 'https://www.investedluxury.com';
-  const imageUrl = article.mainImage;
+  
+  // חיתוך תמונה ל-2:3 (1000x1500) פורמט Pinterest
+  const rawImage = article.mainImage;
+  const imageUrl = rawImage 
+    ? `${rawImage}?w=1000&h=1500&fit=crop&crop=center` 
+    : `${siteUrl}/og-image.jpg`;
 
   const pin = await fetch('https://api.pinterest.com/v5/pins', {
     method: 'POST',
@@ -48,7 +53,7 @@ export async function POST(request: NextRequest) {
       link: `${siteUrl}/${article.slug}`,
       media_source: {
         source_type: 'image_url',
-        url: imageUrl || `${siteUrl}/og-image.jpg`,
+        url: imageUrl,
       },
     }),
   });
