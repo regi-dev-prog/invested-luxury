@@ -22,10 +22,9 @@ const HASHTAGS: Record<string, string> = {
 const DEFAULT_HASHTAGS = '#investedluxury #luxurylifestyle #luxuryfashion';
 
 export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const article = body.result;
-
-  console.log('[Webhook] Received:', JSON.stringify(article, null, 2));
+const body = await request.json();
+  console.log('[Webhook] Full body:', JSON.stringify(body, null, 2));
+  const article = body.result || body;
 
   if (!article?.title) {
     return NextResponse.json({ ok: true, skipped: 'no title' });
