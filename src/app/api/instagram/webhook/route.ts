@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
 
   const category = article.categories?.[0] || '';
   const hashtags = HASHTAGS[category] || DEFAULT_HASHTAGS;
-  const imageUrl = article.mainImage?.asset?.url;
-  const slug = article.slug?.current;
+  const imageUrl = article.mainImage;
+  const slug = article.slug;
   const excerpt = article.excerpt || '';
 
   // ── Instagram Caption ──
