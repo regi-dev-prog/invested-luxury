@@ -22,8 +22,7 @@ const HASHTAGS: Record<string, string> = {
 const DEFAULT_HASHTAGS = '#investedluxury #luxurylifestyle #luxuryfashion';
 
 export async function POST(request: NextRequest) {
-const body = await request.json();
-  console.log('[Webhook] Full body:', JSON.stringify(body, null, 2));
+  const body = await request.json();
   const article = body.result || body;
 
   if (!article?.title) {
@@ -33,24 +32,37 @@ const body = await request.json();
   const category = article.categories?.[0] || '';
   const hashtags = HASHTAGS[category] || DEFAULT_HASHTAGS;
   const imageUrl = article.mainImage;
-  const slug = article.slug;
   const excerpt = article.excerpt || '';
 
+  // URL מלא עם category path
+  const articleUrl = article.parentCategory && article.categorySlug
+    ? `${SITE_URL}/${article.parentCategory}/${article.categorySlug}/${article.slug}`
+    : `${SITE_URL}/${article.slug}`;
+
   // ── Instagram Caption ──
-  const captionParts = [article.title];
-  if (excerpt) captionParts.push('', excerpt);
-  captionParts.push('', '🔗 Read more at investedluxury.com', '(Link in bio)', '', `${hashtags} #investedluxury`);
-  const igCaption = captionParts.join('\n');
+  const igCaption = [
+    article.title,
+    '',
+    excerpt,
+    '',
+    '🔗 Read more at investedluxury.com',
+    '(Link in bio)',
+    '',
+    `${hashtags} #investedluxury`
+  ].join('\n');
 
   // ── Facebook Message ──
-  const articleUrl = `${SITE_URL}/${slug}`;
-  const fbParts = [article.title];
-  if (excerpt) fbParts.push('', excerpt);
-  fbParts.push('', `🔗 ${articleUrl}`, '', `${hashtags} #investedluxury`);
-  const fbMessage = fbParts.join('\n');
+  const fbMessage = [
+    article.title,
+    '',
+    excerpt,
+    '',
+    `🔗 ${articleUrl}`,
+    '',
+    `${hashtags} #investedluxury`
+  ].join('\n');
 
   if (!imageUrl) {
-    console.log('[Webhook] No image, skipping');
     return NextResponse.json({ ok: true, skipped: 'no image' });
   }
 
@@ -76,14 +88,11 @@ const body = await request.json();
         body: JSON.stringify({ creation_id: containerData.id, access_token: IG_TOKEN }),
       });
       const publishData = await publishRes.json();
-      console.log('[Webhook] IG Published:', publishData.id);
       results.ig = publishData.id;
     } else {
-      console.log('[Webhook] IG Error:', containerData.error);
       results.igError = containerData.error;
     }
   } catch (err) {
-    console.error('[Webhook] IG Error:', err);
     results.igError = 'Internal error';
   }
 
@@ -95,14 +104,9 @@ const body = await request.json();
       body: JSON.stringify({ url: imageUrl, message: fbMessage, access_token: IG_TOKEN }),
     });
     const fbData = await fbRes.json();
-    console.log('[Webhook] FB Published:', fbData.id || fbData.post_id);
     results.fb = fbData.id || fbData.post_id;
-    if (fbData.error) {
-      console.log('[Webhook] FB Error:', fbData.error);
-      results.fbError = fbData.error;
-    }
+    if (fbData.error) results.fbError = fbData.error;
   } catch (err) {
-    console.error('[Webhook] FB Error:', err);
     results.fbError = 'Internal error';
   }
 
