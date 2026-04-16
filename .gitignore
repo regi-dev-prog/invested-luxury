@@ -34,3 +34,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+fix-pins.mjs
+fix-pinterest-urls.mjs
