@@ -34,7 +34,11 @@ export async function POST(request: NextRequest) {
   const boardId = BOARD_MAP[category] || DEFAULT_BOARD;
   const siteUrl = 'https://www.investedluxury.com';
   
-  // חיתוך תמונה ל-2:3 (1000x1500) פורמט Pinterest
+  // בנה URL מלא עם category path
+  const articleUrl = article.parentCategory && article.categorySlug
+    ? `${siteUrl}/${article.parentCategory}/${article.categorySlug}/${article.slug}`
+    : `${siteUrl}/${article.slug}`;
+
   const rawImage = article.mainImage;
   const imageUrl = rawImage 
     ? `${rawImage}?w=1000&h=1500&fit=crop&crop=center` 
@@ -50,7 +54,7 @@ export async function POST(request: NextRequest) {
       board_id: boardId,
       title: article.title,
       description: article.excerpt || article.title,
-      link: `${siteUrl}/${article.slug}`,
+      link: articleUrl,
       media_source: {
         source_type: 'image_url',
         url: imageUrl,
