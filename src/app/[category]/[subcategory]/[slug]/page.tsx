@@ -1,12 +1,18 @@
 // =============================================================================
-// ARTICLE PAGE - Full SEO Implementation
+// ARTICLE PAGE - Full SEO Implementation + Canonical URL Enforcement
 // =============================================================================
 // Route: /fashion/bags/[slug], /lifestyle/hotels/[slug], etc.
+// =============================================================================
+// CHANGES (April 2026):
+// 1. Canonical URL computed from article's primary category, NOT from URL params
+// 2. Non-canonical paths redirect 301 to canonical
+// 3. SocialShare URL uses non-www domain
+// 4. Related article links always use canonical paths
 // =============================================================================
 
 
 import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { client } from '@/sanity/lib/client'
 import { urlFor } from '@/sanity/lib/image'
 import { PortableText } from '@portabletext/react'
@@ -99,6 +105,27 @@ async function fetchArticle(slug: string) {
 }
 
 // =============================================================================
+// HELPER: Compute canonical URL from article data
+// =============================================================================
+function getCanonicalPath(article: any, fallbackCategory: string, fallbackSubcategory: string): {
+  parentSlug: string
+  categorySlug: string
+  canonicalUrl: string
+} {
+  const primaryCategory = article.categories?.[0]
+  const parentSlug = (typeof primaryCategory?.parentCategory === 'string' && primaryCategory.parentCategory)
+    || fallbackCategory
+  const categorySlug = (primaryCategory?.slug?.current)
+    || fallbackSubcategory
+
+  return {
+    parentSlug,
+    categorySlug,
+    canonicalUrl: `${siteUrl}/${parentSlug}/${categorySlug}/${article.slug?.current || ''}`,
+  }
+}
+
+// =============================================================================
 // GENERATE METADATA FOR SEO
 // =============================================================================
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -108,12 +135,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: 'Article Not Found' }
   }
 
-  const canonicalUrl = `${siteUrl}/${params.category}/${params.subcategory}/${params.slug}`
+  // FIXED: Canonical URL computed from article data, not URL params
+  const { canonicalUrl } = getCanonicalPath(article, params.category, params.subcategory)
+
   const ogImage = article.mainImage 
     ? urlFor(article.mainImage).width(1200).height(630).url()
     : `${siteUrl}/og-image.jpg`
 
-  // Use SEO fields from Sanity if available, otherwise fallback to article fields
   const title = article.seo?.metaTitle || article.title
   const description = article.seo?.metaDescription || article.excerpt || ''
 
@@ -178,7 +206,6 @@ function formatDate(dateString?: string | null) {
 }
 
 function formatPrice(price?: number | null, currency: string = 'USD') {
-  // FIX: Handle null/undefined price
   if (price == null) return 'Price on request'
   
   const symbols: Record<string, string> = { USD: '$', EUR: '€', GBP: '£' }
@@ -219,6 +246,18 @@ function transformProductData(product: any) {
     })),
     primaryLink: retailers[0]?.url || resaleRetailers[0]?.url,
   }
+}
+
+// =============================================================================
+// HELPER: Build canonical link for a related article
+// =============================================================================
+function getRelatedArticleHref(related: any, currentCategory: string, currentSubcategory: string): string {
+  const cat = related.category
+  const parentSlug = (typeof cat?.parentCategory === 'string' && cat.parentCategory)
+    || currentCategory
+  const categorySlug = cat?.slug?.current || currentSubcategory
+
+  return `/${parentSlug}/${categorySlug}/${related.slug?.current || related.slug}`
 }
 
 // PortableText custom components
@@ -340,15 +379,27 @@ export default async function ArticlePage({ params }: Props) {
     notFound()
   }
 
+  // =============================================================================
+  // CANONICAL URL ENFORCEMENT
+  // Redirect non-canonical paths to the canonical URL (301)
+  // =============================================================================
+  const { parentSlug, categorySlug, canonicalUrl } = getCanonicalPath(
+    article,
+    params.category,
+    params.subcategory
+  )
+
+  if (params.category !== parentSlug || params.subcategory !== categorySlug) {
+    redirect(`/${parentSlug}/${categorySlug}/${params.slug}`)
+  }
+
   const parentCategory = getParentCategory(params.category)
   const subCategory = getSubCategory(params.subcategory)
   
   const isReview = article.articleType === 'review'
   const productData = transformProductData(article.primaryProduct)
-  // Show affiliate buttons on ANY article type that has a product (not just reviews)
   const showAffiliateButtons = !!article.primaryProduct
   
-  const canonicalUrl = `${siteUrl}/${params.category}/${params.subcategory}/${params.slug}`
   const ogImage = article.mainImage 
     ? urlFor(article.mainImage).width(1200).height(630).url()
     : `${siteUrl}/og-image.jpg`
@@ -389,16 +440,13 @@ export default async function ArticlePage({ params }: Props) {
     ],
   }
 
-  // =============================================================================
-  // FIXED: Build Product Schema with proper offers handling
-  // =============================================================================
+  // Product Schema for reviews
   let productSchemaForReview: any = null
   
   if (article.primaryProduct) {
     const product = article.primaryProduct
     const affiliateLinks = product.affiliateLinks || []
     
-    // Filter valid offers (non-resale, in stock, with URL)
     const validOffers = affiliateLinks
       .filter((link: any) => !link.isResale && link.inStock !== false && link.url)
       .map((link: any) => ({
@@ -413,12 +461,10 @@ export default async function ArticlePage({ params }: Props) {
         },
       }))
 
-    // Get valid prices for AggregateOffer
     const validPrices = validOffers
       .map((o: any) => o.price)
       .filter((p: any) => typeof p === 'number' && p > 0)
 
-    // Build product schema
     productSchemaForReview = {
       "@type": "Product",
       name: product.name,
@@ -428,7 +474,6 @@ export default async function ArticlePage({ params }: Props) {
         : ogImage,
     }
 
-    // Add brand if available
     if (product.brand?.name) {
       productSchemaForReview.brand = {
         "@type": "Brand",
@@ -436,9 +481,7 @@ export default async function ArticlePage({ params }: Props) {
       }
     }
 
-    // CRITICAL: Build offers based on available data
     if (validOffers.length > 1 && validPrices.length > 0) {
-      // Multiple offers with prices -> AggregateOffer
       productSchemaForReview.offers = {
         "@type": "AggregateOffer",
         lowPrice: Math.min(...validPrices),
@@ -449,10 +492,8 @@ export default async function ArticlePage({ params }: Props) {
         offers: validOffers,
       }
     } else if (validOffers.length === 1 && validPrices.length > 0) {
-      // Single offer with price -> simple Offer
       productSchemaForReview.offers = validOffers[0]
     } else if (product.price && product.price > 0) {
-      // No affiliate links but product has base price
       productSchemaForReview.offers = {
         "@type": "Offer",
         price: product.price,
@@ -460,7 +501,6 @@ export default async function ArticlePage({ params }: Props) {
         availability: "https://schema.org/InStock",
       }
     } else if (validOffers.length > 0) {
-      // Has offers but no prices -> use first offer
       productSchemaForReview.offers = {
         "@type": "Offer",
         url: validOffers[0].url,
@@ -468,10 +508,9 @@ export default async function ArticlePage({ params }: Props) {
         seller: validOffers[0].seller,
       }
     }
-    // If none of the above, offers will be undefined (warning but not error)
   }
 
-  // Article/Review Schema - FIXED: Uses productSchemaForReview with proper offers
+  // Article/Review Schema
   const articleSchema: any = {
     "@context": "https://schema.org",
     "@type": isReview ? "Review" : "Article",
@@ -502,7 +541,6 @@ export default async function ArticlePage({ params }: Props) {
     },
   }
 
-  // Add itemReviewed with proper offers for reviews
   if (isReview && productSchemaForReview) {
     articleSchema.itemReviewed = productSchemaForReview
     
@@ -518,7 +556,7 @@ export default async function ArticlePage({ params }: Props) {
 
   return (
     <>
-      {/* JSON-LD Schemas - FIXED: Only 2 schemas now (Breadcrumb + Article/Review) */}
+      {/* JSON-LD Schemas */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
@@ -622,7 +660,7 @@ export default async function ArticlePage({ params }: Props) {
 
         {/* Content */}
         <div className="max-w-4xl mx-auto px-4 py-12">
-          {/* Quick Buy Card - Shows on any article with a product */}
+          {/* Quick Buy Card */}
           {showAffiliateButtons && productData && productData.retailers.length > 0 && (
             <QuickBuyCard
               productName={productData.name}
@@ -646,7 +684,7 @@ export default async function ArticlePage({ params }: Props) {
             />
           </div>
 
-          {/* Product Specs Box - Shows on any article with a product */}
+          {/* Product Specs Box */}
           {showAffiliateButtons && productData && productData.retailers.length > 0 && (
             <ProductSpecsBox
               productName={productData.name}
@@ -665,9 +703,9 @@ export default async function ArticlePage({ params }: Props) {
             products we genuinely believe in.
           </p>
 
-          {/* Social Share */}
+          {/* Social Share — FIXED: uses non-www canonical URL */}
           <SocialShare 
-            url={`https://www.investedluxury.com/${params.category}/${params.subcategory}/${params.slug}`}
+            url={canonicalUrl}
             title={article.title}
             description={article.excerpt || ''}
             image={article.mainImage ? urlFor(article.mainImage).width(1200).url() : ''}
@@ -684,7 +722,7 @@ export default async function ArticlePage({ params }: Props) {
           )}
         </div>
 
-        {/* Related Articles */}
+        {/* Related Articles — FIXED: uses canonical paths */}
         {article.relatedArticles?.length > 0 && (
           <section className="bg-cream py-16">
             <div className="max-w-6xl mx-auto px-4">
@@ -695,7 +733,7 @@ export default async function ArticlePage({ params }: Props) {
                 {article.relatedArticles.map((related: any) => (
                   <Link 
                     key={related._id}
-                    href={`/${related.category?.parentCategory || params.category}/${related.category?.slug?.current || params.subcategory}/${related.slug?.current || related.slug}`}
+                    href={getRelatedArticleHref(related, params.category, params.subcategory)}
                     className="group"
                   >
                     <div className="relative aspect-[4/3] overflow-hidden mb-4 bg-white">
@@ -718,7 +756,7 @@ export default async function ArticlePage({ params }: Props) {
           </section>
         )}
 
-        {/* Sticky Buy Bar for Mobile - Shows on any article with a product */}
+        {/* Sticky Buy Bar for Mobile */}
         {showAffiliateButtons && productData && productData.retailers[0] && (
   <StickyBuyBar
     productName={productData.name}
