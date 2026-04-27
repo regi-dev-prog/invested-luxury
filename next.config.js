@@ -179,6 +179,7 @@ const nextConfig = {
       { source: '/guides/accessories', destination: '/fashion/accessories', permanent: true },
       { source: '/fashion/brand-guides', destination: '/fashion', permanent: true },
       { source: '/guides/shopping', destination: '/', permanent: true },
+      { source: '/guides/retailers', destination: '/', permanent: true },
       { source: '/shopping/retailers', destination: '/', permanent: true },
       { source: '/shopping', destination: '/', permanent: true },
       { source: '/fashion/shopping', destination: '/', permanent: true },
@@ -202,9 +203,29 @@ const nextConfig = {
       { source: '/fashion/clothing/mytheresa-promo-code', destination: '/guides/beginner-guides/mytheresa-promo-code', permanent: true },
       { source: '/fashion/clothing/farfetch-promo-code', destination: '/guides/beginner-guides/farfetch-promo-code', permanent: true },
 
-      // NOTE: /undefined/ URLs, /fashion/shopping/:slug, /guides/shopping/:slug
-      // are handled dynamically by middleware (Sanity lookup → canonical redirect)
-      // NOT redirected to / which loses SEO value
+      // =====================================================================
+      // 10. AHREFS AUDIT — April 27, 2026
+      //     Broken internal links + missing redirects
+      // =====================================================================
+
+      // --- /shopping/slug (2-segment, no parent) → canonical 3-segment path ---
+      { source: '/shopping/therealreal-vs-fashionphile-vs-vestiaire-collective', destination: '/fashion/bags/therealreal-vs-fashionphile-vs-vestiaire-collective', permanent: true },
+      { source: '/shopping/aspinal-of-london-discount-code', destination: '/guides/beginner-guides/aspinal-of-london-discount-code', permanent: true },
+
+      // --- /fashion/brand-guides/:slug → correct subcategory ---
+      { source: '/fashion/brand-guides/:slug', destination: '/fashion/bags/:slug', permanent: true },
+
+      // --- /lifestyle/hotels/:slug → /lifestyle/travel/:slug ---
+      { source: '/lifestyle/hotels/:slug*', destination: '/lifestyle/travel/:slug*', permanent: true },
+
+      // --- /wellness/retreats/:slug → /wellness/longevity/:slug ---
+      { source: '/wellness/retreats/:slug*', destination: '/wellness/longevity/:slug*', permanent: true },
+
+      // --- /lifestyle/art-photography/:slug that belongs under guides ---
+      { source: '/lifestyle/art-photography/art-investment-firms', destination: '/guides/investment-guides/art-investment-firms', permanent: true },
+      { source: '/lifestyle/art-photography/is-art-a-good-investment-2026', destination: '/guides/investment-guides/is-art-a-good-investment-2026', permanent: true },
+
+      // NOTE: /undefined/ URLs handled dynamically by middleware (Sanity lookup)
 
     ]
   },

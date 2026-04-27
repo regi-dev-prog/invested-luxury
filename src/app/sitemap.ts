@@ -31,6 +31,9 @@ const STATIC_PAGES = [
   { path: '/affiliate-disclosure', changeFrequency: 'yearly' as const, priority: 0.3 },
 ]
 
+// Categories to exclude from sitemap (redirected or no page exists)
+const EXCLUDED_CATEGORY_SLUGS = new Set(['shopping', 'retailers', 'resources'])
+
 // =============================================================================
 // SANITY QUERIES
 // =============================================================================
@@ -72,6 +75,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const subCategoryPages: MetadataRoute.Sitemap = categories
       .map((cat: { slug: string; parentCategory: string }) => {
         if (!cat.slug || !cat.parentCategory || typeof cat.parentCategory !== 'string') return null
+
+        // Skip categories that are redirected or have no page
+        if (EXCLUDED_CATEGORY_SLUGS.has(cat.slug)) return null
 
         parentSlugs.add(cat.parentCategory)
 
