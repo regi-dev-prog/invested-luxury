@@ -7,7 +7,7 @@
 // (e.g., client-side navigation, ISR pre-rendering).
 // =============================================================================
 
-import { redirect, notFound } from 'next/navigation'
+import { permanentRedirect, notFound } from 'next/navigation'
 import { createClient } from '@sanity/client'
 
 const client = createClient({
@@ -32,7 +32,7 @@ export default async function ArticleRedirectPage({ params }: { params: { slug: 
       typeof article.parentCategory === 'string' &&
       typeof article.categorySlug === 'string'
     ) {
-      redirect(`/${article.parentCategory}/${article.categorySlug}/${params.slug}`)
+      permanentRedirect(`/${article.parentCategory}/${article.categorySlug}/${params.slug}`)
     }
   } catch (error) {
     console.error('Article redirect lookup failed:', error)

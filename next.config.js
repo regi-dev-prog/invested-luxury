@@ -191,28 +191,20 @@ const nextConfig = {
       //    Specific duplicate category paths indexed by Google
       // =====================================================================
 
-      // --- "undefined" in URL path (category lookup failed) ---
-      { source: '/:parent/undefined/:slug', destination: '/', permanent: true },
-
       // --- /bags/bags/* → /fashion/bags/* (duplicate slug loop with article) ---
       { source: '/bags/bags/:slug', destination: '/fashion/bags/:slug', permanent: true },
 
-      // --- Articles under wrong /fashion/shopping/* ---
-      { source: '/fashion/shopping/:slug', destination: '/', permanent: true },
-
-      // --- Cross-category duplicates: article under wrong parent ---
-      { source: '/lifestyle/investment-guides/:slug*', destination: '/guides/investment-guides/:slug*', permanent: true },
-
       // --- quiet-luxury articles that should be under clothing ---
-      { source: '/fashion/quiet-luxury/quiet-luxury-clothing-brands', destination: '/fashion/clothing/quiet-luxury-clothing-brands', permanent: true },
+      { source: '/fashion/quiet-luxury/quiet-luxury-clothing-brands-investment-guide', destination: '/fashion/clothing/quiet-luxury-clothing-brands-investment-guide', permanent: true },
       { source: '/fashion/quiet-luxury/quiet-luxury-capsule-wardrobe', destination: '/fashion/clothing/quiet-luxury-capsule-wardrobe', permanent: true },
 
       // --- Promo code articles under wrong category ---
       { source: '/fashion/clothing/mytheresa-promo-code', destination: '/guides/beginner-guides/mytheresa-promo-code', permanent: true },
       { source: '/fashion/clothing/farfetch-promo-code', destination: '/guides/beginner-guides/farfetch-promo-code', permanent: true },
 
-      // --- /guides/shopping/:slug catch-all (subcategory redirected to /) ---
-      { source: '/guides/shopping/:slug', destination: '/', permanent: true },
+      // NOTE: /undefined/ URLs, /fashion/shopping/:slug, /guides/shopping/:slug
+      // are handled dynamically by middleware (Sanity lookup → canonical redirect)
+      // NOT redirected to / which loses SEO value
 
     ]
   },

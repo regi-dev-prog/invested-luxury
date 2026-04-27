@@ -12,7 +12,7 @@
 
 
 import { Metadata } from 'next'
-import { notFound, redirect } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { client } from '@/sanity/lib/client'
 import { urlFor } from '@/sanity/lib/image'
 import { PortableText } from '@portabletext/react'
@@ -390,7 +390,7 @@ export default async function ArticlePage({ params }: Props) {
   )
 
   if (params.category !== parentSlug || params.subcategory !== categorySlug) {
-    redirect(`/${parentSlug}/${categorySlug}/${params.slug}`)
+    permanentRedirect(`/${parentSlug}/${categorySlug}/${params.slug}`)
   }
 
   const parentCategory = getParentCategory(params.category)
