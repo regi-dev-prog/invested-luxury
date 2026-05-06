@@ -1,0 +1,24 @@
+name: Debug CJ API
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run CJ debug
+        env:
+          CJ_PAT: ${{ secrets.CJ_PAT }}
+        run: |
+          cd scripts/cj-mytheresa
+          python3 debug_cj.py 2>&1 | tee debug_output.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cj-debug-output
+          path: scripts/cj-mytheresa/debug_output.txt
