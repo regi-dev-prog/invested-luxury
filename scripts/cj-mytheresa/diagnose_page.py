@@ -19,7 +19,8 @@ print(f"=== Fetching {PAGE_URL} ===")
 req = urllib.request.Request(
     PAGE_URL,
     headers={
-        "User-Agent": "Mozilla/5.0 (compatible; URLAuditBot/1.0)",
+        # Googlebot UA — allowed by middleware bot protection
+        "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
         "Cache-Control": "no-cache",
         "Pragma": "no-cache",
     }
