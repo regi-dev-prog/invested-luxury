@@ -99,42 +99,68 @@ def search_product(keywords: str, advertiser: str = "us", limit: int = 5) -> lis
     return result.get("resultList") or []
 
 
-def best_match(results: list[dict], brand: str, name: str) -> dict | None:
+def best_match(results: list[dict], brand: str, name: str,
+               prefer_advertiser: str = "2817689") -> dict | None:
     """
-    Pick the best match from CJ search results.
-    Heuristic: prefer in-stock items where brand matches and name keywords appear.
+    Pick the best Mytheresa product match.
+    Scoring (highest wins):
+      +20  exact brand match in result.brand
+      +10  brand appears in result.title
+      +5   each name keyword appears in result.title (3+ chars)
+      +15  advertiser is preferred (default: Mytheresa US/CA = 2817689)
+      +10  URL contains '/en-us/' or '/us/en/' (US-targeted)
+      +10  availability == 'in stock' (case-insensitive)
+      -100 missing link
+    Returns the highest-scoring match if score > 0, else None.
     """
     if not results:
         return None
 
     brand_lower = (brand or "").lower().strip()
-    name_words = set(w.lower() for w in (name or "").split() if len(w) > 2)
+    # Tokenize name, drop tiny + common words
+    stopwords = {"the", "and", "for", "with", "small", "medium", "large",
+                 "mini", "micro", "bag", "bags", "shoe", "shoes"}
+    name_words = {
+        w.lower() for w in (name or "").replace("-", " ").split()
+        if len(w) > 2 and w.lower() not in stopwords
+    }
 
     scored = []
     for r in results:
         title = (r.get("title") or "").lower()
         r_brand = (r.get("brand") or "").lower()
+        r_advertiser = str(r.get("advertiserId") or "")
+        link = r.get("link") or ""
         availability = (r.get("availability") or "").lower()
 
         score = 0
-        if brand_lower and brand_lower in r_brand:
-            score += 10
-        if brand_lower and brand_lower in title:
-            score += 3
-        # Count matching name words
+        if brand_lower:
+            if brand_lower == r_brand:
+                score += 20
+            elif brand_lower in r_brand or r_brand in brand_lower:
+                score += 15
+            if brand_lower in title:
+                score += 10
+        # Name keyword overlap
         matches = sum(1 for w in name_words if w in title)
-        score += matches * 2
-        # Prefer in-stock
-        if "stock" in availability or "available" in availability or availability == "in_stock":
-            score += 5
-        # Penalty for placeholder/empty
-        if not r.get("link"):
+        score += matches * 5
+        # Prefer the right advertiser program
+        if r_advertiser == prefer_advertiser:
+            score += 15
+        # Prefer en-us / us/en URLs (American audience)
+        if "/en-us/" in link or "/us/en/" in link:
+            score += 10
+        # In-stock preference
+        if "in stock" in availability or "instock" in availability:
+            score += 10
+        # Penalty for missing link
+        if not link:
             score -= 100
 
         scored.append((score, r))
 
     scored.sort(key=lambda x: x[0], reverse=True)
-    if scored and scored[0][0] > 0:
+    if scored and scored[0][0] >= 20:  # require at least decent confidence
         return scored[0][1]
     return None
 

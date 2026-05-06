@@ -6,32 +6,24 @@ on:
       mode:
         description: "Operation mode"
         required: true
-        default: "validate-only"
+        default: "search-only"
         type: choice
         options:
-          - validate-only
-          - dry-run
-          - apply
-      scope:
-        description: "Which targets to process"
-        required: true
-        default: "all"
-        type: choice
-        options:
-          - all
-          - broken-only
-          - wrapped-only
+          - search-only   # report only, no Sanity writes (safest)
+          - dry-run       # simulate mutations
+          - apply         # write to Sanity
+      limit:
+        description: "Process only first N entries (blank = all)"
+        required: false
+        default: ""
 
 jobs:
   fix:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
@@ -39,16 +31,18 @@ jobs:
         id: flags
         run: |
           case "${{ github.event.inputs.mode }}" in
-            validate-only)
-              echo "EXTRA=--validate-only" >> $GITHUB_OUTPUT
-              ;;
+            search-only)
+              echo "EXTRA=--search-only" >> $GITHUB_OUTPUT ;;
             dry-run)
-              echo "EXTRA=" >> $GITHUB_OUTPUT
-              ;;
+              echo "EXTRA=" >> $GITHUB_OUTPUT ;;
             apply)
-              echo "EXTRA=--apply" >> $GITHUB_OUTPUT
-              ;;
+              echo "EXTRA=--apply" >> $GITHUB_OUTPUT ;;
           esac
+          if [ -n "${{ github.event.inputs.limit }}" ]; then
+            echo "LIMIT=--limit=${{ github.event.inputs.limit }}" >> $GITHUB_OUTPUT
+          else
+            echo "LIMIT=" >> $GITHUB_OUTPUT
+          fi
 
       - name: Run fix_mytheresa.py
         env:
@@ -57,11 +51,11 @@ jobs:
         run: |
           cd scripts/cj-mytheresa
           python3 fix_mytheresa.py \
-            --scope=${{ github.event.inputs.scope }} \
             --output-dir=../../reports \
+            ${{ steps.flags.outputs.LIMIT }} \
             ${{ steps.flags.outputs.EXTRA }}
 
-      - name: Upload report artifact
+      - name: Upload report
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -69,7 +63,7 @@ jobs:
           path: reports/
           retention-days: 30
 
-      - name: Print report to step summary
+      - name: Print report summary
         if: always()
         run: |
           if [ -f reports/REPORT.md ]; then
