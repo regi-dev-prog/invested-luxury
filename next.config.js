@@ -229,6 +229,26 @@ const nextConfig = {
 
     ]
   },
+
+  // =========================================================================
+  // HEADERS - Prevent Google/Ahrefs from "discovering" Next.js build assets
+  // =========================================================================
+  // Vercel's Skew Protection appends ?dpl=dpl_xxx to /_next/static/* URLs on
+  // every deployment. Crawlers were collecting these as discovered URLs.
+  // X-Robots-Tag: noindex tells search engines not to index these assets,
+  // while still allowing them to be fetched for rendering. Do NOT block in
+  // robots.txt — Google needs CSS/JS to evaluate mobile-friendliness & CWV.
+  // =========================================================================
+  async headers() {
+    return [
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex' },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
