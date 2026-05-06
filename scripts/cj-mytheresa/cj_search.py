@@ -6,7 +6,12 @@ import urllib.error
 import time
 
 ENDPOINT = "https://ads.api.cj.com/query"
-CID = "101713247"
+
+# CJ identifiers — these are TWO DIFFERENT THINGS:
+#   CID (Company ID)  = the publisher account → used by GraphQL API
+#   PID (Property ID) = the website tracking ID → used in deep-link URLs
+CID = "7910614"     # InvestedLuxury publisher account
+PID = "101713247"   # InvestedLuxury.com property
 
 # Mytheresa advertiser IDs (from CJ Get Code panels)
 ADVERTISERS = {
@@ -60,19 +65,17 @@ def graphql(query_str: str, max_retries: int = 3) -> dict:
 def search_product(keywords: str, advertiser: str = "us", limit: int = 5) -> list[dict]:
     """
     Search Mytheresa product feed by keywords.
-    Returns list of {title, brand, link, price, currency} dicts.
+    Returns list of {title, brand, link, price, currency, availability} dicts.
 
-    Note: CJ's GraphQL schema for shopping products varies by region/version.
-    Trying both 'products' and 'shoppingProducts' field names.
+    Uses `shoppingProducts` (Mytheresa is a shopping advertiser) which exposes
+    availability/price/imageLink directly without needing inline fragments.
     """
     advertiser_id = ADVERTISERS.get(advertiser, ADVERTISERS["us"])
-    # Sanitize keywords for GraphQL string
     kw = keywords.replace('"', '\\"').replace('\n', ' ').strip()
 
-    # Primary query (modern schema)
     query = f"""
     {{
-      products(
+      shoppingProducts(
         companyId: "{CID}"
         partnerIds: ["{advertiser_id}"]
         keywords: ["{kw}"]
@@ -84,25 +87,16 @@ def search_product(keywords: str, advertiser: str = "us", limit: int = 5) -> lis
           title
           brand
           link
-          price {{ amount currency }}
           imageLink
           availability
+          price {{ amount currency }}
         }}
       }}
     }}
     """
-    try:
-        data = graphql(query)
-        result = data.get("products") or {}
-        return result.get("resultList") or []
-    except RuntimeError as e:
-        # Try legacy schema name as fallback
-        if "Cannot query field" in str(e) or "products" in str(e):
-            query2 = query.replace("products(", "shoppingProducts(")
-            data = graphql(query2)
-            result = data.get("shoppingProducts") or {}
-            return result.get("resultList") or []
-        raise
+    data = graphql(query)
+    result = data.get("shoppingProducts") or {}
+    return result.get("resultList") or []
 
 
 def best_match(results: list[dict], brand: str, name: str) -> dict | None:
