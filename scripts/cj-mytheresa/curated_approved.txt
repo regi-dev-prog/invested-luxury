@@ -1,0 +1,30 @@
+# Curated whitelist of approvals manually verified after the strict-match audit.
+# Format: doc_id|location_path (one per line, # for comments)
+# Generated: 2026-05-06 after Run #25432401043 review.
+#
+# Excluded from auto-approval (sent to manual review instead):
+#   - Khaite Lotus Tote (material/color drift)
+#   - Khaite Olivia Bag (material/color drift)
+#   - Loro Piana Lakeside Chelsea Boot (chelsea -> knee-high mismatch)
+#   - Loro Piana Summer Charms Walk Loafer (loafer -> sandal mismatch)
+#   - The Row Canal Suede Ballet Flats Beige (ballet -> generic flats)
+#   - The Row Zipped 1 Leather Ankle Boots Beige (color drift beige -> black)
+#   - Gucci Horsebit Loafer (leather -> jacquard)
+#   - Article: Quiet Luxury Capsule Wardrobe (cashmere -> camel hair)
+
+product-khaite-arizona-boots|affiliateLinks[_key=="ef6575efed8b"].url
+product-khaite-benny-belt|affiliateLinks[_key=="0b18d9528127"].url
+product-khaite-danielle-jeans|affiliateLinks[_key=="47c88a886266"].url
+product-khaite-elena-bag|affiliateLinks[_key=="634040f84502"].url
+product-loro-piana-cashmere-robe|affiliateLinks[_key=="c7f997f5f74a"].url
+product-loro-piana-extra-pocket-l19|affiliateLinks[_key=="c3cb63d5c11a"].url
+product-loro-piana-grande-unita-scarf|affiliateLinks[_key=="4e0e1132699b"].url
+product-loro-piana-open-walk|affiliateLinks[_key=="d2701a1058e2"].url
+product-loro-piana-sesia-micro|affiliateLinks[_key=="59a089f76a4b"].url
+product-the-row-canal-leather-loafer|affiliateLinks[_key=="e52d568c1573"].url
+product-the-row-canal-suede-loafer|affiliateLinks[_key=="6a15543d65f1"].url
+product-the-row-fisherman-sandal-blue|affiliateLinks[_key=="dacfb3e460a1"].url
+product-the-row-fisherman-sandal-white|affiliateLinks[_key=="31e0b69d7544"].url
+product-the-row-zipped-1-leather-black|affiliateLinks[_key=="16f937d82792"].url
+product-the-row-zipped-boot-1-suede-brown|affiliateLinks[_key=="1cedd5e57d87"].url
+product-toteme-chelsea-boot|affiliateLinks[_key=="542fb05c9c3f"].url

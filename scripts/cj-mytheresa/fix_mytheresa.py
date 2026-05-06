@@ -468,11 +468,27 @@ def main():
                         help="Also apply manually-approved entries from review.csv (TODO)")
     parser.add_argument("--search-only", action="store_true",
                         help="Only search; never apply")
+    parser.add_argument("--curated-file", default=None,
+                        help="Path to curated_approved.txt (one 'doc_id|location_path' "
+                             "per line). When set, ONLY entries in this whitelist are "
+                             "included in mutations. Other approvals are dropped.")
     parser.add_argument("--limit", type=int, default=None,
                         help="Process only first N targets (debug)")
     parser.add_argument("--output-dir", default=".")
     parser.add_argument("--throttle-cj", type=float, default=0.5)
     args = parser.parse_args()
+
+    # Load curated whitelist if provided
+    curated_keys = None
+    if args.curated_file:
+        whitelist = set()
+        with open(args.curated_file) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    whitelist.add(line)
+        curated_keys = whitelist
+        log(f"Curated whitelist loaded: {len(curated_keys)} entries from {args.curated_file}")
 
     products, articles = scan_sanity()
     targets = extract_targets(products, articles)
@@ -491,6 +507,29 @@ def main():
     log(f"Decision summary: {counts}")
 
     mutations, plan = build_mutations(targets, include_manually_approved=False)
+
+    # Apply curated whitelist filter
+    if curated_keys is not None:
+        before = len(mutations)
+        # Re-build mutations + plan filtered by whitelist
+        filtered_mutations = []
+        filtered_plan = []
+        for m, p in zip(mutations, plan):
+            key = f"{p['doc_id']}|{p['location_path']}"
+            if key in curated_keys:
+                filtered_mutations.append(m)
+                filtered_plan.append(p)
+        mutations, plan = filtered_mutations, filtered_plan
+        log(f"Curated filter: {before} → {len(mutations)} mutations "
+            f"(dropped {before - len(mutations)} not in whitelist)")
+        # Sanity check: warn if whitelist has entries we didn't see
+        plan_keys = {f"{p['doc_id']}|{p['location_path']}" for p in plan}
+        missing = curated_keys - plan_keys
+        if missing:
+            log(f"⚠ {len(missing)} curated entries did NOT match any approved entry:")
+            for k in sorted(missing):
+                log(f"    {k}")
+
     write_outputs(targets, plan, output_dir=args.output_dir)
 
     if args.search_only:

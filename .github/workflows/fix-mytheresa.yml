@@ -9,9 +9,11 @@ on:
         default: "search-only"
         type: choice
         options:
-          - search-only       # safest: report only, no Sanity writes
-          - dry-run-approved  # simulate apply for HIGH-confidence matches
-          - apply-approved    # actually write HIGH-confidence matches to Sanity
+          - search-only          # safest: report only, no Sanity writes
+          - dry-run-approved     # simulate apply on all HIGH-confidence
+          - apply-approved       # write all HIGH-confidence to Sanity
+          - dry-run-curated      # simulate apply on curated whitelist only (16)
+          - apply-curated        # write curated whitelist (16) to Sanity
       limit:
         description: "Process first N entries (blank = all)"
         required: false
@@ -30,10 +32,28 @@ jobs:
       - name: Determine flags
         id: flags
         run: |
-          case "${{ github.event.inputs.mode }}" in
-            search-only)        echo "EXTRA=--search-only"      >> $GITHUB_OUTPUT ;;
-            dry-run-approved)   echo "EXTRA="                    >> $GITHUB_OUTPUT ;;
-            apply-approved)     echo "EXTRA=--apply-approved"    >> $GITHUB_OUTPUT ;;
+          MODE="${{ github.event.inputs.mode }}"
+          case "$MODE" in
+            search-only)
+              echo "EXTRA=--search-only" >> $GITHUB_OUTPUT
+              echo "CURATED=" >> $GITHUB_OUTPUT
+              ;;
+            dry-run-approved)
+              echo "EXTRA=" >> $GITHUB_OUTPUT
+              echo "CURATED=" >> $GITHUB_OUTPUT
+              ;;
+            apply-approved)
+              echo "EXTRA=--apply-approved" >> $GITHUB_OUTPUT
+              echo "CURATED=" >> $GITHUB_OUTPUT
+              ;;
+            dry-run-curated)
+              echo "EXTRA=" >> $GITHUB_OUTPUT
+              echo "CURATED=--curated-file=curated_approved.txt" >> $GITHUB_OUTPUT
+              ;;
+            apply-curated)
+              echo "EXTRA=--apply-approved" >> $GITHUB_OUTPUT
+              echo "CURATED=--curated-file=curated_approved.txt" >> $GITHUB_OUTPUT
+              ;;
           esac
           if [ -n "${{ github.event.inputs.limit }}" ]; then
             echo "LIMIT=--limit=${{ github.event.inputs.limit }}" >> $GITHUB_OUTPUT
@@ -50,6 +70,7 @@ jobs:
           python3 fix_mytheresa.py \
             --output-dir=../../reports \
             ${{ steps.flags.outputs.LIMIT }} \
+            ${{ steps.flags.outputs.CURATED }} \
             ${{ steps.flags.outputs.EXTRA }}
 
       - name: Upload report
