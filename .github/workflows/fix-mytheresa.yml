@@ -1,0 +1,79 @@
+name: Fix Mytheresa URLs
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Operation mode"
+        required: true
+        default: "validate-only"
+        type: choice
+        options:
+          - validate-only
+          - dry-run
+          - apply
+      scope:
+        description: "Which targets to process"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - broken-only
+          - wrapped-only
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Determine flags
+        id: flags
+        run: |
+          case "${{ github.event.inputs.mode }}" in
+            validate-only)
+              echo "EXTRA=--validate-only" >> $GITHUB_OUTPUT
+              ;;
+            dry-run)
+              echo "EXTRA=" >> $GITHUB_OUTPUT
+              ;;
+            apply)
+              echo "EXTRA=--apply" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+      - name: Run fix_mytheresa.py
+        env:
+          SANITY_TOKEN: ${{ secrets.SANITY_TOKEN }}
+          CJ_PAT: ${{ secrets.CJ_PAT }}
+        run: |
+          cd scripts/cj-mytheresa
+          python3 fix_mytheresa.py \
+            --scope=${{ github.event.inputs.scope }} \
+            --output-dir=../../reports \
+            ${{ steps.flags.outputs.EXTRA }}
+
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mytheresa-fix-report-${{ github.run_id }}
+          path: reports/
+          retention-days: 30
+
+      - name: Print report to step summary
+        if: always()
+        run: |
+          if [ -f reports/REPORT.md ]; then
+            cat reports/REPORT.md >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No report generated" >> $GITHUB_STEP_SUMMARY
+          fi
