@@ -9,11 +9,11 @@ on:
         default: "search-only"
         type: choice
         options:
-          - search-only   # report only, no Sanity writes (safest)
-          - dry-run       # simulate mutations
-          - apply         # write to Sanity
+          - search-only       # safest: report only, no Sanity writes
+          - dry-run-approved  # simulate apply for HIGH-confidence matches
+          - apply-approved    # actually write HIGH-confidence matches to Sanity
       limit:
-        description: "Process only first N entries (blank = all)"
+        description: "Process first N entries (blank = all)"
         required: false
         default: ""
 
@@ -31,12 +31,9 @@ jobs:
         id: flags
         run: |
           case "${{ github.event.inputs.mode }}" in
-            search-only)
-              echo "EXTRA=--search-only" >> $GITHUB_OUTPUT ;;
-            dry-run)
-              echo "EXTRA=" >> $GITHUB_OUTPUT ;;
-            apply)
-              echo "EXTRA=--apply" >> $GITHUB_OUTPUT ;;
+            search-only)        echo "EXTRA=--search-only"      >> $GITHUB_OUTPUT ;;
+            dry-run-approved)   echo "EXTRA="                    >> $GITHUB_OUTPUT ;;
+            apply-approved)     echo "EXTRA=--apply-approved"    >> $GITHUB_OUTPUT ;;
           esac
           if [ -n "${{ github.event.inputs.limit }}" ]; then
             echo "LIMIT=--limit=${{ github.event.inputs.limit }}" >> $GITHUB_OUTPUT
@@ -63,11 +60,9 @@ jobs:
           path: reports/
           retention-days: 30
 
-      - name: Print report summary
+      - name: Print summary
         if: always()
         run: |
           if [ -f reports/REPORT.md ]; then
             cat reports/REPORT.md >> $GITHUB_STEP_SUMMARY
-          else
-            echo "No report generated" >> $GITHUB_STEP_SUMMARY
           fi
