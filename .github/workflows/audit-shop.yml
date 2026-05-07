@@ -1,0 +1,25 @@
+name: Audit Shop Visibility
+
+on:
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run audit
+        env:
+          SANITY_TOKEN: ${{ secrets.SANITY_TOKEN }}
+        run: |
+          cd scripts/cj-mytheresa
+          python3 audit_shop_visibility.py 2>&1 | tee audit_shop_output.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: audit-shop-${{ github.run_id }}
+          path: scripts/cj-mytheresa/audit_shop_output.txt
