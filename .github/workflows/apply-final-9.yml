@@ -1,0 +1,56 @@
+name: Apply Final 9 Mutations
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Mode"
+        required: true
+        default: "dry-run"
+        type: choice
+        options:
+          - dry-run
+          - apply
+          - apply-and-revalidate
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Determine flags
+        id: flags
+        run: |
+          MODE="${{ github.event.inputs.mode }}"
+          case "$MODE" in
+            dry-run)
+              echo "FLAGS=--dry-run" >> $GITHUB_OUTPUT
+              ;;
+            apply)
+              echo "FLAGS=--apply" >> $GITHUB_OUTPUT
+              ;;
+            apply-and-revalidate)
+              echo "FLAGS=--apply --revalidate" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+      - name: Run apply_final_9.py
+        env:
+          SANITY_TOKEN: ${{ secrets.SANITY_TOKEN }}
+          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
+        run: |
+          cd scripts/cj-mytheresa
+          python3 apply_final_9.py ${{ steps.flags.outputs.FLAGS }} 2>&1 | tee apply_final_9_output.txt
+
+      - name: Upload log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apply-final-9-${{ github.run_id }}
+          path: scripts/cj-mytheresa/apply_final_9_output.txt
+          retention-days: 30
