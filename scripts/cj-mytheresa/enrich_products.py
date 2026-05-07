@@ -312,22 +312,60 @@ def find_products_needing_image() -> list[dict]:
 
 
 def fetch_image_from_cj(brand: str, name: str) -> str | None:
-    """Search CJ for a product matching brand + name, return imageLink (or None)."""
-    # Lazy import — cj_search has its own auth checks
+    """Search CJ for a product matching brand + name, return imageLink (or None).
+
+    Tries multiple keyword variations because Sanity product names sometimes
+    already include the brand (e.g. name='The Row Margaux 15' brand='The Row'),
+    which causes duplicate-brand keywords like 'The Row The Row Margaux 15'
+    that confuse CJ's search.
+    """
     from cj_search import search_product, best_match
 
-    keyword = f"{brand} {name}".strip()
-    if not keyword:
+    brand = (brand or "").strip()
+    name = (name or "").strip()
+    if not brand and not name:
         return None
-    try:
-        results = search_product(keyword, advertiser="us", limit=20)
-    except Exception as e:
-        log(f"    CJ search failed for '{keyword}': {e}")
-        return None
-    best, _ = best_match(results, brand=brand, name=name)
-    if not best:
-        return None
-    return best.get("imageLink") or None
+
+    # Build keyword variations to try in order
+    keywords = []
+    name_lower = name.lower()
+    brand_lower = brand.lower()
+    if brand_lower and name_lower.startswith(brand_lower):
+        # name already includes brand → don't duplicate
+        keywords.append(name)
+        # Also try without brand prefix if name has more words
+        rest = name[len(brand):].strip()
+        if rest and rest != name:
+            keywords.append(f"{brand} {rest}")  # normalized form
+    else:
+        keywords.append(f"{brand} {name}".strip())
+        if name:
+            keywords.append(name)  # fallback: just the name
+        if brand:
+            keywords.append(brand)  # last resort: brand only (rare match)
+
+    # Deduplicate while preserving order
+    seen = set()
+    unique_keywords = []
+    for k in keywords:
+        kn = k.lower().strip()
+        if kn and kn not in seen:
+            seen.add(kn)
+            unique_keywords.append(k)
+
+    for kw in unique_keywords:
+        try:
+            results = search_product(kw, advertiser="us", limit=20)
+        except Exception as e:
+            log(f"    CJ search failed for '{kw}': {e}")
+            continue
+        if not results:
+            continue
+        best, _ = best_match(results, brand=brand, name=name)
+        if best and best.get("imageLink"):
+            return best["imageLink"]
+
+    return None
 
 
 def attach_image_to_product(doc_id: str, asset_id: str, dry_run: bool = False) -> bool:
