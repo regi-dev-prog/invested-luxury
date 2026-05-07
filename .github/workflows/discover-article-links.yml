@@ -1,0 +1,25 @@
+name: Discover Article Links
+
+on:
+  workflow_dispatch:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run discover_article_links.py
+        env:
+          SANITY_TOKEN: ${{ secrets.SANITY_TOKEN }}
+        run: |
+          cd scripts/cj-mytheresa
+          python3 discover_article_links.py 2>&1 | tee discover_output.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: discover-article-links-${{ github.run_id }}
+          path: scripts/cj-mytheresa/discover_output.txt
