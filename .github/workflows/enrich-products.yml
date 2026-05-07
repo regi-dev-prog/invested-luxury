@@ -1,0 +1,74 @@
+name: Enrich Products Daily
+
+on:
+  schedule:
+    # Every day at 02:00 UTC (~04:00 Israel summer / 03:00 winter,
+    # ~21:00 EST / 18:00 PST — outside US business hours so CJ load is low)
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Operation mode"
+        required: true
+        default: "dry-run"
+        type: choice
+        options:
+          - dry-run
+          - apply
+          - apply-skip-images
+      limit:
+        description: "Limit each pass to N products (blank = all)"
+        required: false
+        default: ""
+
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Determine flags
+        id: flags
+        run: |
+          # Default for scheduled runs: full apply (wrap + images + revalidate)
+          MODE="${{ github.event.inputs.mode || 'apply' }}"
+          case "$MODE" in
+            dry-run)
+              echo "FLAGS=--dry-run" >> $GITHUB_OUTPUT
+              ;;
+            apply)
+              echo "FLAGS=--apply" >> $GITHUB_OUTPUT
+              ;;
+            apply-skip-images)
+              echo "FLAGS=--apply --skip-images" >> $GITHUB_OUTPUT
+              ;;
+          esac
+          if [ -n "${{ github.event.inputs.limit }}" ]; then
+            echo "LIMIT=--limit=${{ github.event.inputs.limit }}" >> $GITHUB_OUTPUT
+          else
+            echo "LIMIT=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run enrich_products.py
+        env:
+          SANITY_TOKEN: ${{ secrets.SANITY_TOKEN }}
+          CJ_PAT: ${{ secrets.CJ_PAT }}
+          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
+        run: |
+          cd scripts/cj-mytheresa
+          python3 enrich_products.py \
+            ${{ steps.flags.outputs.FLAGS }} \
+            ${{ steps.flags.outputs.LIMIT }} \
+            2>&1 | tee enrich_output.txt
+
+      - name: Upload log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: enrich-products-${{ github.run_id }}
+          path: scripts/cj-mytheresa/enrich_output.txt
+          retention-days: 14

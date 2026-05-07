@@ -21,8 +21,22 @@ export const metadata: Metadata = {
   },
 };
 
+// Visibility rules (May 2026):
+// - Show every product that has at least one affiliate link with a real URL
+// - "Real URL" = defined, non-empty, and not the Mytheresa homepage placeholder
+// - Allow optional `hidden` flag for manual exclusion
+// - Image is optional — products without one still appear (frontend handles fallback)
+// - inStock and status fields are no longer gating visibility
 const PRODUCTS_QUERY = `
-  *[_type == "product" && status == "published"] | order(displayOrder asc, _createdAt desc) {
+  *[_type == "product"
+    && (!defined(hidden) || hidden == false)
+    && count(affiliateLinks[
+        defined(url)
+        && url != ""
+        && url != "https://www.mytheresa.com/"
+        && url != "https://mytheresa.com/"
+    ]) > 0
+  ] | order(featured desc, displayOrder asc, _createdAt desc) {
     _id,
     name,
     "slug": slug.current,
@@ -32,11 +46,11 @@ const PRODUCTS_QUERY = `
     "brand": brand->{name, "slug": slug.current, tier},
     "category": category->{name, "slug": slug.current, "parentSlug": parentCategory->slug.current},
     "image": images[0],
-    "primaryLink": affiliateLinks[isPrimary == true && inStock == true][0]{
+    "primaryLink": affiliateLinks[isPrimary == true && defined(url) && url != ""][0]{
       url,
       "retailerName": coalesce(retailerName, retailer)
     },
-    "fallbackLink": affiliateLinks[inStock == true][0]{
+    "fallbackLink": affiliateLinks[defined(url) && url != "" && url != "https://www.mytheresa.com/"][0]{
       url,
       "retailerName": coalesce(retailerName, retailer)
     },
