@@ -258,8 +258,15 @@ def best_match(results: list[dict], brand: str, name: str,
             if r_advertiser == prefer_advertiser:
                 score += 15
 
-            if "/en-us/" in link or "/us/en/" in link:
-                score += 10
+            # URL format preference — Mytheresa redirect bug
+            # Format A `/us/en/women/...-pXXXXXXXX` works correctly.
+            # Format B `/en-us/...-NNNN.html` is auto-redirected by Mytheresa
+            # to dead old URLs (verified May 2026 — they 404 with ?rdr=mag).
+            # Strongly prefer A so when CJ has both formats, A wins.
+            if "/us/en/women/" in link:
+                score += 25
+            elif "/en-us/" in link:
+                score += 0  # explicit zero — leave B as last resort
             if "in stock" in availability:
                 score += 10
 

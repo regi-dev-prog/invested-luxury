@@ -474,6 +474,11 @@ def main():
                              "included in mutations. Other approvals are dropped.")
     parser.add_argument("--limit", type=int, default=None,
                         help="Process only first N targets (debug)")
+    parser.add_argument("--target-docs", default=None,
+                        help="Comma-separated list of doc_ids to process "
+                             "(e.g. 'product-loro-piana-open-walk,product-the-row-canal-leather-loafer'). "
+                             "Filters targets BEFORE CJ search to save API calls. "
+                             "Useful for re-searching a subset after best_match logic changes.")
     parser.add_argument("--output-dir", default=".")
     parser.add_argument("--throttle-cj", type=float, default=0.5)
     args = parser.parse_args()
@@ -493,6 +498,18 @@ def main():
     products, articles = scan_sanity()
     targets = extract_targets(products, articles)
     log(f"Total Mytheresa entries: {len(targets)}")
+
+    if args.target_docs:
+        wanted = {x.strip() for x in args.target_docs.split(",") if x.strip()}
+        before = len(targets)
+        targets = [t for t in targets if t.get("doc_id") in wanted]
+        log(f"--target-docs filter: {before} → {len(targets)} entries "
+            f"(matched {len({t['doc_id'] for t in targets})}/{len(wanted)} requested doc_ids)")
+        unmatched = wanted - {t["doc_id"] for t in targets}
+        if unmatched:
+            log(f"⚠ {len(unmatched)} requested doc_ids not found in Sanity:")
+            for d in sorted(unmatched):
+                log(f"    {d}")
 
     if args.limit:
         targets = targets[:args.limit]

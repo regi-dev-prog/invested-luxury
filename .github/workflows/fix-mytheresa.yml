@@ -18,6 +18,10 @@ on:
         description: "Process first N entries (blank = all)"
         required: false
         default: ""
+      target_docs:
+        description: "Comma-separated doc_ids to process (blank = all). Used to re-search a subset after best_match logic changes."
+        required: false
+        default: ""
 
 jobs:
   fix:
@@ -60,6 +64,11 @@ jobs:
           else
             echo "LIMIT=" >> $GITHUB_OUTPUT
           fi
+          if [ -n "${{ github.event.inputs.target_docs }}" ]; then
+            echo "TARGET_DOCS=--target-docs=${{ github.event.inputs.target_docs }}" >> $GITHUB_OUTPUT
+          else
+            echo "TARGET_DOCS=" >> $GITHUB_OUTPUT
+          fi
 
       - name: Run fix_mytheresa.py
         env:
@@ -70,6 +79,7 @@ jobs:
           python3 fix_mytheresa.py \
             --output-dir=../../reports \
             ${{ steps.flags.outputs.LIMIT }} \
+            ${{ steps.flags.outputs.TARGET_DOCS }} \
             ${{ steps.flags.outputs.CURATED }} \
             ${{ steps.flags.outputs.EXTRA }}
 
