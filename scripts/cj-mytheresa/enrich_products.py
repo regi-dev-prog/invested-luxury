@@ -456,24 +456,23 @@ def run_image_pass(products: list[dict], dry_run: bool, limit: int | None) -> di
 # ---------------------------------------------------------------------------
 
 
-AFFECTED_ARTICLES_GROQ_TEMPLATE = """
-*[_type == "article" && defined(slug.current) && (
-  primaryProduct._ref in [{ids}] ||
-  count(secondaryProducts[_ref in [{ids}]]) > 0 ||
-  count(body[].markDefs[reference._ref in [{ids}]]) > 0
-)] {
-  "slug": slug.current,
-  "categorySlug": coalesce(categories[0]->slug.current, ""),
-  "parentSlug": coalesce(categories[0]->parentCategory->slug.current, "")
-}
-"""
-
-
 def find_affected_article_paths(product_doc_ids: set[str]) -> list[str]:
     if not product_doc_ids:
         return []
     ids_str = ",".join(f'"{x}"' for x in sorted(product_doc_ids))
-    groq = AFFECTED_ARTICLES_GROQ_TEMPLATE.format(ids=ids_str)
+    # Use string concat instead of .format() — GROQ uses {} for projections
+    # which conflicts with str.format() placeholder syntax.
+    groq = (
+        '*[_type == "article" && defined(slug.current) && ('
+        f'primaryProduct._ref in [{ids_str}] || '
+        f'count(secondaryProducts[_ref in [{ids_str}]]) > 0 || '
+        f'count(body[].markDefs[reference._ref in [{ids_str}]]) > 0'
+        ')] {'
+        '"slug": slug.current, '
+        '"categorySlug": coalesce(categories[0]->slug.current, ""), '
+        '"parentSlug": coalesce(categories[0]->parentCategory->slug.current, "")'
+        '}'
+    )
     try:
         articles = sanity_query(groq)
     except Exception as e:
