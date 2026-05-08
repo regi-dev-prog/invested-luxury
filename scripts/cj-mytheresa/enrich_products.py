@@ -488,7 +488,15 @@ def find_mytheresa_opportunities() -> list[dict]:
 def find_mytheresa_match_for_opportunity(brand: str, name: str) -> dict | None:
     """Search CJ for the product. Returns full match dict (link, image, title) or None.
 
-    Returns the FULL CJ result, not just imageLink — Pass 4 needs the link too.
+    Pass 4 uses STRICTER matching than Pass 2 image fetch because the consequence
+    of a wrong match here is that we send a reader to a different product (e.g.
+    'Golden Goose Superstar' → 'Golden Goose Lightstar') which is misleading and
+    damages credibility. Image fetch is more forgiving — a generic packshot of
+    the same brand is acceptable as a fallback.
+
+    Strict requirements (in addition to best_match's existing filters):
+    - Token overlap ≥ 70% of meaningful name tokens
+    - Model identifier (distinctive multi-letter token) must match if present
     """
     from cj_search import search_product, best_match
 
@@ -519,6 +527,30 @@ def find_mytheresa_match_for_opportunity(brand: str, name: str) -> dict | None:
             seen.add(kn)
             unique_keywords.append(k)
 
+    # Tokenize the source name for strict overlap checking
+    import re
+    STOPWORDS = {
+        "the", "a", "an", "and", "or", "of", "in", "with", "for",
+        # Common fashion descriptors that don't identify a product
+        "leather", "suede", "calfskin", "shearling", "cashmere", "wool", "silk",
+        "cotton", "linen", "denim", "satin", "velvet", "knit", "knitted",
+        "small", "medium", "large", "mini", "micro", "maxi",
+        "black", "white", "brown", "beige", "navy", "blue", "red", "green",
+        "grey", "gray", "tan", "cream", "ivory", "camel",
+        "shoes", "boots", "boot", "sneakers", "sneaker", "loafer", "loafers",
+        "sandal", "sandals", "flats", "flat", "pumps", "heel", "heels",
+        "bag", "bags", "tote", "clutch", "wallet", "belt", "scarf", "sweater",
+        "jeans", "pants", "trousers", "shirt", "blouse", "skirt", "dress",
+        "coat", "jacket",
+    }
+
+    def meaningful_tokens(s: str) -> set[str]:
+        # Lowercase, split on non-alphanumeric, drop short tokens and stopwords
+        toks = re.findall(r"[a-z0-9]+", s.lower())
+        return {t for t in toks if len(t) >= 3 and t not in STOPWORDS}
+
+    src_tokens = meaningful_tokens(f"{brand} {name}")
+
     for kw in unique_keywords:
         try:
             results = search_product(kw, advertiser="us", limit=20)
@@ -529,13 +561,45 @@ def find_mytheresa_match_for_opportunity(brand: str, name: str) -> dict | None:
         best, _ = best_match(results, brand=brand, name=name)
         if not best:
             continue
+
         link = best.get("link", "")
         if not link:
             continue
-        # Strict: only accept Format A URLs (/us/en/women/...-pXXXXXXXX)
-        # Format B (/en-us/...html) gets redirected to dead URLs by Mytheresa.
+
+        # Must be Format A
         if "/us/en/women/" not in link:
             continue
+
+        # Strict token overlap check
+        # The key requirement: a token in the SOURCE name that is NOT a brand
+        # token must appear in the candidate. This catches:
+        #   "Golden Goose Superstar" → "Golden Goose Lightstar" (superstar absent)
+        #   "The Row Sam" → "The Row Canvas" (sam absent)
+        #   "Khaite Pippen" → "Khaite Billy" (pippen absent)
+        # While still accepting:
+        #   "Khaite Danielle Jeans" → "Khaite Danielle High-Rise Jeans"
+        #   "Alo Yoga Airbrush" → "Alo Yoga Airbrush High-Rise"
+
+        title = best.get("title", "") or best.get("name", "")
+        candidate_text = f"{title} {link}"
+        cand_tokens = meaningful_tokens(candidate_text)
+        brand_tokens = meaningful_tokens(brand)
+
+        # Tokens in source that are NOT part of the brand — these are the
+        # distinguishing model/style identifiers
+        model_tokens = src_tokens - brand_tokens
+
+        if not model_tokens:
+            # Source has only brand tokens (e.g. "Khaite" alone with no model
+            # name in the product). Cannot verify match — too risky.
+            continue
+
+        # Require AT LEAST ONE model token to appear in the candidate.
+        # This is the core check: if we can't verify the specific model name,
+        # we can't claim this is the same product.
+        if not (model_tokens & cand_tokens):
+            continue
+
         return best
 
     return None
