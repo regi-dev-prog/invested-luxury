@@ -534,20 +534,30 @@ def find_mytheresa_match_for_opportunity(brand: str, name: str) -> dict | None:
         # Common fashion descriptors that don't identify a product
         "leather", "suede", "calfskin", "shearling", "cashmere", "wool", "silk",
         "cotton", "linen", "denim", "satin", "velvet", "knit", "knitted",
+        "blend", "virgin", "merino",
         "small", "medium", "large", "mini", "micro", "maxi",
+        "high", "low", "mid", "rise", "waist", "leg", "wide", "slim", "straight",
+        "long", "short", "ankle", "knee",
         "black", "white", "brown", "beige", "navy", "blue", "red", "green",
-        "grey", "gray", "tan", "cream", "ivory", "camel",
+        "grey", "gray", "tan", "cream", "ivory", "camel", "burgundy",
         "shoes", "boots", "boot", "sneakers", "sneaker", "loafer", "loafers",
         "sandal", "sandals", "flats", "flat", "pumps", "heel", "heels",
         "bag", "bags", "tote", "clutch", "wallet", "belt", "scarf", "sweater",
         "jeans", "pants", "trousers", "shirt", "blouse", "skirt", "dress",
-        "coat", "jacket",
+        "coat", "jacket", "pant", "pouch", "handbag",
     }
 
     def meaningful_tokens(s: str) -> set[str]:
         # Lowercase, split on non-alphanumeric, drop short tokens and stopwords
         toks = re.findall(r"[a-z0-9]+", s.lower())
         return {t for t in toks if len(t) >= 3 and t not in STOPWORDS}
+
+    def url_slug(link: str) -> str:
+        # Get the descriptive slug between /us/en/women/ and -pXXXXXXXX
+        m = re.search(r"/us/en/women/(.+?)-p\d+", link)
+        if m:
+            return m.group(1)
+        return link.split("/")[-1]
 
     src_tokens = meaningful_tokens(f"{brand} {name}")
 
@@ -571,18 +581,24 @@ def find_mytheresa_match_for_opportunity(brand: str, name: str) -> dict | None:
             continue
 
         # Strict token overlap check
+        # We check ONLY the URL slug, not the CJ title — Mytheresa product
+        # URLs are canonical product identifiers (e.g. khaite-billy-leather-...).
+        # CJ titles can be promotional and may include unrelated tokens that
+        # accidentally match (e.g. a Fendi sunglasses title might contain
+        # 'baguette' as a marketing reference).
+        #
         # The key requirement: a token in the SOURCE name that is NOT a brand
-        # token must appear in the candidate. This catches:
+        # token must appear in the URL slug. This catches:
         #   "Golden Goose Superstar" → "Golden Goose Lightstar" (superstar absent)
         #   "The Row Sam" → "The Row Canvas" (sam absent)
         #   "Khaite Pippen" → "Khaite Billy" (pippen absent)
+        #   "Fendi Baguette" → "Fendi Oval Sunglasses" (baguette absent)
         # While still accepting:
         #   "Khaite Danielle Jeans" → "Khaite Danielle High-Rise Jeans"
-        #   "Alo Yoga Airbrush" → "Alo Yoga Airbrush High-Rise"
+        #   "Toteme T-Lock Bag" → "Toteme T-Lock Suede Shoulder Bag"
 
-        title = best.get("title", "") or best.get("name", "")
-        candidate_text = f"{title} {link}"
-        cand_tokens = meaningful_tokens(candidate_text)
+        slug = url_slug(link)
+        slug_tokens = meaningful_tokens(slug)
         brand_tokens = meaningful_tokens(brand)
 
         # Tokens in source that are NOT part of the brand — these are the
@@ -594,10 +610,10 @@ def find_mytheresa_match_for_opportunity(brand: str, name: str) -> dict | None:
             # name in the product). Cannot verify match — too risky.
             continue
 
-        # Require AT LEAST ONE model token to appear in the candidate.
-        # This is the core check: if we can't verify the specific model name,
-        # we can't claim this is the same product.
-        if not (model_tokens & cand_tokens):
+        # Require AT LEAST ONE model token to appear in the URL slug.
+        # This is the core check: if we can't verify the specific model name
+        # in the canonical URL, we can't claim this is the same product.
+        if not (model_tokens & slug_tokens):
             continue
 
         return best
