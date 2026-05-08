@@ -14,7 +14,7 @@ def q(g):
 
 
 print("=== 1. YSL Cassandre Clutch — current state ===")
-r = q('*[_id match "*ysl-cassandre*"][0]{_id, name, "brand": brand->name, hidden, affiliateLinks}')
+r = q('*[_id match "*ysl-cassandre*"][0]{_id, name, "brand": brand->name, hidden, "imageCount": count(images), images, affiliateLinks}')
 print(json.dumps(r, indent=2, ensure_ascii=False))
 print()
 
