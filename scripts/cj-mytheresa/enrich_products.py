@@ -452,6 +452,190 @@ def run_image_pass(products: list[dict], dry_run: bool, limit: int | None) -> di
 
 
 # ---------------------------------------------------------------------------
+# Pass 4 — Mytheresa affiliate opportunity discovery
+# ---------------------------------------------------------------------------
+
+# Find all products that do NOT already have a Mytheresa affiliate link.
+# Includes products with non-affiliate links (Saint Laurent.com, Khaite.com, etc.)
+# whose author would benefit from adding a Mytheresa option.
+PRODUCTS_NEEDING_MYTHERESA_OPPORTUNITY_GROQ = """
+*[_type == "product"
+  && count(affiliateLinks[
+      defined(url)
+      && url != ""
+      && (lower(retailer) match "*mytheresa*" || url match "*mytheresa*")
+  ]) == 0
+] {
+  _id,
+  name,
+  "slug": slug.current,
+  "brand": brand->name,
+  affiliateLinks[]{
+    _key,
+    url,
+    retailer,
+    retailerName,
+    isPrimary
+  }
+}
+"""
+
+
+def find_mytheresa_opportunities() -> list[dict]:
+    return sanity_query(PRODUCTS_NEEDING_MYTHERESA_OPPORTUNITY_GROQ) or []
+
+
+def find_mytheresa_match_for_opportunity(brand: str, name: str) -> dict | None:
+    """Search CJ for the product. Returns full match dict (link, image, title) or None.
+
+    Returns the FULL CJ result, not just imageLink — Pass 4 needs the link too.
+    """
+    from cj_search import search_product, best_match
+
+    brand = (brand or "").strip()
+    name = (name or "").strip()
+    if not brand and not name:
+        return None
+
+    # Same keyword strategy as fetch_image_from_cj
+    keywords = []
+    name_lower = name.lower()
+    brand_lower = brand.lower()
+    if brand_lower and name_lower.startswith(brand_lower):
+        keywords.append(name)
+        rest = name[len(brand):].strip()
+        if rest and rest != name:
+            keywords.append(f"{brand} {rest}")
+    else:
+        keywords.append(f"{brand} {name}".strip())
+        if name:
+            keywords.append(name)
+
+    seen = set()
+    unique_keywords = []
+    for k in keywords:
+        kn = k.lower().strip()
+        if kn and kn not in seen:
+            seen.add(kn)
+            unique_keywords.append(k)
+
+    for kw in unique_keywords:
+        try:
+            results = search_product(kw, advertiser="us", limit=20)
+        except Exception:
+            continue
+        if not results:
+            continue
+        best, _ = best_match(results, brand=brand, name=name)
+        if not best:
+            continue
+        link = best.get("link", "")
+        if not link:
+            continue
+        # Strict: only accept Format A URLs (/us/en/women/...-pXXXXXXXX)
+        # Format B (/en-us/...html) gets redirected to dead URLs by Mytheresa.
+        if "/us/en/women/" not in link:
+            continue
+        return best
+
+    return None
+
+
+def run_opportunity_pass(products: list[dict], dry_run: bool, limit: int | None) -> dict:
+    """For each product without a Mytheresa link, try to find a Mytheresa
+    equivalent in CJ feed and add it as a new primary affiliate link."""
+    import secrets
+
+    stats = {
+        "checked": 0,
+        "found_match": 0,
+        "added_link": 0,
+        "no_match": 0,
+        "mutate_failed": 0,
+    }
+
+    mutated_doc_ids: set[str] = set()
+
+    for i, p in enumerate(products):
+        if limit and i >= limit:
+            break
+        stats["checked"] += 1
+        brand = p.get("brand") or ""
+        name = p.get("name") or ""
+        log(f"  [{i+1}/{len(products)}] {p['_id']}: {brand} {name}")
+
+        match = find_mytheresa_match_for_opportunity(brand, name)
+        if not match:
+            log(f"      ✗ no Mytheresa match in CJ feed")
+            stats["no_match"] += 1
+            continue
+        stats["found_match"] += 1
+
+        # Clean the URL (strip query params from CJ feed)
+        target = match["link"].split("?")[0]
+        sid = derive_sid(p["_id"], p.get("slug"))
+        wrapped = wrap_url(target, sid)
+        log(f"      ✓ found: {target}")
+        log(f"        → {wrapped[:90]}…")
+
+        if dry_run:
+            continue
+
+        # Build a multi-step patch:
+        #   1. Set isPrimary=false on every existing affiliateLink that has it
+        #   2. Append a new Mytheresa affiliateLink with isPrimary=true
+        new_link = {
+            "_type": "affiliateLink",
+            "_key": secrets.token_hex(6),
+            "url": wrapped,
+            "retailer": "Mytheresa",
+            "retailerName": "Mytheresa",
+            "isAffiliate": True,
+            "isPrimary": True,
+            "inStock": True,
+        }
+
+        # First mutation: demote existing primaries
+        demote_patches = []
+        for existing in p.get("affiliateLinks") or []:
+            if existing.get("isPrimary"):
+                key = existing["_key"]
+                demote_patches.append({
+                    "patch": {
+                        "query": f'*[_id == "{p["_id"]}" || _id == "drafts.{p["_id"]}"]',
+                        "set": {f'affiliateLinks[_key=="{key}"].isPrimary': False},
+                    }
+                })
+
+        # Second mutation: append new Mytheresa link
+        append_patch = {
+            "patch": {
+                "query": f'*[_id == "{p["_id"]}" || _id == "drafts.{p["_id"]}"]',
+                "setIfMissing": {"affiliateLinks": []},
+                "insert": {
+                    "after": "affiliateLinks[-1]",
+                    "items": [new_link],
+                },
+            }
+        }
+
+        try:
+            sanity_mutate(demote_patches + [append_patch], dry_run=False)
+            log(f"      ✓ added Mytheresa link as primary")
+            stats["added_link"] += 1
+            mutated_doc_ids.add(p["_id"])
+        except Exception as e:
+            log(f"      ✗ mutate failed: {e}")
+            stats["mutate_failed"] += 1
+            continue
+
+        time.sleep(0.5)  # rate-limit CJ + Sanity
+
+    stats["mutated_doc_ids"] = list(mutated_doc_ids)
+    return stats
+
+
+# ---------------------------------------------------------------------------
 # Pass 3 — Revalidation
 # ---------------------------------------------------------------------------
 
@@ -514,6 +698,8 @@ def main() -> int:
                         help="Apply mutations to Sanity.")
     parser.add_argument("--skip-images", action="store_true",
                         help="Skip Pass 2 (image fetch).")
+    parser.add_argument("--skip-opportunity", action="store_true",
+                        help="Skip Pass 4 (Mytheresa affiliate opportunity discovery).")
     parser.add_argument("--limit", type=int, default=None,
                         help="Limit each pass to N products.")
     args = parser.parse_args()
@@ -525,6 +711,7 @@ def main() -> int:
     summary = {
         "wrap": {"raw_products": 0, "mutations": 0},
         "image": {},
+        "opportunity": {},
         "revalidate": {"paths": 0},
         "errors": [],
     }
@@ -581,6 +768,29 @@ def main() -> int:
         except Exception as e:
             log(f"  ✗ Pass 2 failed: {e}")
             summary["errors"].append(f"pass2: {e}")
+
+    # ============================================================
+    # PASS 4 — Mytheresa affiliate opportunity discovery
+    # ============================================================
+    if args.skip_opportunity:
+        log("")
+        log("PASS 4 — SKIPPED (--skip-opportunity)")
+    else:
+        log("")
+        log("=" * 70)
+        log("PASS 4 — Mytheresa affiliate opportunity discovery")
+        log("=" * 70)
+        try:
+            opportunities = find_mytheresa_opportunities()
+            log(f"Found {len(opportunities)} products without Mytheresa affiliate link")
+            stats = run_opportunity_pass(opportunities, args.dry_run, args.limit)
+            for did in stats.pop("mutated_doc_ids", []):
+                mutated_doc_ids.add(did)
+            summary["opportunity"] = stats
+            log(f"  Opportunity pass stats: {stats}")
+        except Exception as e:
+            log(f"  ✗ Pass 4 failed: {e}")
+            summary["errors"].append(f"pass4: {e}")
 
     # ============================================================
     # PASS 3 — Revalidate affected articles

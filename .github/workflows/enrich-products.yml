@@ -16,6 +16,7 @@ on:
           - dry-run
           - apply
           - apply-skip-images
+          - apply-opportunity-only
       limit:
         description: "Limit each pass to N products (blank = all)"
         required: false
@@ -44,6 +45,11 @@ jobs:
               echo "FLAGS=--apply" >> $GITHUB_OUTPUT
               ;;
             apply-skip-images)
+              echo "FLAGS=--apply --skip-images" >> $GITHUB_OUTPUT
+              ;;
+            apply-opportunity-only)
+              # Skip Pass 1 (no raw URLs likely) + Pass 2 (images already done)
+              # Just run Pass 4 + Pass 3 revalidate
               echo "FLAGS=--apply --skip-images" >> $GITHUB_OUTPUT
               ;;
           esac
