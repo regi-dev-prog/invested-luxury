@@ -16,7 +16,9 @@ export const client = createClient({
 const builder = imageUrlBuilder(client);
 
 export function urlFor(source: any) {
-  return builder.image(source);
+  // auto('format') ensures HEIF/HEIC assets get converted to WebP/JPEG
+  // for browser compatibility (Mytheresa CDN serves HEIF natively)
+  return builder.image(source).auto('format');
 }
 
 // Preview client (for drafts)
