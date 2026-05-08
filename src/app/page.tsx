@@ -70,7 +70,24 @@ async function getLatestArticles(limit: number = 6) {
 }
 
 async function getFeaturedProducts(limit: number = 6) {
-  const query = `*[_type == "product" && featured == true && (defined(images) && count(images) > 0)] | order(displayOrder asc, _createdAt desc) [0...${limit}] {
+  // Currently Coveting eligibility:
+  //  1. featured == true (manually curated)
+  //  2. Has at least one image
+  //  3. Has at least one valid affiliate link (not placeholder, not empty)
+  //  4. Not explicitly hidden
+  // The product must also resolve a primary affiliate URL — products whose
+  // only links are placeholders or homepage URLs are filtered post-query.
+  const query = `*[_type == "product"
+    && featured == true
+    && (!defined(hidden) || hidden == false)
+    && defined(images) && count(images) > 0
+    && count(affiliateLinks[
+        defined(url)
+        && url != ""
+        && url != "https://www.mytheresa.com/"
+        && url != "https://mytheresa.com/"
+    ]) > 0
+  ] | order(displayOrder asc, _createdAt desc) [0...${limit}] {
     _id,
     name,
     price,
@@ -84,7 +101,9 @@ async function getFeaturedProducts(limit: number = 6) {
       affiliateLinks[defined(url) && url != "" && url != "https://www.mytheresa.com/"][0].url
     )
   }`;
-  return await client.fetch(query);
+  const products = await client.fetch(query);
+  // Defensive filter: drop any rows where coalesce still returned nothing
+  return (products ?? []).filter((p: any) => p?.affiliateUrl);
 }
 
 // Fetch articles for a specific category independently — no global pool competition
