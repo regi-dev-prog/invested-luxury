@@ -71,7 +71,10 @@ const articleQuery = `*[_type == "article" && slug.current == $slug && status ==
     currency,
     "brand": brand->{name, slug},
     "image": images[0],
-    "affiliateLink": affiliateLinks[0].url
+    "affiliateLink": coalesce(
+      affiliateLinks[isPrimary == true && defined(url) && url != ""][0].url,
+      affiliateLinks[defined(url) && url != "" && url != "https://www.mytheresa.com/"][0].url
+    )
   },
   "relatedArticles": relatedArticles[]->{
     _id,
@@ -223,6 +226,19 @@ function transformProductData(product: any) {
   const retailers = product.affiliateLinks?.filter((link: any) => !link.isResale) || []
   const resaleRetailers = product.affiliateLinks?.filter((link: any) => link.isResale) || []
   
+  // Pick the primary URL: explicit isPrimary first, then any non-placeholder URL.
+  // This ensures Pass 4's Mytheresa link (added with isPrimary: true) is used
+  // instead of the legacy retailer[0] (e.g. ysl.com homepage).
+  const PLACEHOLDER_URLS = ['', 'https://www.mytheresa.com/', 'https://mytheresa.com/']
+  const isValidLink = (link: any) =>
+    link?.url && !PLACEHOLDER_URLS.includes(link.url)
+  
+  const primaryRetailer =
+    retailers.find((link: any) => link.isPrimary && isValidLink(link)) ||
+    retailers.find(isValidLink) ||
+    resaleRetailers.find((link: any) => link.isPrimary && isValidLink(link)) ||
+    resaleRetailers.find(isValidLink)
+  
   return {
     name: product.name || 'Unknown Product',
     brand: product.brand?.name,
@@ -244,7 +260,7 @@ function transformProductData(product: any) {
       url: link.url,
       isResale: true,
     })),
-    primaryLink: retailers[0]?.url || resaleRetailers[0]?.url,
+    primaryLink: primaryRetailer?.url,
   }
 }
 

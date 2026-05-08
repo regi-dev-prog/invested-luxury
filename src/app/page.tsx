@@ -79,7 +79,10 @@ async function getFeaturedProducts(limit: number = 6) {
     "brand": brand->name,
     "image": images[0],
     imageUrl,
-    "affiliateUrl": affiliateLinks[0].url
+    "affiliateUrl": coalesce(
+      affiliateLinks[isPrimary == true && defined(url) && url != ""][0].url,
+      affiliateLinks[defined(url) && url != "" && url != "https://www.mytheresa.com/"][0].url
+    )
   }`;
   return await client.fetch(query);
 }

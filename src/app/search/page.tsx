@@ -56,7 +56,10 @@ async function searchProducts(query: string) {
     "brand": brand->name,
     image { asset, alt },
     imageUrl,
-    "affiliateUrl": affiliateLinks[0].url
+    "affiliateUrl": coalesce(
+      affiliateLinks[isPrimary == true && defined(url) && url != ""][0].url,
+      affiliateLinks[defined(url) && url != "" && url != "https://www.mytheresa.com/"][0].url
+    )
   }`;
 
   return await client.fetch(searchQuery, { q: `${query.trim()}*` });
