@@ -601,6 +601,19 @@ def find_mytheresa_match_for_opportunity(brand: str, name: str) -> dict | None:
         slug_tokens = meaningful_tokens(slug)
         brand_tokens = meaningful_tokens(brand)
 
+        # If brand was empty/short, the first significant token of `name` is
+        # likely the brand. Treat the first src token as part of brand_tokens
+        # to avoid the case where 'Khaite Pippen Loafer' with empty brand
+        # treats {khaite, pippen} as model tokens and matches on {khaite}.
+        if not brand_tokens and src_tokens:
+            # Use ordered tokenization to find the first meaningful token
+            ordered = [
+                t for t in re.findall(r"[a-z0-9]+", name.lower())
+                if len(t) >= 3 and t not in STOPWORDS
+            ]
+            if ordered:
+                brand_tokens = {ordered[0]}
+
         # Tokens in source that are NOT part of the brand — these are the
         # distinguishing model/style identifiers
         model_tokens = src_tokens - brand_tokens
