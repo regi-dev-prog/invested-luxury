@@ -77,6 +77,12 @@ async function getFeaturedProducts(limit: number = 6) {
   //  4. Not explicitly hidden
   // The product must also resolve a primary affiliate URL — products whose
   // only links are placeholders or homepage URLs are filtered post-query.
+  //
+  // We fetch a wider pool (3x the limit, capped at 30) and then apply
+  // brand diversification client-side: max 2 products from any single
+  // brand. Prevents the section from looking monotonous when a single
+  // brand has many featured products (e.g. 6 Saint Laurents in a row).
+  const poolSize = Math.max(limit * 3, 18);
   const query = `*[_type == "product"
     && featured == true
     && (!defined(hidden) || hidden == false)
@@ -87,7 +93,7 @@ async function getFeaturedProducts(limit: number = 6) {
         && url != "https://www.mytheresa.com/"
         && url != "https://mytheresa.com/"
     ]) > 0
-  ] | order(displayOrder asc, _createdAt desc) [0...${limit}] {
+  ] | order(displayOrder asc, _createdAt desc) [0...${poolSize}] {
     _id,
     name,
     price,
@@ -101,9 +107,28 @@ async function getFeaturedProducts(limit: number = 6) {
       affiliateLinks[defined(url) && url != "" && url != "https://www.mytheresa.com/"][0].url
     )
   }`;
-  const products = await client.fetch(query);
-  // Defensive filter: drop any rows where coalesce still returned nothing
-  return (products ?? []).filter((p: any) => p?.affiliateUrl);
+  const pool = (await client.fetch(query)) ?? [];
+  // Defensive filter: drop rows where coalesce still resolved to no URL
+  const valid = pool.filter((p: any) => p?.affiliateUrl);
+  // Brand-diversified selection: 2 passes over the ordered pool, taking at
+  // most one product per brand each pass. Result is deterministic (same
+  // order on every render — cache-friendly) and the original displayOrder
+  // is preserved within each pass.
+  const MAX_PER_BRAND = 2;
+  const selected: any[] = [];
+  const brandCounts: Record<string, number> = {};
+  for (let pass = 0; pass < MAX_PER_BRAND && selected.length < limit; pass++) {
+    for (const p of valid) {
+      if (selected.length >= limit) break;
+      if (selected.includes(p)) continue;
+      const brand = (p.brand as string) || '__no_brand__';
+      const count = brandCounts[brand] ?? 0;
+      if (count > pass) continue; // already took one from this brand this pass
+      selected.push(p);
+      brandCounts[brand] = count + 1;
+    }
+  }
+  return selected;
 }
 
 // Fetch articles for a specific category independently — no global pool competition
