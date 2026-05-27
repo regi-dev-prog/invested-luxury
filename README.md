@@ -104,3 +104,5 @@ All rights reserved © InvestedLuxury 2025
 <!-- rebuild 2026-04-27T11:56:55.573924 -->
 <!-- rebuild 2026-05-19T09:32:09.141703 -->
 <!-- rebuild 2026-05-19T09:37:59.668597+00:00 -->
+
+<!-- Vercel rebuild trigger: 2026-05-27T09:21:29Z - Withings Body Scan Review new slug -->
