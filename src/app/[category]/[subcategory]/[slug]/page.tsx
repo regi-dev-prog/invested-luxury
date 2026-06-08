@@ -527,9 +527,14 @@ export default async function ArticlePage({ params }: Props) {
   }
 
   // Article/Review Schema
+  // Only emit a Review type when we have a rating to attach. A Review without
+  // reviewRating is invalid for Google, so an unrated review falls back to
+  // Article and the Product is emitted as a standalone schema instead.
+  const emitReview = isReview && !!article.productRating
+
   const articleSchema: any = {
     "@context": "https://schema.org",
-    "@type": isReview ? "Review" : "Article",
+    "@type": emitReview ? "Review" : "Article",
     headline: article.title,
     description: article.excerpt,
     image: ogImage,
@@ -557,16 +562,22 @@ export default async function ArticlePage({ params }: Props) {
     },
   }
 
-  if (isReview && productSchemaForReview) {
+  // Rated review: product lives inside the Review as itemReviewed (with rating).
+  // Otherwise emit the Product standalone so Product / Merchant rich results stay valid.
+  let standaloneProductSchema: any = null
+
+  if (emitReview && productSchemaForReview) {
     articleSchema.itemReviewed = productSchemaForReview
-    
-    if (article.productRating) {
-      articleSchema.reviewRating = {
-        "@type": "Rating",
-        ratingValue: article.productRating,
-        bestRating: 5,
-        worstRating: 1,
-      }
+    articleSchema.reviewRating = {
+      "@type": "Rating",
+      ratingValue: article.productRating,
+      bestRating: 5,
+      worstRating: 1,
+    }
+  } else if (productSchemaForReview) {
+    standaloneProductSchema = {
+      "@context": "https://schema.org",
+      ...productSchemaForReview,
     }
   }
 
@@ -587,6 +598,12 @@ export default async function ArticlePage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
+      {standaloneProductSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(standaloneProductSchema) }}
+        />
+      )}
 
       <article className="min-h-screen">
         {/* Hero Section */}
