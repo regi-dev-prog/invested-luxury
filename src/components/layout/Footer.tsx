@@ -31,6 +31,8 @@ const footerLinks = {
     { label: 'About', href: '/about' },
     { label: 'Who Is This For', href: '/who-is-investedluxury-for' },
     { label: 'Contact', href: '/contact' },
+    { label: 'Methodology', href: '/methodology' },
+    { label: 'Affiliate Disclosure', href: '/affiliate-disclosure' },
     { label: 'Privacy Policy', href: '/privacy-policy' },
     { label: 'Terms of Service', href: '/terms' },
   ],
