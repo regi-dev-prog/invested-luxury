@@ -1,0 +1,36 @@
+name: Affiliate Opportunity Radar
+
+on:
+  schedule:
+    # Mondays 05:00 UTC — report ready at the start of the work week,
+    # after Sunday night's enrich run has cleaned up the data
+    - cron: "0 5 * * 1"
+  workflow_dispatch:
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run affiliate radar
+        env:
+          SANITY_TOKEN: ${{ secrets.SANITY_TOKEN }}
+        run: |
+          cd scripts/affiliate-radar
+          python3 affiliate_radar.py --output-dir=./out 2>&1 | tee out_log.txt
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: affiliate-radar-${{ github.run_id }}
+          path: |
+            scripts/affiliate-radar/out/REPORT.md
+            scripts/affiliate-radar/out/radar_data.json
+            scripts/affiliate-radar/out_log.txt
+          retention-days: 60

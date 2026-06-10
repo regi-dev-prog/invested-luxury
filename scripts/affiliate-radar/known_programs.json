@@ -1,0 +1,227 @@
+{
+  "_comment": "Known affiliate programs for InvestedLuxury verticals. Commission/AOV figures are estimates from public network listings and industry sources — verify inside each network before applying. Updated manually; last review 2026-06. Skimlinks/aggregators permanently excluded per April 2026 decision. Networks allowed: AWIN, CJ, Rakuten, Sovrn, Partnerize, direct in-house programs.",
+  "approved": [
+    {"name": "Farfetch", "network": "AWIN", "domains": ["farfetch.com"], "status": "approved"},
+    {"name": "Mytheresa US/CA", "network": "CJ", "domains": ["mytheresa.com"], "status": "approved"},
+    {"name": "Mytheresa International", "network": "CJ", "domains": ["mytheresa.com"], "status": "approved"},
+    {"name": "Mytheresa UK", "network": "CJ", "domains": ["mytheresa.com"], "status": "approved"},
+    {"name": "Booking.com", "network": "CJ", "domains": ["booking.com"], "status": "approved"}
+  ],
+  "pending": [
+    {"name": "NET-A-PORTER", "network": "Rakuten", "domains": ["net-a-porter.com"], "status": "pending"},
+    {"name": "SSENSE", "network": "direct/Partnerize", "domains": ["ssense.com"], "status": "pending"},
+    {"name": "Saks Fifth Avenue", "network": "Rakuten", "domains": ["saksfifthavenue.com", "saks.com"], "status": "pending"},
+    {"name": "Bergdorf Goodman", "network": "Rakuten", "domains": ["bergdorfgoodman.com"], "status": "pending"}
+  ],
+  "programs": [
+    {
+      "name": "Eight Sleep",
+      "network": "Partnerize/direct",
+      "domains": ["eightsleep.com"],
+      "vertical": "wellness",
+      "est_commission_pct": 10,
+      "est_aov_usd": 3500,
+      "est_commission_per_sale_usd": 350,
+      "cookie_days": 30,
+      "notes": "Pod mattress covers $2,850-$5,100. Highest-revenue wellness anchor. Strong brand fit for longevity vertical."
+    },
+    {
+      "name": "Sunlighten",
+      "network": "direct/ShareASale-successor",
+      "domains": ["sunlighten.com"],
+      "vertical": "wellness",
+      "est_commission_pct": 7,
+      "est_aov_usd": 7000,
+      "est_commission_per_sale_usd": 490,
+      "cookie_days": 60,
+      "notes": "Infrared saunas $5K-$10K+. Anchor for Best Home Sauna 2026 pillar. Long consideration cycle, generous cookie typical."
+    },
+    {
+      "name": "Clearlight Saunas",
+      "network": "direct",
+      "domains": ["infraredsauna.com", "clearlight.com"],
+      "vertical": "wellness",
+      "est_commission_pct": 8,
+      "est_aov_usd": 6500,
+      "est_commission_per_sale_usd": 520,
+      "cookie_days": 90,
+      "notes": "Direct program. Competes with Sunlighten for sauna cluster monetization."
+    },
+    {
+      "name": "Plunge",
+      "network": "direct/Partnerize",
+      "domains": ["plunge.com", "thecoldplunge.com"],
+      "vertical": "wellness",
+      "est_commission_pct": 8,
+      "est_aov_usd": 5000,
+      "est_commission_per_sale_usd": 400,
+      "cookie_days": 30,
+      "notes": "Cold plunge tubs $3K-$8K. Direct fit for cold-plunge-benefits keyword cluster (527 keywords in research)."
+    },
+    {
+      "name": "HigherDOSE",
+      "network": "AWIN",
+      "domains": ["higherdose.com"],
+      "vertical": "wellness",
+      "est_commission_pct": 10,
+      "est_aov_usd": 600,
+      "est_commission_per_sale_usd": 60,
+      "cookie_days": 30,
+      "notes": "Infrared sauna blankets, red light masks. Lower AOV but high volume; passes $50 threshold."
+    },
+    {
+      "name": "Therabody",
+      "network": "CJ",
+      "domains": ["therabody.com"],
+      "vertical": "wellness",
+      "est_commission_pct": 5,
+      "est_aov_usd": 400,
+      "est_commission_per_sale_usd": 20,
+      "cookie_days": 14,
+      "notes": "BELOW $50 THRESHOLD at typical AOV. Only worth it for Theragun PRO bundles."
+    },
+    {
+      "name": "NET-A-PORTER",
+      "network": "Rakuten",
+      "domains": ["net-a-porter.com"],
+      "vertical": "fashion",
+      "est_commission_pct": 6,
+      "est_aov_usd": 800,
+      "est_commission_per_sale_usd": 48,
+      "cookie_days": 14,
+      "notes": "ALREADY PENDING. Unlocks Margaux monetization + NAP link fixes across articles."
+    },
+    {
+      "name": "MATCHES",
+      "network": "Partnerize",
+      "domains": ["matchesfashion.com", "matches.com"],
+      "vertical": "fashion",
+      "est_commission_pct": 7,
+      "est_aov_usd": 700,
+      "est_commission_per_sale_usd": 49,
+      "cookie_days": 30,
+      "notes": "Borderline on $50 threshold. Strong The Row / Toteme / quiet luxury inventory."
+    },
+    {
+      "name": "Luisaviaroma",
+      "network": "Rakuten",
+      "domains": ["luisaviaroma.com"],
+      "vertical": "fashion",
+      "est_commission_pct": 8,
+      "est_aov_usd": 750,
+      "est_commission_per_sale_usd": 60,
+      "cookie_days": 30,
+      "notes": "Strong EU luxury inventory, ships US. Good Loro Piana / Khaite coverage."
+    },
+    {
+      "name": "24S",
+      "network": "Rakuten",
+      "domains": ["24s.com"],
+      "vertical": "fashion",
+      "est_commission_pct": 10,
+      "est_aov_usd": 900,
+      "est_commission_per_sale_usd": 90,
+      "cookie_days": 30,
+      "notes": "LVMH-owned. Highest commission rate in luxury fashion. Carries Loro Piana, Celine, Dior."
+    },
+    {
+      "name": "Nordstrom",
+      "network": "Rakuten",
+      "domains": ["nordstrom.com"],
+      "vertical": "fashion",
+      "est_commission_pct": 2,
+      "est_aov_usd": 400,
+      "est_commission_per_sale_usd": 8,
+      "cookie_days": 7,
+      "notes": "BELOW $50 THRESHOLD. Low rate, short cookie. Skip unless strategic."
+    },
+    {
+      "name": "TheRealReal",
+      "network": "Rakuten",
+      "domains": ["therealreal.com"],
+      "vertical": "resale",
+      "est_commission_pct": 5,
+      "est_aov_usd": 1200,
+      "est_commission_per_sale_usd": 60,
+      "cookie_days": 7,
+      "notes": "Resale authority. Already cited heavily in resale-value methodology articles — natural fit."
+    },
+    {
+      "name": "Vestiaire Collective",
+      "network": "AWIN",
+      "domains": ["vestiairecollective.com"],
+      "vertical": "resale",
+      "est_commission_pct": 6,
+      "est_aov_usd": 900,
+      "est_commission_per_sale_usd": 54,
+      "cookie_days": 30,
+      "notes": "Already cited in resale methodology. AWIN — existing network relationship."
+    },
+    {
+      "name": "Fashionphile",
+      "network": "direct",
+      "domains": ["fashionphile.com"],
+      "vertical": "resale",
+      "est_commission_pct": 4,
+      "est_aov_usd": 1800,
+      "est_commission_per_sale_usd": 72,
+      "cookie_days": 30,
+      "notes": "Bags-focused resale. Featured in therealreal-vs-fashionphile comparison article already."
+    },
+    {
+      "name": "Chrono24",
+      "network": "direct/CJ",
+      "domains": ["chrono24.com"],
+      "vertical": "watches",
+      "est_commission_pct": 2.5,
+      "est_aov_usd": 6000,
+      "est_commission_per_sale_usd": 150,
+      "cookie_days": 30,
+      "notes": "Watch marketplace. High AOV compensates low rate. Fits Omega/TAG Heuer featured products."
+    },
+    {
+      "name": "Blue Nile",
+      "network": "CJ",
+      "domains": ["bluenile.com"],
+      "vertical": "jewelry",
+      "est_commission_pct": 5,
+      "est_aov_usd": 2500,
+      "est_commission_per_sale_usd": 125,
+      "cookie_days": 30,
+      "notes": "Jewelry investment cluster fit (209 keywords). Existing CJ relationship."
+    },
+    {
+      "name": "Brilliant Earth",
+      "network": "CJ",
+      "domains": ["brilliantearth.com"],
+      "vertical": "jewelry",
+      "est_commission_pct": 8,
+      "est_aov_usd": 2000,
+      "est_commission_per_sale_usd": 160,
+      "cookie_days": 14,
+      "notes": "Already a featured product on site (per audit). CJ — existing network."
+    },
+    {
+      "name": "Monos",
+      "network": "direct/Partnerize",
+      "domains": ["monos.com"],
+      "vertical": "travel",
+      "est_commission_pct": 10,
+      "est_aov_usd": 350,
+      "est_commission_per_sale_usd": 35,
+      "cookie_days": 30,
+      "notes": "BELOW $50 THRESHOLD individually but carry-on+checked bundles pass. Luggage fits travel vertical."
+    },
+    {
+      "name": "Virtuoso / Classic Vacations",
+      "network": "direct",
+      "domains": ["virtuoso.com"],
+      "vertical": "travel",
+      "est_commission_pct": 0,
+      "est_aov_usd": 0,
+      "est_commission_per_sale_usd": 0,
+      "cookie_days": 0,
+      "notes": "NOT an affiliate program — advisor referral model. Listed to prevent repeated evaluation."
+    }
+  ]
+}
