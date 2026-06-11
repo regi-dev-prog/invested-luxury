@@ -1,0 +1,409 @@
+# Affiliate Opportunity Radar — 2026-06-11
+
+_Read-only weekly scan. Applications remain manual by design._
+
+## Top opportunities (9 meet the $50/sale threshold)
+
+### 1. Sunlighten  —  score 8330.0
+
+- **Network:** direct/ShareASale-successor  |  **Vertical:** wellness
+- **Economics:** ~7% commission, ~$7000 AOV → **~$490/sale**, 60-day cookie
+- **Site presence:** weight 17.0 (2 articles, 3 products)
+- **Articles:** clearlight-vs-sunlighten-infrared-sauna-comparison, sunlighten-amplify-review
+- **Products:** Sunlighten Amplify II 2-Person Infrared Sauna, Sunlighten Amplify III 3-Person Infrared Sauna, Sunlighten Signature 2-Person Infrared Sauna
+- **Notes:** Infrared saunas $5K-$10K+. Anchor for Best Home Sauna 2026 pillar. Long consideration cycle, generous cookie typical.
+
+<details><summary>Outreach draft (copy-paste)</summary>
+
+```text
+Subject: Publisher application — InvestedLuxury.com (wellness editorial)
+
+Hi Sunlighten affiliate team,
+
+I run InvestedLuxury.com, an independent editorial site analyzing luxury
+purchases through cost-per-wear, resale value, and 10-year cost of
+ownership. Our readers are affluent (HHI $150K+, ages 28-55) across the
+US, UK, UAE, Singapore, and Hong Kong — researching exactly the
+considered, high-AOV purchases Sunlighten specializes in.
+
+Sunlighten is already referenced organically in 2 of our
+published articles (e.g. investedluxury.com/.../clearlight-vs-sunlighten-infrared-sauna-comparison), so approval would let us convert
+existing editorial mentions into tracked partnerships rather than starting
+from zero.
+
+Site: https://investedluxury.com
+Methodology: https://investedluxury.com/methodology
+Current partners include Farfetch, Mytheresa, and Booking.com.
+
+Happy to share traffic data or answer any questions.
+
+Best,
+Regi
+InvestedLuxury Editorial
+hello@investedluxury.com
+
+```
+</details>
+
+### 2. TheRealReal  —  score 4020.0
+
+- **Network:** Rakuten  |  **Vertical:** resale
+- **Economics:** ~5% commission, ~$1200 AOV → **~$60/sale**, 7-day cookie
+- **Site presence:** weight 67.0 (30 articles, 10 products)
+- **Articles:** best-designer-ballet-flats, best-designer-loafers-investment-2026, best-diamond-tennis-bracelet, best-investment-bags-2026, best-purse-brands-ranked, black-designer-sneakers-hide-scuffs …
+- **Products:** Bottega Veneta Knot Clutch, Cartier Juste un Clou Bracelet Small, Cartier Love Bracelet Classic Yellow Gold, Classic Flap Medium (Black Caviar), Freja Caroline Bag, Loro Piana Coste Crewneck Baby Cashmere (Women's) …
+- **Notes:** Resale authority. Already cited heavily in resale-value methodology articles — natural fit.
+
+<details><summary>Outreach draft (copy-paste)</summary>
+
+```text
+Subject: Publisher application — InvestedLuxury.com (resale editorial)
+
+Hi TheRealReal affiliate team,
+
+I run InvestedLuxury.com, an independent editorial site analyzing luxury
+purchases through cost-per-wear, resale value, and 10-year cost of
+ownership. Our readers are affluent (HHI $150K+, ages 28-55) across the
+US, UK, UAE, Singapore, and Hong Kong — researching exactly the
+considered, high-AOV purchases TheRealReal specializes in.
+
+TheRealReal is already referenced organically in 30 of our
+published articles (e.g. investedluxury.com/.../best-designer-ballet-flats), so approval would let us convert
+existing editorial mentions into tracked partnerships rather than starting
+from zero.
+
+Site: https://investedluxury.com
+Methodology: https://investedluxury.com/methodology
+Current partners include Farfetch, Mytheresa, and Booking.com.
+
+Happy to share traffic data or answer any questions.
+
+Best,
+Regi
+InvestedLuxury Editorial
+hello@investedluxury.com
+
+```
+</details>
+
+### 3. Plunge  —  score 3200.0
+
+- **Network:** direct/Partnerize  |  **Vertical:** wellness
+- **Economics:** ~8% commission, ~$5000 AOV → **~$400/sale**, 30-day cookie
+- **Site presence:** weight 8.0 (1 articles, 2 products)
+- **Articles:** cold-plunge-benefits-women
+- **Products:** Plunge Pop-Up, The Plunge Original
+- **Notes:** Cold plunge tubs $3K-$8K. Direct fit for cold-plunge-benefits keyword cluster (527 keywords in research).
+
+<details><summary>Outreach draft (copy-paste)</summary>
+
+```text
+Subject: Publisher application — InvestedLuxury.com (wellness editorial)
+
+Hi Plunge affiliate team,
+
+I run InvestedLuxury.com, an independent editorial site analyzing luxury
+purchases through cost-per-wear, resale value, and 10-year cost of
+ownership. Our readers are affluent (HHI $150K+, ages 28-55) across the
+US, UK, UAE, Singapore, and Hong Kong — researching exactly the
+considered, high-AOV purchases Plunge specializes in.
+
+Plunge is already referenced organically in 1 of our
+published articles (e.g. investedluxury.com/.../cold-plunge-benefits-women), so approval would let us convert
+existing editorial mentions into tracked partnerships rather than starting
+from zero.
+
+Site: https://investedluxury.com
+Methodology: https://investedluxury.com/methodology
+Current partners include Farfetch, Mytheresa, and Booking.com.
+
+Happy to share traffic data or answer any questions.
+
+Best,
+Regi
+InvestedLuxury Editorial
+hello@investedluxury.com
+
+```
+</details>
+
+### 4. Clearlight Saunas  —  score 3120.0
+
+- **Network:** direct  |  **Vertical:** wellness
+- **Economics:** ~8% commission, ~$6500 AOV → **~$520/sale**, 90-day cookie
+- **Site presence:** weight 6.0 (1 articles, 1 products)
+- **Articles:** clearlight-vs-sunlighten-infrared-sauna-comparison
+- **Products:** Clearlight Sanctuary 2 Infrared Sauna
+- **Notes:** Direct program. Competes with Sunlighten for sauna cluster monetization.
+
+<details><summary>Outreach draft (copy-paste)</summary>
+
+```text
+Subject: Publisher application — InvestedLuxury.com (wellness editorial)
+
+Hi Clearlight Saunas affiliate team,
+
+I run InvestedLuxury.com, an independent editorial site analyzing luxury
+purchases through cost-per-wear, resale value, and 10-year cost of
+ownership. Our readers are affluent (HHI $150K+, ages 28-55) across the
+US, UK, UAE, Singapore, and Hong Kong — researching exactly the
+considered, high-AOV purchases Clearlight Saunas specializes in.
+
+Clearlight Saunas is already referenced organically in 1 of our
+published articles (e.g. investedluxury.com/.../clearlight-vs-sunlighten-infrared-sauna-comparison), so approval would let us convert
+existing editorial mentions into tracked partnerships rather than starting
+from zero.
+
+Site: https://investedluxury.com
+Methodology: https://investedluxury.com/methodology
+Current partners include Farfetch, Mytheresa, and Booking.com.
+
+Happy to share traffic data or answer any questions.
+
+Best,
+Regi
+InvestedLuxury Editorial
+hello@investedluxury.com
+
+```
+</details>
+
+### 5. Fashionphile  —  score 1800.0
+
+- **Network:** direct  |  **Vertical:** resale
+- **Economics:** ~4% commission, ~$1800 AOV → **~$72/sale**, 30-day cookie
+- **Site presence:** weight 25.0 (7 articles, 6 products)
+- **Articles:** best-investment-bags-2026, best-purse-brands-ranked, chanel-bags-guide, prada-bags-guide, saint-laurent-resale-case-study, the-row-margaux-review …
+- **Products:** 2.55 Reissue Medium, Boy Bag Medium, Cartier Trinity Ring, Classic Flap Medium (Black Caviar), Mini Jodie, Mini Rectangular Classic Flap
+- **Notes:** Bags-focused resale. Featured in therealreal-vs-fashionphile comparison article already.
+
+<details><summary>Outreach draft (copy-paste)</summary>
+
+```text
+Subject: Publisher application — InvestedLuxury.com (resale editorial)
+
+Hi Fashionphile affiliate team,
+
+I run InvestedLuxury.com, an independent editorial site analyzing luxury
+purchases through cost-per-wear, resale value, and 10-year cost of
+ownership. Our readers are affluent (HHI $150K+, ages 28-55) across the
+US, UK, UAE, Singapore, and Hong Kong — researching exactly the
+considered, high-AOV purchases Fashionphile specializes in.
+
+Fashionphile is already referenced organically in 7 of our
+published articles (e.g. investedluxury.com/.../best-investment-bags-2026), so approval would let us convert
+existing editorial mentions into tracked partnerships rather than starting
+from zero.
+
+Site: https://investedluxury.com
+Methodology: https://investedluxury.com/methodology
+Current partners include Farfetch, Mytheresa, and Booking.com.
+
+Happy to share traffic data or answer any questions.
+
+Best,
+Regi
+InvestedLuxury Editorial
+hello@investedluxury.com
+
+```
+</details>
+
+### 6. Vestiaire Collective  —  score 1350.0
+
+- **Network:** AWIN  |  **Vertical:** resale
+- **Economics:** ~6% commission, ~$900 AOV → **~$54/sale**, 30-day cookie
+- **Site presence:** weight 25.0 (12 articles, 4 products)
+- **Articles:** best-investment-bags-2026, cashmere-triangle-scarf, chanel-bags-guide, chloe-bags-guide, designer-boots-women, max-mara-coat-review …
+- **Products:** 2.55 Reissue Medium, Boy Bag Medium, Cartier Love Bracelet Medium Yellow Gold, Cartier Love Bracelet Small Yellow Gold
+- **Notes:** Already cited in resale methodology. AWIN — existing network relationship.
+
+<details><summary>Outreach draft (copy-paste)</summary>
+
+```text
+Subject: Publisher application — InvestedLuxury.com (resale editorial)
+
+Hi Vestiaire Collective affiliate team,
+
+I run InvestedLuxury.com, an independent editorial site analyzing luxury
+purchases through cost-per-wear, resale value, and 10-year cost of
+ownership. Our readers are affluent (HHI $150K+, ages 28-55) across the
+US, UK, UAE, Singapore, and Hong Kong — researching exactly the
+considered, high-AOV purchases Vestiaire Collective specializes in.
+
+Vestiaire Collective is already referenced organically in 12 of our
+published articles (e.g. investedluxury.com/.../best-investment-bags-2026), so approval would let us convert
+existing editorial mentions into tracked partnerships rather than starting
+from zero.
+
+Site: https://investedluxury.com
+Methodology: https://investedluxury.com/methodology
+Current partners include Farfetch, Mytheresa, and Booking.com.
+
+Happy to share traffic data or answer any questions.
+
+Best,
+Regi
+InvestedLuxury Editorial
+hello@investedluxury.com
+
+```
+</details>
+
+### 7. Brilliant Earth  —  score 640.0
+
+- **Network:** CJ  |  **Vertical:** jewelry
+- **Economics:** ~8% commission, ~$2000 AOV → **~$160/sale**, 14-day cookie
+- **Site presence:** weight 4.0 (1 articles, 1 products)
+- **Articles:** best-diamond-tennis-bracelet
+- **Products:** Lab-Grown Diamond Tennis Bracelet
+- **Notes:** Already a featured product on site (per audit). CJ — existing network.
+
+<details><summary>Outreach draft (copy-paste)</summary>
+
+```text
+Subject: Publisher application — InvestedLuxury.com (jewelry editorial)
+
+Hi Brilliant Earth affiliate team,
+
+I run InvestedLuxury.com, an independent editorial site analyzing luxury
+purchases through cost-per-wear, resale value, and 10-year cost of
+ownership. Our readers are affluent (HHI $150K+, ages 28-55) across the
+US, UK, UAE, Singapore, and Hong Kong — researching exactly the
+considered, high-AOV purchases Brilliant Earth specializes in.
+
+Brilliant Earth is already referenced organically in 1 of our
+published articles (e.g. investedluxury.com/.../best-diamond-tennis-bracelet), so approval would let us convert
+existing editorial mentions into tracked partnerships rather than starting
+from zero.
+
+Site: https://investedluxury.com
+Methodology: https://investedluxury.com/methodology
+Current partners include Farfetch, Mytheresa, and Booking.com.
+
+Happy to share traffic data or answer any questions.
+
+Best,
+Regi
+InvestedLuxury Editorial
+hello@investedluxury.com
+
+```
+</details>
+
+### 8. HigherDOSE  —  score 360.0
+
+- **Network:** AWIN  |  **Vertical:** wellness
+- **Economics:** ~10% commission, ~$600 AOV → **~$60/sale**, 30-day cookie
+- **Site presence:** weight 6.0 (0 articles, 2 products)
+- **Products:** HigherDose Infrared PEMF Go Mat, HigherDose Infrared PEMF Pro Mat
+- **Notes:** Infrared sauna blankets, red light masks. Lower AOV but high volume; passes $50 threshold.
+
+<details><summary>Outreach draft (copy-paste)</summary>
+
+```text
+Subject: Publisher application — InvestedLuxury.com (wellness editorial)
+
+Hi HigherDOSE affiliate team,
+
+I run InvestedLuxury.com, an independent editorial site analyzing luxury
+purchases through cost-per-wear, resale value, and 10-year cost of
+ownership. Our readers are affluent (HHI $150K+, ages 28-55) across the
+US, UK, UAE, Singapore, and Hong Kong — researching exactly the
+considered, high-AOV purchases HigherDOSE specializes in.
+
+HigherDOSE is already referenced organically in several of our
+published articles, so approval would let us convert
+existing editorial mentions into tracked partnerships rather than starting
+from zero.
+
+Site: https://investedluxury.com
+Methodology: https://investedluxury.com/methodology
+Current partners include Farfetch, Mytheresa, and Booking.com.
+
+Happy to share traffic data or answer any questions.
+
+Best,
+Regi
+InvestedLuxury Editorial
+hello@investedluxury.com
+
+```
+</details>
+
+### 9. Chrono24  —  score 300.0
+
+- **Network:** direct/CJ  |  **Vertical:** watches
+- **Economics:** ~2.5% commission, ~$6000 AOV → **~$150/sale**, 30-day cookie
+- **Site presence:** weight 2.0 (1 articles, 0 products)
+- **Articles:** best-entry-level-luxury-watches-investment
+- **Notes:** Watch marketplace. High AOV compensates low rate. Fits Omega/TAG Heuer featured products.
+
+<details><summary>Outreach draft (copy-paste)</summary>
+
+```text
+Subject: Publisher application — InvestedLuxury.com (watches editorial)
+
+Hi Chrono24 affiliate team,
+
+I run InvestedLuxury.com, an independent editorial site analyzing luxury
+purchases through cost-per-wear, resale value, and 10-year cost of
+ownership. Our readers are affluent (HHI $150K+, ages 28-55) across the
+US, UK, UAE, Singapore, and Hong Kong — researching exactly the
+considered, high-AOV purchases Chrono24 specializes in.
+
+Chrono24 is already referenced organically in 1 of our
+published articles (e.g. investedluxury.com/.../best-entry-level-luxury-watches-investment), so approval would let us convert
+existing editorial mentions into tracked partnerships rather than starting
+from zero.
+
+Site: https://investedluxury.com
+Methodology: https://investedluxury.com/methodology
+Current partners include Farfetch, Mytheresa, and Booking.com.
+
+Happy to share traffic data or answer any questions.
+
+Best,
+Regi
+InvestedLuxury Editorial
+hello@investedluxury.com
+
+```
+</details>
+
+## Already pending — site presence confirms priority
+
+- **NET-A-PORTER** (Rakuten) — weight 202.0, 8 articles, 62 products. Chase the approval; inventory is already waiting.
+- **SSENSE** (direct/Partnerize) — weight 33.0, 3 articles, 10 products. Chase the approval; inventory is already waiting.
+- **Saks Fifth Avenue** (Rakuten) — weight 31.0, 1 articles, 10 products. Chase the approval; inventory is already waiting.
+- **Bergdorf Goodman** (Rakuten) — weight 17.0, 2 articles, 5 products. Chase the approval; inventory is already waiting.
+
+## Known programs below the $50/sale threshold (skip)
+
+- Nordstrom: ~$8/sale (weight 53.0) — BELOW $50 THRESHOLD. Low rate, short cookie. Skip unless strategic.
+- Therabody: ~$20/sale (weight 11.0) — BELOW $50 THRESHOLD at typical AOV. Only worth it for Theragun PRO bundles.
+
+## Unknown domains worth researching (no program data yet)
+
+These appear on the site but aren't in known_programs.json. Research whether they run a program on AWIN/CJ/Rakuten/Partnerize, then add an entry to known_programs.json.
+
+- **therow.com** — weight 53.0 (e.g. black-designer-sneakers-hide-scuffs, cashmere-triangle-scarf, designer-boots-women)
+- **tiffany.com** — weight 47.0 (e.g. best-jewelry-brands, tiffany-t-bracelet-guide, tiffany-t-vs-cartier-love)
+- **toteme-studio.com** — weight 47.0 (e.g. designer-boots-women, quiet-luxury-clothing-brands-investment-guide, toteme-coat-review)
+- **loropiana.com** — weight 37.0 (e.g. designer-boots-women, loro-piana-beyond-sweater-guide, loro-piana-sweater-worth-it-price-per-wear)
+- **khaite.com** — weight 35.0 (e.g. best-designer-belts-women, best-designer-loafers-investment-2026, khaite-brand-guide)
+- **cartier.com** — weight 29.0 (e.g. best-entry-level-luxury-watches-investment, best-jewelry-brands, cartier-love-bracelet-small-celebrities)
+- **bottegaveneta.com** — weight 21.0 (e.g. best-designer-belts-women, designer-boots-women, quiet-luxury-clothing-brands-investment-guide)
+- **withings.com** — weight 21.0 (e.g. best-smart-scale, withings-body-scan-review)
+- **chloe.com** — weight 20.0 (e.g. best-designer-ballet-flats, designer-boots-women)
+- **demellierlondon.com** — weight 19.0 (e.g. demellier-brand-guide)
+- **maxmara.com** — weight 18.0 (e.g. max-mara-coat-review)
+- **fendi.com** — weight 18.0 (e.g. Fendi Baguette Medium, Fendi By The Way Mini, Fendi First)
+- **ringconcierge.com** — weight 17.0 (e.g. ring-concierge-reviews)
+- **ysl.com** — weight 14.0 (e.g. saint-laurent-resale-case-study)
+- **aspinaloflondon.com** — weight 13.0 (e.g. aspinal-of-london-discount-code)
+- **prada.com** — weight 13.0 (e.g. prada-bags-guide)
+- **fwrd.com** — weight 12.0 (e.g. The Row Round Ballet Flat, Toteme Embroidered Scarf Jacket, Toteme Signature Trench Coat)
+- **livemomentous.com** — weight 11.0 (e.g. biohacking-supplements-research-guide)
+- **icebarrel.com** — weight 11.0 (e.g. cold-plunge-benefits-women, ice-barrel-review)
+- **varley.com** — weight 10.0 (e.g. athleisure-outfits-that-look-expensive)
