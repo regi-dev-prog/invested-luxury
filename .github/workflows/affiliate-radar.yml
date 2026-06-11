@@ -24,6 +24,17 @@ jobs:
           cd scripts/affiliate-radar
           python3 affiliate_radar.py --output-dir=./out 2>&1 | tee out_log.txt
 
+      - name: Commit report to repo
+        run: |
+          mkdir -p reports/affiliate-radar
+          cp scripts/affiliate-radar/out/REPORT.md "reports/affiliate-radar/$(date +%Y-%m-%d)-REPORT.md"
+          cp scripts/affiliate-radar/out/REPORT.md reports/affiliate-radar/LATEST.md
+          git config user.name "radar-bot"
+          git config user.email "radar@investedluxury.com"
+          git add reports/affiliate-radar/
+          git diff --cached --quiet || git commit -m "Affiliate radar report $(date +%Y-%m-%d)"
+          git push
+
       - name: Upload report
         if: always()
         uses: actions/upload-artifact@v4
