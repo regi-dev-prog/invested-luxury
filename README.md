@@ -111,3 +111,4 @@ All rights reserved © InvestedLuxury 2025
 
 <!-- methodology-route-added 2026-06-09 -->
 <!-- rebuild: 2026-06-12T07:59:42.939586Z best-home-sauna-2026 -->
+<!-- rebuild: plunge-vs-ice-barrel 2026-06-19T06:57:04Z -->
