@@ -6,16 +6,9 @@
 // =============================================================================
 
 import { MetadataRoute } from 'next'
-import { createClient } from '@sanity/client'
+import { client } from '@/sanity/lib/client'
 
 export const revalidate = 3600
-
-const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '4b3ap7pf',
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  apiVersion: '2024-01-01',
-  useCdn: false,
-})
 
 const BASE_URL = 'https://investedluxury.com'
 
