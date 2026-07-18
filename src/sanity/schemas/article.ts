@@ -130,6 +130,23 @@ export default defineType({
         },
         {
           type: 'object',
+          name: 'affiliateBanner',
+          title: 'Affiliate Banner',
+          fields: [
+            {name: 'href', type: 'url', title: 'Click URL (tracking link)'},
+            {name: 'imageUrl', type: 'url', title: 'Banner Image URL'},
+            {name: 'alt', type: 'string', title: 'Alt Text'},
+            {name: 'retailer', type: 'string', title: 'Retailer (for analytics)'},
+          ],
+          preview: {
+            select: {alt: 'alt', retailer: 'retailer'},
+            prepare({alt, retailer}: {alt?: string; retailer?: string}) {
+              return {title: `Banner: ${alt || retailer || 'untitled'}`}
+            },
+          },
+        },
+        {
+          type: 'object',
           name: 'faqItem',
           title: 'FAQ Item',
           fields: [
