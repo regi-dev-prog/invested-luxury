@@ -126,6 +126,25 @@ const portableTextComponents = {
         {value.text}
       </AffiliateButton>
     ),
+    affiliateBanner: ({ value }: any) => {
+      if (!value?.href || !value?.imageUrl) return null
+      return (
+        <div className="my-8 flex justify-center">
+          <a
+            href={value.href}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            onClick={() => trackAffiliateClick({
+              retailer: value.retailer || 'banner',
+              position: 'inline-banner',
+            })}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={value.imageUrl} alt={value.alt || ''} className="max-w-full h-auto" />
+          </a>
+        </div>
+      )
+    },
     table: ({ value }: any) => {
       if (!value?.rows?.length) return null
       const headerRows = value.rows.filter((r: any) => r.isHeader)
