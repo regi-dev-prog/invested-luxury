@@ -20,6 +20,7 @@ const articleFields = `
   metaDescription,
   publishedAt,
   featured,
+  featuredIn,
   mainImage,
   "categories": categories[]->slug.current
 `
@@ -46,7 +47,7 @@ export async function getArticlesBySubCategory(categorySlug: string) {
  * Get featured articles for a sub-category
  */
 export async function getFeaturedArticlesBySubCategory(categorySlug: string, limit: number = 3) {
-  const query = `*[_type == "article" && status == "published" && "${categorySlug}" in categories[]->slug.current && featured == true] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
+  const query = `*[_type == "article" && status == "published" && "${categorySlug}" in categories[]->slug.current && "category" in featuredIn] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
     ${articleFields}
   }`
   
@@ -112,7 +113,7 @@ export async function getFeaturedArticlesByParentCategory(parentSlug: string, li
   
   const conditions = subSlugs.map(slug => `"${slug}" in categories[]->slug.current`).join(' || ')
   
-  const query = `*[_type == "article" && status == "published" && (${conditions}) && featured == true] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
+  const query = `*[_type == "article" && status == "published" && (${conditions}) && "category" in featuredIn] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
     ${articleFields}
   }`
   
@@ -155,7 +156,7 @@ export async function getLatestArticles(limit: number = 10) {
  * Get featured articles for homepage
  */
 export async function getFeaturedArticles(limit: number = 6) {
-  const query = `*[_type == "article" && status == "published" && featured == true] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
+  const query = `*[_type == "article" && status == "published" && "homepage" in featuredIn] | order(coalesce(publishedAt, _createdAt) desc) [0...${limit}] {
     ${articleFields}
   }`
   

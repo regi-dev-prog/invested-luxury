@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 // ============================================================================
 
 async function getHeroArticle() {
-  const query = `*[_type == "article" && status == "published" && featured == true] | order(coalesce(publishedAt, _createdAt) desc) [0] {
+  const query = `*[_type == "article" && status == "published" && "homepage" in featuredIn] | order(coalesce(publishedAt, _createdAt) desc) [0] {
     _id,
     title,
     "slug": slug.current,
