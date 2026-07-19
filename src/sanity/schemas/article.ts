@@ -461,11 +461,29 @@ export default defineType({
       group: 'publishing',
     }),
     defineField({
+      name: 'featuredIn',
+      title: 'Featured In',
+      description: 'Where this article should appear as featured. Leave empty for not featured.',
+      type: 'array',
+      group: 'publishing',
+      of: [{type: 'string'}],
+      options: {
+        list: [
+          {title: 'Homepage', value: 'homepage'},
+          {title: 'Category Page', value: 'category'},
+        ],
+        layout: 'grid',
+      },
+    }),
+    defineField({
       name: 'featured',
-      title: 'Featured Article',
+      title: 'Featured Article (deprecated)',
+      description: 'Old field – replaced by "Featured In". Kept hidden for data migration.',
       type: 'boolean',
       group: 'publishing',
       initialValue: false,
+      hidden: true,
+      readOnly: true,
     }),
     defineField({
       name: 'relatedArticles',

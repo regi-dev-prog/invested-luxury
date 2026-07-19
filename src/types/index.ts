@@ -39,7 +39,8 @@ export interface Article {
   body?: PortableTextBlock[];
   seo?: SEO;
   readTime?: number;
-  featured?: boolean;
+  featured?: boolean; // deprecated – use featuredIn
+  featuredIn?: ('homepage' | 'category')[];
 }
 
 export interface Product {
