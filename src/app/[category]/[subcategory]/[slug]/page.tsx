@@ -356,7 +356,14 @@ const portableTextComponents = {
   },
   marks: {
     link: ({ children, value }: any) => {
-      const rel = value?.href?.startsWith('/') ? undefined : 'noopener noreferrer'
+      const AFFILIATE_HOSTS = /awin1\.com|anrdoezrs\.net|kqzyfj\.com|tkqlhce\.com|jdoqocy\.com|dpbolvw\.net|shareasale\.com|go\.skimresources|shop\.infraredsauna\.com/i
+      const isInternal = value?.href?.startsWith('/')
+      const isAffiliate = !isInternal && AFFILIATE_HOSTS.test(value?.href || '')
+      const rel = isInternal
+        ? undefined
+        : isAffiliate
+          ? 'sponsored noopener noreferrer'
+          : 'noopener noreferrer'
       const target = value?.href?.startsWith('/') ? undefined : '_blank'
       return (
         <a 
