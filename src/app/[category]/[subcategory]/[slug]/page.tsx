@@ -534,13 +534,15 @@ export default async function ArticlePage({ params }: Props) {
         priceCurrency: product.currency || "USD",
         availability: "https://schema.org/InStock",
       }
-    } else if (validOffers.length > 0) {
-      productSchemaForReview.offers = {
-        "@type": "Offer",
-        url: validOffers[0].url,
-        availability: "https://schema.org/InStock",
-        seller: validOffers[0].seller,
-      }
+    }
+
+    // Google requires "price" or "priceSpecification" on every Offer. Products
+    // with no price anywhere (services and variable-rate offerings such as
+    // charter, IV therapy or fractional art) cannot produce a valid Product
+    // entity, so we omit the schema rather than emit a priceless Offer that
+    // fails both Product snippets and Merchant listings in Search Console.
+    if (!productSchemaForReview.offers) {
+      productSchemaForReview = null
     }
   }
 
