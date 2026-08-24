@@ -3,6 +3,73 @@ import { NextResponse } from 'next/server';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+type KitStatus = 'ok' | 'partial' | 'failed';
+
+// Adds/updates the subscriber in Kit (formerly ConvertKit) and tags them by
+// signup source. Never throws — always resolves to a status so a Kit outage
+// can't break the subscriber's welcome email or the owner notification.
+async function addToKit(email: string): Promise<{ status: KitStatus; detail: string }> {
+  const apiKey = process.env.KIT_API_KEY;
+  if (!apiKey) {
+    console.error('[newsletter][kit] KIT_API_KEY is not set — skipping Kit sync');
+    return { status: 'failed', detail: 'KIT_API_KEY not configured' };
+  }
+
+  try {
+    // 1) Create (upsert) the subscriber. Kit returns 201 for a new subscriber
+    //    or 200 for an existing one; both include subscriber.id.
+    const subRes = await fetch('https://api.kit.com/v4/subscribers', {
+      method: 'POST',
+      headers: {
+        'X-Kit-Api-Key': apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email_address: email }),
+    });
+
+    if (!subRes.ok) {
+      const body = await subRes.text().catch(() => '');
+      console.error(`[newsletter][kit] subscriber create failed status=${subRes.status} email=${email} body=${body}`);
+      return { status: 'failed', detail: `subscriber create failed (HTTP ${subRes.status})` };
+    }
+
+    const subData = await subRes.json().catch(() => null);
+    const subscriberId = subData?.subscriber?.id;
+    if (!subscriberId) {
+      console.error(`[newsletter][kit] subscriber create returned no id email=${email} body=${JSON.stringify(subData)}`);
+      return { status: 'failed', detail: 'subscriber created but no id returned' };
+    }
+
+    // 2) Tag the subscriber by signup source. Requires the subscriber id in the
+    //    path; body is an empty object.
+    const tagId = process.env.KIT_TAG_SITE_FORM_ID;
+    if (!tagId) {
+      console.error(`[newsletter][kit] KIT_TAG_SITE_FORM_ID is not set — subscriber ${subscriberId} added but not tagged`);
+      return { status: 'partial', detail: `added (id ${subscriberId}) but NOT tagged — KIT_TAG_SITE_FORM_ID missing` };
+    }
+
+    const tagRes = await fetch(`https://api.kit.com/v4/tags/${tagId}/subscribers/${subscriberId}`, {
+      method: 'POST',
+      headers: {
+        'X-Kit-Api-Key': apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
+    });
+
+    if (!tagRes.ok) {
+      const body = await tagRes.text().catch(() => '');
+      console.error(`[newsletter][kit] tagging failed status=${tagRes.status} subscriber=${subscriberId} tag=${tagId} body=${body}`);
+      return { status: 'partial', detail: `added (id ${subscriberId}) but tagging failed (HTTP ${tagRes.status})` };
+    }
+
+    return { status: 'ok', detail: `added (id ${subscriberId}) and tagged source:site-form` };
+  } catch (err) {
+    console.error(`[newsletter][kit] unexpected error syncing email=${email} to Kit:`, err);
+    return { status: 'failed', detail: 'unexpected error (see logs)' };
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const { email, turnstileToken } = await request.json();
@@ -36,6 +103,12 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    // Add the subscriber to Kit (ESP) and tag by source. This runs after
+    // Turnstile verification and before the emails. A Kit failure must not
+    // break the flow, so addToKit never throws — we capture its status and
+    // surface it in the owner notification below.
+    const kit = await addToKit(email);
 
     // Send confirmation email to subscriber
     await resend.emails.send({
@@ -78,6 +151,7 @@ export async function POST(request: Request) {
           <h2 style="color: #1a1a1a;">New Newsletter Subscription</h2>
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+          <p><strong>Kit:</strong> ${kit.status === 'ok' ? '✅' : kit.status === 'partial' ? '⚠️' : '❌'} ${kit.detail}</p>
         </div>
       `,
     });
