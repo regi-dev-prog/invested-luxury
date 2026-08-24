@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run"
   },
   "dependencies": {
     "@portabletext/react": "^5.0.0",
@@ -14,6 +15,7 @@
     "@sanity/image-url": "^1.2.0",
     "@sanity/vision": "^4.20.0",
     "cheerio": "^1.2.0",
+    "disposable-email-domains-js": "^1.25.0",
     "lucide-react": "^0.555.0",
     "next": "14.2.33",
     "next-sanity": "^11.6.10",
@@ -32,6 +34,7 @@
     "eslint-config-next": "14.2.33",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.11"
   }
 }

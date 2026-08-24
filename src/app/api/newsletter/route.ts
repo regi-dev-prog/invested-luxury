@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
+import { validateSubscriberEmail } from '@/lib/validateEmail';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -97,9 +98,44 @@ export async function POST(request: Request) {
       }
     }
 
-    if (!email || !email.includes('@')) {
+    // Reject bot / disposable / malformed addresses before they ever reach Kit.
+    // Runs after Turnstile, before the Kit sync. Conservative by design — see
+    // src/lib/validateEmail.ts.
+    const validation = validateSubscriberEmail(email);
+    if (!validation.valid) {
+      // Log with a searchable prefix so rejections can be reviewed/calibrated.
+      console.error(
+        `[newsletter][reject] email=${email} reason=${validation.reason} detail=${validation.detail ?? ''}`
+      );
+
+      // Notify the owner about every rejection so a wrongly-blocked real reader
+      // is visible. Fire-and-forget: a mail failure must not change the response.
+      try {
+        await resend.emails.send({
+          from: 'InvestedLuxury <noreply@investedluxury.com>',
+          to: 'investedlux@gmail.com',
+          subject: '🚫 Newsletter signup rejected',
+          html: `
+            <div style="font-family: Georgia, serif; padding: 20px;">
+              <h2 style="color: #1a1a1a;">Newsletter signup rejected</h2>
+              <p><strong>Email:</strong> ${email}</p>
+              <p><strong>Reason:</strong> ${validation.reason}</p>
+              <p><strong>Detail:</strong> ${validation.detail ?? '—'}</p>
+              <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+              <p style="color:#888;font-size:12px;">
+                If this is a real reader, loosen the heuristic in
+                src/lib/validateEmail.ts (weights/threshold are constants at the top).
+              </p>
+            </div>
+          `,
+        });
+      } catch (notifyErr) {
+        console.error('[newsletter][reject] failed to send owner notification:', notifyErr);
+      }
+
+      // Generic message — never reveal that the address was flagged as suspicious.
       return NextResponse.json(
-        { error: 'Valid email is required' },
+        { error: 'Please enter a valid email address' },
         { status: 400 }
       );
     }
