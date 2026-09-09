@@ -161,13 +161,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(newUrl, 301)
   }
 
-  // Skip static assets and studio
+  // Skip static assets, downloads, and studio
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
     pathname.startsWith('/studio') ||
     pathname.startsWith('/favicon') ||
-    pathname.match(/\.(ico|png|jpg|jpeg|svg|webp|gif|css|js|woff2?)$/)
+    pathname.startsWith('/downloads') ||
+    pathname.match(/\.(ico|png|jpg|jpeg|svg|webp|gif|css|js|woff2?|xlsx?|pdf|csv|zip|docx?)$/)
   ) {
     return NextResponse.next()
   }

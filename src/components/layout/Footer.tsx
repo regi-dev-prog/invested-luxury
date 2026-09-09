@@ -52,7 +52,7 @@ export default function Footer() {
               Join the Inner Circle
             </h3>
             <p className="text-white/70 mb-8">
-              Receive curated insights on investment-worthy pieces, exclusive access to luxury guides, and early previews of our latest editorial content.
+              A free spreadsheet that shows what a piece really costs based on how often you use it. One sheet for fashion, one for wellness gear. Sign up and we will email it to you. You also get our newsletter with new finds and buying advice.
             </p>
             <FooterNewsletterForm />
             <p className="text-caption text-white/50 mt-4">

@@ -156,8 +156,16 @@ export async function POST(request: Request) {
           <h1 style="color: #1a1a1a; font-size: 24px; font-weight: normal; margin-bottom: 20px;">
             Welcome to InvestedLuxury
           </h1>
+          <p style="color: #4a4a4a; line-height: 1.6; margin-bottom: 24px;">
+            Thank you for subscribing. Here is the Cost Per Wear Calculator you signed up for. It has one sheet for fashion and one for wellness gear.
+          </p>
+          <p style="margin-bottom: 28px;">
+            <a href="https://investedluxury.com/downloads/investedluxury-cpw-cps-calculator.xlsx" style="display: inline-block; background: #1a1a1a; color: #ffffff; text-decoration: none; padding: 12px 24px; font-size: 15px;">
+              Download the calculator
+            </a>
+          </p>
           <p style="color: #4a4a4a; line-height: 1.6; margin-bottom: 20px;">
-            Thank you for subscribing to our newsletter. You'll be the first to know about:
+            You will also be the first to know about:
           </p>
           <ul style="color: #4a4a4a; line-height: 1.8; margin-bottom: 20px;">
             <li>New investment-worthy pieces we've discovered</li>

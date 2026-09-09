@@ -38,8 +38,8 @@ export default function FooterNewsletterForm() {
   if (status === 'success') {
     return (
       <div className="text-center">
-        <p className="text-gold font-medium">Welcome to the Inner Circle! ✨</p>
-        <p className="text-sm text-white/70 mt-1">Check your inbox for a welcome email.</p>
+        <p className="text-gold font-medium">You are on the list.</p>
+        <p className="text-sm text-white/70 mt-1">Check your email for the link to download the calculator.</p>
       </div>
     );
   }
