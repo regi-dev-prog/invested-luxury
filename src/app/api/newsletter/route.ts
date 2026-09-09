@@ -156,25 +156,38 @@ export async function POST(request: Request) {
           <h1 style="color: #1a1a1a; font-size: 24px; font-weight: normal; margin-bottom: 20px;">
             Welcome to InvestedLuxury
           </h1>
-          <p style="color: #4a4a4a; line-height: 1.6; margin-bottom: 24px;">
-            Thank you for subscribing. Here is the Cost Per Wear Calculator you signed up for. It has one sheet for fashion and one for wellness gear.
+          <p style="color: #4a4a4a; font-size: 17px; line-height: 1.6; margin-bottom: 20px;">
+            Hi,
+          </p>
+          <p style="color: #4a4a4a; font-size: 17px; line-height: 1.6; margin-bottom: 24px;">
+            Thanks for signing up. Here's the calculator:
           </p>
           <p style="margin-bottom: 28px;">
-            <a href="https://investedluxury.com/downloads/investedluxury-cpw-cps-calculator.xlsx" style="display: inline-block; background: #1a1a1a; color: #ffffff; text-decoration: none; padding: 12px 24px; font-size: 15px;">
+            <a href="https://investedluxury.com/downloads/investedluxury-cpw-cps-calculator.xlsx" style="display: inline-block; background: #1a1a1a; color: #ffffff; text-decoration: none; padding: 14px 28px; font-size: 16px;">
               Download the calculator
             </a>
           </p>
-          <p style="color: #4a4a4a; line-height: 1.6; margin-bottom: 20px;">
-            You will also be the first to know about:
+          <p style="color: #4a4a4a; font-size: 17px; line-height: 1.6; margin-bottom: 20px;">
+            There are two sheets in it.
           </p>
-          <ul style="color: #4a4a4a; line-height: 1.8; margin-bottom: 20px;">
-            <li>New investment-worthy pieces we've discovered</li>
-            <li>Exclusive guides and buying advice</li>
-            <li>Resale market insights and trends</li>
-          </ul>
-          <p style="color: #4a4a4a; line-height: 1.6;">
-            In the meantime, explore our latest articles at 
-            <a href="https://investedluxury.com" style="color: #C9A962;">investedluxury.com</a>
+          <p style="color: #4a4a4a; font-size: 17px; line-height: 1.6; margin-bottom: 20px;">
+            The first one is cost per wear, for clothes, bags and shoes. Fill in what you paid, what you expect to get back when you sell, and roughly how often you wear it. It works out what the item actually costs you each time you use it.
+          </p>
+          <p style="color: #4a4a4a; font-size: 17px; line-height: 1.6; margin-bottom: 20px;">
+            The second one is cost per session, for wellness equipment like saunas and red light panels. Same idea, plus it shows you how long it takes to break even against paying per visit somewhere else.
+          </p>
+          <p style="color: #4a4a4a; font-size: 17px; line-height: 1.6; margin-bottom: 20px;">
+            The part most people skip is resale value. A bag you paid $2,800 for and sold for $1,900 didn't cost you $2,800. It cost you $900 plus whatever you spent keeping it in good condition. That difference is usually the whole argument for buying the better version.
+          </p>
+          <p style="color: #4a4a4a; font-size: 17px; line-height: 1.6; margin-bottom: 20px;">
+            One thing worth knowing: use completed sale prices for your resale estimates, not what sellers are asking. Asking prices on resale sites run high and they'll make your numbers look better than they are.
+          </p>
+          <p style="color: #4a4a4a; font-size: 17px; line-height: 1.6; margin-bottom: 24px;">
+            I send one issue a week. Each one takes a single product and runs it through these numbers properly, with the working shown.
+          </p>
+          <p style="color: #4a4a4a; font-size: 17px; line-height: 1.6;">
+            Regi<br/>
+            InvestedLuxury
           </p>
           <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;" />
           <p style="color: #888; font-size: 12px;">
