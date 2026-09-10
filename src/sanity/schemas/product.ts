@@ -10,6 +10,7 @@ export default defineType({
     {name: 'details', title: 'Details'},
     {name: 'affiliate', title: 'Affiliate Links'},
     {name: 'investment', title: 'Investment'},
+    {name: 'newsletter', title: 'Newsletter / Cost Calc'},
     {name: 'automation', title: 'Automation'},
     {name: 'seo', title: 'SEO'},
   ],
@@ -391,6 +392,129 @@ export default defineType({
       description: 'Any issues during scraping?',
     }),
 
+    // ============ NEWSLETTER / COST CALC ============
+    // Additive fields for the weekly newsletter engine. All optional so the
+    // existing store products stay valid and no existing query is affected.
+    // Calculation fields show conditionally based on costCategory.
+    defineField({
+      name: 'costCategory',
+      title: 'Cost Calc Category',
+      type: 'string',
+      group: 'newsletter',
+      description:
+        'Drives the weekly newsletter rotation and which cost model applies. Separate from the store Category above. Leave empty for products not used in the newsletter.',
+      options: {
+        list: [
+          {title: 'Fashion (cost per wear)', value: 'fashion'},
+          {title: 'Wellness (cost per session)', value: 'wellness'},
+        ],
+      },
+    }),
+    defineField({
+      name: 'priceLastVerified',
+      title: 'Price Last Verified',
+      type: 'date',
+      group: 'newsletter',
+      description:
+        'The date the current price was actually checked at the merchant. The newsletter QA gate blocks sending if this is older than 60 days.',
+      validation: (Rule) =>
+        Rule.custom((value) => {
+          if (!value) return true
+          return new Date(value as string) <= new Date()
+            ? true
+            : 'Price Last Verified cannot be in the future'
+        }),
+    }),
+    defineField({
+      name: 'priceSource',
+      title: 'Price Source',
+      type: 'string',
+      group: 'newsletter',
+      description: 'Where the current price was taken from (e.g. brand.com, Net-a-Porter).',
+    }),
+    defineField({
+      name: 'lastFeaturedDate',
+      title: 'Last Featured in Newsletter',
+      type: 'date',
+      group: 'newsletter',
+      description: 'When this product last appeared in an issue. The engine uses this to avoid repeats.',
+    }),
+
+    // --- Shared input — applies to both categories ---
+    defineField({
+      name: 'expectedResaleValue',
+      title: 'Expected Resale Value',
+      type: 'number',
+      group: 'newsletter',
+      description:
+        'Estimated resale / second-hand value. Use completed sale prices, not asking prices. Optional for wellness gear (the calculation defaults it to 0, since resale is less predictable there).',
+      hidden: ({document}) => document?.costCategory !== 'fashion' && document?.costCategory !== 'wellness',
+      validation: (Rule) => Rule.min(0),
+    }),
+
+    // --- Fashion inputs (cost per wear) — shown when Cost Calc Category = Fashion ---
+    defineField({
+      name: 'expectedLifespanYears',
+      title: 'Expected Lifespan (years)',
+      type: 'number',
+      group: 'newsletter',
+      hidden: ({document}) => document?.costCategory !== 'fashion',
+      validation: (Rule) => Rule.positive(),
+    }),
+    defineField({
+      name: 'expectedWearsPerYear',
+      title: 'Expected Wears Per Year',
+      type: 'number',
+      group: 'newsletter',
+      hidden: ({document}) => document?.costCategory !== 'fashion',
+      validation: (Rule) => Rule.positive(),
+    }),
+    defineField({
+      name: 'annualCareCost',
+      title: 'Annual Care Cost',
+      type: 'number',
+      group: 'newsletter',
+      description: 'Cleaning, repairs, storage per year.',
+      hidden: ({document}) => document?.costCategory !== 'fashion',
+      validation: (Rule) => Rule.min(0),
+    }),
+
+    // --- Wellness inputs (cost per session) — shown when Cost Calc Category = Wellness ---
+    defineField({
+      name: 'expectedServiceLifeYears',
+      title: 'Expected Service Life (years)',
+      type: 'number',
+      group: 'newsletter',
+      hidden: ({document}) => document?.costCategory !== 'wellness',
+      validation: (Rule) => Rule.positive(),
+    }),
+    defineField({
+      name: 'sessionsPerWeek',
+      title: 'Sessions Per Week',
+      type: 'number',
+      group: 'newsletter',
+      hidden: ({document}) => document?.costCategory !== 'wellness',
+      validation: (Rule) => Rule.positive(),
+    }),
+    defineField({
+      name: 'annualRunningCost',
+      title: 'Annual Running Cost',
+      type: 'number',
+      group: 'newsletter',
+      description: 'Electricity, consumables, maintenance per year.',
+      hidden: ({document}) => document?.costCategory !== 'wellness',
+      validation: (Rule) => Rule.min(0),
+    }),
+    defineField({
+      name: 'comparableCostPerVisit',
+      title: 'Comparable Cost Per Visit',
+      type: 'number',
+      group: 'newsletter',
+      description: 'What one session costs elsewhere (spa, studio), for the break-even comparison.',
+      hidden: ({document}) => document?.costCategory !== 'wellness',
+      validation: (Rule) => Rule.min(0),
+    }),
+
     // ============ META ============
     defineField({
       name: 'featured',
@@ -427,13 +551,15 @@ export default defineType({
       media: 'images.0',
       status: 'status',
       autoGenerated: 'autoGenerated',
+      costCategory: 'costCategory',
     },
-    prepare({title, brand, price, currency, media, status, autoGenerated}) {
+    prepare({title, brand, price, currency, media, status, autoGenerated, costCategory}) {
       const currencySymbol = currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : '$'
       const autoTag = autoGenerated ? ' 🤖' : ''
+      const costTag = costCategory ? ` • 📬 ${costCategory}` : ''
       return {
         title: `${title || 'Untitled Product'}${autoTag}`,
-        subtitle: `${brand || 'No brand'} - ${currencySymbol}${price?.toLocaleString() || '0'} • ${status || 'draft'}`,
+        subtitle: `${brand || 'No brand'} - ${currencySymbol}${price?.toLocaleString() || '0'} • ${status || 'draft'}${costTag}`,
         media: media,
       }
     },
