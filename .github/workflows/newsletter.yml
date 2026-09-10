@@ -1,0 +1,42 @@
+name: Weekly Newsletter
+
+on:
+  schedule:
+    # Thursday 13:00 UTC (~09:00 ET / 06:00 PT — Thursday morning for a US
+    # audience; ~15:00–16:00 Israel). Change the hour to retime the issue.
+    - cron: "0 13 * * 4"
+  workflow_dispatch:
+    inputs:
+      autosend:
+        description: "Create a draft in Kit, or actually send"
+        required: true
+        default: "draft"
+        type: choice
+        options:
+          - draft
+          - send
+
+jobs:
+  newsletter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - name: Run newsletter engine
+        env:
+          KIT_API_KEY: ${{ secrets.KIT_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SANITY_API_TOKEN: ${{ secrets.SANITY_API_TOKEN }}
+          NEWSLETTER_BYPASS_TOKEN: ${{ secrets.NEWSLETTER_BYPASS_TOKEN }}
+          NEXT_PUBLIC_SANITY_PROJECT_ID: "4b3ap7pf"
+          NEXT_PUBLIC_SANITY_DATASET: "production"
+          NEXT_PUBLIC_SITE_URL: "https://investedluxury.com"
+          # Scheduled runs create a DRAFT. It sends only when dispatched manually
+          # with "send", or when the repo variable NEWSLETTER_AUTOSEND is "true".
+          NEWSLETTER_AUTOSEND: ${{ (github.event.inputs.autosend == 'send') && 'true' || vars.NEWSLETTER_AUTOSEND || 'false' }}
+        run: node scripts/newsletter/run.mjs

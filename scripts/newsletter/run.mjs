@@ -221,6 +221,12 @@ async function checkArticleLink(url) {
     try {
       const res = await fetch(url, { redirect: 'follow', headers })
       status = `HTTP ${res.status}`
+      // Vercel's edge bot mitigation sits in front of our middleware; a plain
+      // fetch can't solve its JS challenge. Surface this clearly — the fix is a
+      // Vercel Firewall bypass rule for the x-newsletter-check header, not code.
+      if (res.headers.get('x-vercel-mitigated') === 'challenge') {
+        status = `HTTP ${res.status} (blocked by Vercel edge challenge — add a Vercel Firewall bypass for the x-newsletter-check header)`
+      }
       if (res.ok) return { ok: true, status, tries: i + 1 }
     } catch (err) {
       status = `error: ${err.message}`
