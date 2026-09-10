@@ -19,14 +19,18 @@ export interface SelectableProduct extends NewsletterProductInput {
   _id: string
   name?: string | null
   lastFeaturedDate?: string | null
+  /** False when the affiliate link does not land on a single product page. */
+  linkTargetIsProductPage?: boolean | null
 }
 
 type EligibleCalc = EligibleFashionResult | EligibleWellnessResult
 
 export interface CandidatePool {
-  /** Eligible products in this week's category (the raw depth of the pool). */
+  /** Eligible products in this week's category (after bad-link exclusion). */
   eligibleInCategory: number
-  /** Of those, how many were dropped for being featured within the window. */
+  /** Otherwise-eligible products dropped because their link is not a product page. */
+  excludedBadLinkTarget: number
+  /** Of the eligible, how many were dropped for being featured within the window. */
   excludedRecentlyFeatured: number
   /** Eligible AND not recently featured — the products actually pickable. */
   selectable: number
@@ -102,10 +106,18 @@ export function selectWeeklyProduct(
   const category = categoryForWeek(isoWeek)
 
   // 1. Keep only products that are eligible AND in this week's category.
+  //    A product whose affiliate link is not a single product page is dropped
+  //    even if otherwise eligible — a detailed breakdown next to a homepage
+  //    link is a bad reader experience.
   const eligible: Array<{product: SelectableProduct; calc: EligibleCalc}> = []
+  let excludedBadLinkTarget = 0
   for (const product of products) {
     const calc = calculateCost(product, {now})
     if (calc.isEligible && calc.category === category) {
+      if (product.linkTargetIsProductPage === false) {
+        excludedBadLinkTarget++
+        continue
+      }
       eligible.push({product, calc})
     }
   }
@@ -125,6 +137,7 @@ export function selectWeeklyProduct(
 
   const pool: CandidatePool = {
     eligibleInCategory: eligible.length,
+    excludedBadLinkTarget,
     excludedRecentlyFeatured,
     selectable: selectable.length,
   }

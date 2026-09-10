@@ -26,6 +26,7 @@ describe('calculateCost — fashion', () => {
     expect(result.isEligible).toBe(true)
     if (!result.isEligible || result.category !== 'fashion') throw new Error('expected eligible fashion')
 
+    expect(result.needsPriceVerification).toBe(false) // fresh priceLastVerified
     const m = result.metrics
     expect(m.totalAcquisitionCost).toBe(4500)
     expect(m.totalCareCost).toBe(600) // 40 * 15
@@ -34,6 +35,15 @@ describe('calculateCost — fashion', () => {
     expect(m.costPerWear).toBeCloseTo(2.6666667, 6) // 2400 / 900
     expect(m.valueRetainedPercent).toBe(60) // 2700 / 4500 * 100
     expect(m.costPerYear).toBe(160) // 2400 / 15
+  })
+
+  it('stays eligible but flags needsPriceVerification when priceLastVerified is missing', () => {
+    const { priceLastVerified, ...withoutDate } = bottega
+    void priceLastVerified
+    const result = calculateCost(withoutDate, { now: NOW })
+    expect(result.isEligible).toBe(true)
+    if (!result.isEligible) throw new Error('expected eligible')
+    expect(result.needsPriceVerification).toBe(true)
   })
 })
 

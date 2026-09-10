@@ -181,7 +181,15 @@ export async function middleware(request: NextRequest) {
   // Allow known good bots — but still apply URL redirects
   const isAllowedBot = ua && ALLOWED_BOTS.some(pattern => pattern.test(ua))
 
-  if (!isAllowedBot) {
+  // Trusted internal check: the weekly newsletter engine verifies its article
+  // link before sending. A request carrying the shared secret in
+  // x-newsletter-check skips the bot / rate-limit gate. This never touches SEO
+  // or real visitors — only a caller that already knows NEWSLETTER_BYPASS_TOKEN.
+  const bypassToken = process.env.NEWSLETTER_BYPASS_TOKEN
+  const hasNewsletterBypass =
+    !!bypassToken && request.headers.get('x-newsletter-check') === bypassToken
+
+  if (!isAllowedBot && !hasNewsletterBypass) {
     // Block known bad bots
     if (ua && BOT_UA_PATTERNS.some(pattern => pattern.test(ua))) {
       console.log(`[BLOCKED-UA] ${ip} | ${ua?.slice(0, 80)}`)

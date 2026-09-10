@@ -50,6 +50,9 @@ export interface EligibleFashionResult {
   isEligible: true
   category: 'fashion'
   reasons: []
+  /** True when priceLastVerified is absent — the engine must verify the price
+   *  live before this product ships. A missing date does not disqualify. */
+  needsPriceVerification: boolean
   metrics: FashionMetrics
 }
 
@@ -57,6 +60,8 @@ export interface EligibleWellnessResult {
   isEligible: true
   category: 'wellness'
   reasons: []
+  /** See EligibleFashionResult.needsPriceVerification. */
+  needsPriceVerification: boolean
   metrics: WellnessMetrics
 }
 
@@ -121,8 +126,12 @@ export function calculateCost(
     reasons.push('Price must be greater than zero')
   }
 
+  // A missing priceLastVerified does NOT disqualify: the engine verifies the
+  // price at runtime for the one product it selects. It only flags the need.
+  // A date that exists but is stale (older than maxAge) still disqualifies.
+  let needsPriceVerification = false
   if (product.priceLastVerified == null || product.priceLastVerified === '') {
-    reasons.push('Missing priceLastVerified')
+    needsPriceVerification = true
   } else {
     const verified = new Date(product.priceLastVerified)
     if (Number.isNaN(verified.getTime())) {
@@ -185,6 +194,7 @@ export function calculateCost(
       isEligible: true,
       category: 'fashion',
       reasons: [],
+      needsPriceVerification,
       metrics: {
         totalAcquisitionCost,
         totalCareCost,
@@ -216,6 +226,7 @@ export function calculateCost(
     isEligible: true,
     category: 'wellness',
     reasons: [],
+    needsPriceVerification,
     metrics: {
       netCostAfterResale,
       totalSessions,

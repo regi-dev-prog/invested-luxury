@@ -89,6 +89,21 @@ describe('eligibility filtering', () => {
     expect(result.selected).toBe(false)
     expect(result.pool.eligibleInCategory).toBe(0)
   })
+
+  it('excludes a product whose link is not a single product page', () => {
+    const issueDate = new Date('2026-06-15')
+    const now = issueDate
+    const category = selectWeeklyProduct([], issueDate, {now}).category
+
+    const badLink = eligible(category, now, {_id: 'p-badlink', price: 9000, linkTargetIsProductPage: false})
+    const goodLink = eligible(category, now, {_id: 'p-goodlink', price: 3000, linkTargetIsProductPage: true})
+    const result = selectWeeklyProduct([badLink, goodLink], issueDate, {now})
+
+    expect(result.selected).toBe(true)
+    if (result.selected) expect(result.product._id).toBe('p-goodlink') // not the pricier bad-link one
+    expect(result.pool.excludedBadLinkTarget).toBe(1)
+    expect(result.pool.eligibleInCategory).toBe(1)
+  })
 })
 
 describe('ranking', () => {

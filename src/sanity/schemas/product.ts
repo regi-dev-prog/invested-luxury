@@ -514,6 +514,25 @@ export default defineType({
       hidden: ({document}) => document?.costCategory !== 'wellness',
       validation: (Rule) => Rule.min(0),
     }),
+    defineField({
+      name: 'linkTargetIsProductPage',
+      title: 'Affiliate link points to a single product page',
+      type: 'boolean',
+      group: 'newsletter',
+      description:
+        'False when the affiliate link lands on a designer, category, home, or editorial page instead of one specific product. The newsletter engine skips products marked false, because a detailed cost breakdown next to a link that dumps the reader on a brand homepage is a poor experience.',
+      hidden: ({document}) => document?.costCategory !== 'fashion' && document?.costCategory !== 'wellness',
+    }),
+    defineField({
+      name: 'calcFieldsAreDefaults',
+      title: 'Calc fields are category defaults (not verified)',
+      type: 'boolean',
+      group: 'newsletter',
+      description:
+        'Set by the backfill script when the calculation fields were filled with category defaults rather than reviewed. Turn this off once you have checked the numbers for this product.',
+      initialValue: false,
+      hidden: ({document}) => document?.costCategory !== 'fashion' && document?.costCategory !== 'wellness',
+    }),
 
     // ============ META ============
     defineField({

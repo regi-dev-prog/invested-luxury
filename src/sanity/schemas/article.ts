@@ -461,6 +461,14 @@ export default defineType({
       group: 'publishing',
     }),
     defineField({
+      name: 'lastSentInNewsletter',
+      title: 'Last Sent in Newsletter',
+      type: 'date',
+      group: 'publishing',
+      description:
+        'Set by the weekly newsletter engine when this article goes out. The engine skips any article that already has this set, so it never sends the same one twice.',
+    }),
+    defineField({
       name: 'featuredIn',
       title: 'Featured In',
       description: 'Where this article should appear as featured. Leave empty for not featured.',
