@@ -18,6 +18,7 @@
  *      NEXT_PUBLIC_SITE_URL (optional), NEWSLETTER_AUTOSEND (optional)
  */
 import { createClient } from '@sanity/client'
+import imageUrlBuilder from '@sanity/image-url'
 import Anthropic from '@anthropic-ai/sdk'
 
 const DRY_RUN = process.argv.includes('--dry-run')
@@ -38,6 +39,7 @@ if (!process.env.ANTHROPIC_API_KEY) die('Missing ANTHROPIC_API_KEY (needed to wr
 if (!DRY_RUN && !process.env.KIT_API_KEY) die('Missing KIT_API_KEY (needed to reach Kit).')
 
 const sanity = createClient({ projectId, dataset, token: process.env.SANITY_API_TOKEN, apiVersion: '2021-10-21', useCdn: false })
+const imageBuilder = imageUrlBuilder(sanity)
 const anthropic = new Anthropic() // reads ANTHROPIC_API_KEY from env
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000
@@ -49,7 +51,7 @@ async function selectArticle(now) {
   // Published, not yet sent in a newsletter.
   const articles = await sanity.fetch(
     `*[_type == "article" && status == "published" && !defined(lastSentInNewsletter)]{
-      _id, title, "slug": slug.current, subtitle, excerpt, publishedAt, body
+      _id, title, "slug": slug.current, subtitle, excerpt, publishedAt, body, mainImage
     }`,
   )
 
@@ -169,16 +171,28 @@ function articleUrl(article) {
   return `${SITE_URL}/article/${article.slug}`
 }
 
-function buildHtml(article, copy, url) {
+/** Hero image for the issue, or null if the article has none. */
+function heroImage(article) {
+  const img = article.mainImage
+  if (!img || !img.asset || !img.asset._ref) return null
+  const url = imageBuilder.image(img).width(600).quality(80).format('webp').url()
+  return { url, alt: (img.alt || article.title || '').trim() }
+}
+
+function buildHtml(article, copy, url, hero) {
   const paras = copy.paragraphs
     .map(
       (p) =>
         `<p style="color:#4a4a4a; font-size:17px; line-height:1.6; margin:0 0 20px;">${escapeHtml(p)}</p>`,
     )
     .join('\n')
+  // Optional hero, linked to the article like the button. Skipped if absent.
+  const heroBlock = hero
+    ? `<p style="margin:0 0 24px;"><a href="${url}"><img src="${hero.url}" alt="${escapeHtml(hero.alt)}" width="600" style="display:block; width:100%; max-width:600px; height:auto; border:0;" /></a></p>\n      `
+    : ''
   return `
     <div style="font-family: Georgia, serif; max-width:600px; margin:0 auto; padding:40px 20px;">
-      <h1 style="color:#1a1a1a; font-size:24px; font-weight:normal; margin:0 0 24px;">${escapeHtml(article.title)}</h1>
+      ${heroBlock}<h1 style="color:#1a1a1a; font-size:24px; font-weight:normal; margin:0 0 24px;">${escapeHtml(article.title)}</h1>
       ${paras}
       <p style="margin:28px 0;">
         <a href="${url}" style="display:inline-block; background:#1a1a1a; color:#ffffff; text-decoration:none; padding:14px 28px; font-size:16px;">Read the article</a>
@@ -235,7 +249,7 @@ async function checkArticleLink(url) {
   return { ok: false, status, tries: attempts }
 }
 
-async function runQaGates(article, copy, url, html) {
+async function runQaGates(article, copy, url, html, hero) {
   const checks = []
 
   // Subject present and within 60 characters.
@@ -268,6 +282,27 @@ async function runQaGates(article, copy, url, html) {
     ok: link.ok,
     detail: `${link.status} after ${link.tries} attempt(s) for ${url}`,
   })
+
+  // Hero image is optional, but if present it must load (200). Sanity's CDN is
+  // not behind our rate limiter, so a plain fetch is enough (light retry).
+  if (hero) {
+    let imgStatus = 'unknown'
+    let imgOk = false
+    for (let i = 0; i < 2; i++) {
+      if (i > 0) await sleep(2000)
+      try {
+        const r = await fetch(hero.url, { headers: { 'User-Agent': REAL_UA } })
+        imgStatus = `HTTP ${r.status}`
+        if (r.ok) {
+          imgOk = true
+          break
+        }
+      } catch (err) {
+        imgStatus = `error: ${err.message}`
+      }
+    }
+    checks.push({ name: 'Hero image returns 200', ok: imgOk, detail: `${imgStatus} for ${hero.url}` })
+  }
 
   console.log('\nQA gates:')
   let failed = false
@@ -314,17 +349,19 @@ async function main() {
 
   const copy = await writeCopy(article)
   const url = articleUrl(article)
-  const html = buildHtml(article, copy, url)
+  const hero = heroImage(article)
+  const html = buildHtml(article, copy, url, hero)
 
   console.log('\n----- ISSUE -----')
   console.log(`Subject : ${copy.subject}`)
   console.log(`Preview : ${copy.preview}`)
+  console.log(`Hero    : ${hero ? hero.url : '(none — article has no image, skipped)'}`)
   console.log(`Link    : ${url}`)
   console.log('')
   copy.paragraphs.forEach((p) => console.log(p + '\n'))
   console.log('-----------------')
 
-  await runQaGates(article, copy, url, html)
+  await runQaGates(article, copy, url, html, hero)
 
   if (DRY_RUN) {
     console.log('\nDRY RUN: QA passed. No Kit broadcast created, no Sanity write. This is the issue that would go out.')
