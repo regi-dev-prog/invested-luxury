@@ -190,8 +190,12 @@ function buildHtml(article, copy, url, hero) {
   const heroBlock = hero
     ? `<p style="margin:0 0 24px;"><a href="${url}"><img src="${hero.url}" alt="${escapeHtml(hero.alt)}" width="600" style="display:block; width:100%; max-width:600px; height:auto; border:0;" /></a></p>\n      `
     : ''
+  // Brand logo as styled text, matching the site's wordmark (I and L in gold).
+  // Text renders reliably in every email client, no hosted image needed.
+  const logoBlock = `<div style="text-align:center; margin:0 0 28px;"><a href="${SITE_URL}" style="text-decoration:none; font-family: Georgia, serif; font-size:26px; letter-spacing:0.5px; color:#1a1a1a;"><span style="color:#C9A962;">I</span>nvested<span style="color:#C9A962;">L</span>uxury</a></div>`
   return `
     <div style="font-family: Georgia, serif; max-width:600px; margin:0 auto; padding:40px 20px;">
+      ${logoBlock}
       ${heroBlock}<h1 style="color:#1a1a1a; font-size:24px; font-weight:normal; margin:0 0 24px;">${escapeHtml(article.title)}</h1>
       ${paras}
       <p style="margin:28px 0;">
