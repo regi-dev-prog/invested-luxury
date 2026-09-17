@@ -31,8 +31,7 @@ jobs:
         env:
           KIT_API_KEY: ${{ secrets.KIT_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          # The repo secret is named SANITY_TOKEN; the script reads SANITY_API_TOKEN.
-          SANITY_API_TOKEN: ${{ secrets.SANITY_TOKEN }}
+          SANITY_API_TOKEN: ${{ secrets.SANITY_API_TOKEN }}
           NEWSLETTER_BYPASS_TOKEN: ${{ secrets.NEWSLETTER_BYPASS_TOKEN }}
           NEXT_PUBLIC_SANITY_PROJECT_ID: "4b3ap7pf"
           NEXT_PUBLIC_SANITY_DATASET: "production"
