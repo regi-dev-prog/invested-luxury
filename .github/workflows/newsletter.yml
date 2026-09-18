@@ -36,7 +36,8 @@ jobs:
           NEXT_PUBLIC_SANITY_PROJECT_ID: "4b3ap7pf"
           NEXT_PUBLIC_SANITY_DATASET: "production"
           NEXT_PUBLIC_SITE_URL: "https://investedluxury.com"
-          # Scheduled runs create a DRAFT. It sends only when dispatched manually
-          # with "send", or when the repo variable NEWSLETTER_AUTOSEND is "true".
-          NEWSLETTER_AUTOSEND: ${{ (github.event.inputs.autosend == 'send') && 'true' || vars.NEWSLETTER_AUTOSEND || 'false' }}
+          # Manual dispatch obeys its "send"/"draft" choice exactly. Scheduled
+          # runs send only when the repo variable NEWSLETTER_AUTOSEND is "true".
+          # Outputs "true" to send, "" (draft) otherwise — "" is unambiguously falsy.
+          NEWSLETTER_AUTOSEND: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.autosend == 'send') && 'true' || (github.event_name == 'schedule' && vars.NEWSLETTER_AUTOSEND == 'true') && 'true' || '' }}
         run: node scripts/newsletter/run.mjs
