@@ -76,8 +76,9 @@ export default function ProductSpecsBox({
                 key={i}
                 href={retailer.url}
                 target="_blank"
-                rel="noopener noreferrer sponsored"
+                rel="noopener sponsored"
                 className="flex items-center justify-between px-4 py-3 bg-black text-white hover:bg-[#C9A227] transition-colors"
+                data-il-tracked="1"
                 onClick={() => handleRetailerClick(retailer.name, false)}
               >
                 <span className="font-medium">{retailer.name}</span>
@@ -100,8 +101,9 @@ export default function ProductSpecsBox({
                 key={i}
                 href={retailer.url}
                 target="_blank"
-                rel="noopener noreferrer sponsored"
+                rel="noopener sponsored"
                 className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 hover:border-black hover:text-black transition-colors text-sm"
+                data-il-tracked="1"
                 onClick={() => handleRetailerClick(retailer.name, true)}
               >
                 {retailer.name}

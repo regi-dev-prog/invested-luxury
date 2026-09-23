@@ -303,7 +303,7 @@ const portableTextComponents = {
       if (!value?.href || !value?.imageUrl) return null
       return (
         <div className="my-8 flex justify-center">
-          <a href={value.href} target="_blank" rel="noopener noreferrer sponsored">
+          <a href={value.href} target="_blank" rel="noopener sponsored">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={value.imageUrl} alt={value.alt || ''} className="max-w-full h-auto" />
           </a>

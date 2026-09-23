@@ -50,7 +50,7 @@ export default function ProductCard({ product, variant = 'default' }: ProductCar
           <a
             href={product.affiliateLink}
             target="_blank"
-            rel="noopener noreferrer sponsored"
+            rel="noopener sponsored"
             className="shrink-0 p-2 text-charcoal hover:text-gold transition-colors"
             aria-label={`Shop ${product.name}`}
           >
@@ -99,7 +99,7 @@ export default function ProductCard({ product, variant = 'default' }: ProductCar
               <a
                 href={product.affiliateLink}
                 target="_blank"
-                rel="noopener noreferrer sponsored"
+                rel="noopener sponsored"
                 className="btn-primary inline-flex items-center gap-2 self-start"
               >
                 Shop Now
@@ -145,7 +145,7 @@ export default function ProductCard({ product, variant = 'default' }: ProductCar
             <a
               href={product.affiliateLink}
               target="_blank"
-              rel="noopener noreferrer sponsored"
+              rel="noopener sponsored"
               className="text-sm font-medium uppercase tracking-wider text-charcoal hover:text-gold transition-colors flex items-center gap-1"
             >
               Shop
