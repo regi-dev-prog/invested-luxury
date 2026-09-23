@@ -103,8 +103,9 @@ export default function QuickBuyCard({
             <a
               href={primaryRetailer.url}
               target="_blank"
-              rel="noopener noreferrer sponsored"
+              rel="noopener sponsored"
               className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 font-medium tracking-wide hover:bg-[#C9A227] transition-colors"
+              data-il-tracked="1"
               onClick={() => handleRetailerClick(primaryRetailer.name, 'quick-buy-primary')}
             >
               <ShoppingBag className="w-4 h-4" />
@@ -131,12 +132,13 @@ export default function QuickBuyCard({
                       key={index}
                       href={retailer.url}
                       target="_blank"
-                      rel="noopener noreferrer sponsored"
+                      rel="noopener sponsored"
                       className={`flex items-center justify-between px-4 py-3 text-sm transition-colors ${
                         retailer.isResale
                           ? 'bg-white border border-gray-300 hover:border-[#C9A227] text-gray-700'
                           : 'bg-gray-100 hover:bg-gray-200 text-black'
                       }`}
+                      data-il-tracked="1"
                       onClick={() => handleRetailerClick(retailer.name, 'quick-buy-more')}
                     >
                       <span>

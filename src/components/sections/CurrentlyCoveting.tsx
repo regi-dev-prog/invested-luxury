@@ -56,7 +56,7 @@ const ProductCard = ({ product }: { product: FeaturedProduct }) => {
       <Link 
         href={product.affiliateUrl}
         target="_blank"
-        rel="noopener noreferrer sponsored"
+        rel="noopener sponsored"
         className="block aspect-square relative bg-white overflow-hidden mb-4"
       >
         {imageSource ? (
@@ -85,7 +85,7 @@ const ProductCard = ({ product }: { product: FeaturedProduct }) => {
         <Link
           href={product.affiliateUrl}
           target="_blank"
-          rel="noopener noreferrer sponsored"
+          rel="noopener sponsored"
           className="inline-block px-6 py-2 border border-black text-xs uppercase tracking-wider font-montserrat
                      hover:bg-black hover:text-white transition-colors duration-200"
         >

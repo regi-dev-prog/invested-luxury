@@ -54,7 +54,7 @@ export default function AffiliateButton({
     <a
       href={href}
       target="_blank"
-      rel="noopener noreferrer sponsored"
+      rel="noopener sponsored"
       className={`${baseClasses} ${variantClasses[variant]} ${className}`}
       data-retailer={retailer}
       onClick={handleClick}

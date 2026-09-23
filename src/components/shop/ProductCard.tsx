@@ -126,7 +126,8 @@ export function ProductCard({ product }: ProductCardProps) {
         <a
           href={affiliateLink.url}
           target="_blank"
-          rel="noopener noreferrer sponsored"
+          rel="noopener sponsored"
+          data-il-tracked="1"
           onClick={handleShopClick}
           className="mt-3 inline-block border border-charcoal px-5 py-2 font-sans text-[10px] uppercase tracking-[0.2em] text-charcoal transition-colors duration-200 hover:bg-charcoal hover:text-white"
         >

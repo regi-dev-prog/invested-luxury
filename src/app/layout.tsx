@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ComingSoon from "@/components/ComingSoon";
+import OutboundClickTracker from "@/components/analytics/OutboundClickTracker";
 
 const siteUrl = "https://investedluxury.com";
 
@@ -140,6 +141,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <OutboundClickTracker />
       </body>
     </html>
   );
