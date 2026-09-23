@@ -110,6 +110,31 @@ function isDataCenterIP(ip: string): boolean {
 }
 
 // ============================================================
+// ROUTE TABLES — used to avoid needless Sanity lookups
+// ============================================================
+
+const PARENT_CATEGORIES = new Set(['fashion', 'guides', 'lifestyle', 'wellness'])
+
+// Category slugs as of Sept 2026 (from Sanity). If a new category is added,
+// add it here; otherwise its category page triggers one cached lookup that
+// returns null and falls through harmlessly.
+const CATEGORY_SLUGS = new Set([
+  'accessories', 'art-photography', 'bags', 'beginner-guides', 'biohacking',
+  'clothing', 'gift-guides', 'hotels', 'investment-guides', 'jewelry',
+  'longevity', 'quiet-luxury', 'resources', 'retailers', 'retreats',
+  'seasonal-guides', 'shoes', 'shopping', 'travel', 'watches',
+])
+
+// Single-segment paths that are real pages, never article slugs
+const RESERVED_ROUTES = new Set([
+  ...PARENT_CATEGORIES,
+  ...CATEGORY_SLUGS,
+  'about', 'contact', 'methodology', 'affiliate-disclosure', 'privacy',
+  'privacy-policy', 'terms', 'newsletter', 'search', 'sitemap.xml',
+  'robots.txt', 'article', 'products',
+])
+
+// ============================================================
 // SANITY LOOKUP — Resolve article's canonical path
 // ============================================================
 
@@ -233,6 +258,26 @@ export async function middleware(request: NextRequest) {
     const slug = segments[segments.length - 1]
     if (slug && slug !== 'undefined') {
       return await redirectToCanonical(request, slug)
+    }
+  }
+
+  // --- /[slug] or /[x]/[slug] (article URL missing parent and/or category) ---
+  // Sept 2026: GSC reported root-level article URLs (/best-home-sauna-2026) and
+  // 2-segment ones (/jewelry/tiffany-t-vs-cartier-love). Instead of one static
+  // redirect per slug, resolve any published article slug to its canonical
+  // /parent/category/slug path. Category pages and static routes are skipped so
+  // no Sanity lookup happens for them; unknown slugs fall through to a normal 404.
+  {
+    const segments = pathname.split('/').filter(Boolean)
+    if (segments.length === 1 || segments.length === 2) {
+      const first = segments[0]
+      const last = segments[segments.length - 1]
+      const isReservedRoute = segments.length === 1 && RESERVED_ROUTES.has(first)
+      const isCategoryPage =
+        segments.length === 2 && PARENT_CATEGORIES.has(first) && CATEGORY_SLUGS.has(last)
+      if (!isReservedRoute && !isCategoryPage && last.includes('-')) {
+        return await redirectToCanonical(request, last)
+      }
     }
   }
 

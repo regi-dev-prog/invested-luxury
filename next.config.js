@@ -225,7 +225,16 @@ const nextConfig = {
       { source: '/lifestyle/art-photography/art-investment-firms', destination: '/guides/investment-guides/art-investment-firms', permanent: true },
       { source: '/lifestyle/art-photography/is-art-a-good-investment-2026', destination: '/guides/investment-guides/is-art-a-good-investment-2026', permanent: true },
 
-      // NOTE: /undefined/ URLs handled dynamically by middleware (Sanity lookup)
+      // =====================================================================
+      // 11. GSC 404s — September 2026
+      //     Slug that never existed → the compression boots article.
+      //     Root-level and 2-segment article URLs (missing parent/category)
+      //     are handled dynamically by middleware.ts (Sanity lookup).
+      // =====================================================================
+      { source: '/wellness/longevity/normatec-vs-therabody-compression-boots-comparison', destination: '/wellness/longevity/best-compression-boots', permanent: true },
+      { source: '/normatec-vs-therabody-compression-boots-comparison', destination: '/wellness/longevity/best-compression-boots', permanent: true },
+
+      // NOTE: /undefined/ and /[slug] URLs handled dynamically by middleware (Sanity lookup)
 
     ]
   },
