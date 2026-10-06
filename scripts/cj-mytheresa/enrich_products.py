@@ -34,6 +34,7 @@ CLI:
 
 import argparse
 import json
+import re
 import os
 import sys
 import time
@@ -311,7 +312,26 @@ def find_products_needing_image() -> list[dict]:
     return sanity_query(PRODUCTS_NEEDING_IMAGE_GROQ) or []
 
 
-def fetch_image_from_cj(brand: str, name: str) -> str | None:
+MYTHERESA_SKU_RE = re.compile(r"-(p\d{8})(?:[/?#]|$)", re.I)
+
+
+def mytheresa_sku(product: dict) -> str | None:
+    """Return the Mytheresa SKU (e.g. 'p01210375') if any affiliate link
+    targets a Mytheresa product page. Handles CJ-wrapped links (?url=...)."""
+    for link in product.get("affiliateLinks") or []:
+        url = link.get("url") or ""
+        try:
+            qs = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+            target = (qs.get("url") or [url])[0]
+        except Exception:
+            target = url
+        m = MYTHERESA_SKU_RE.search(urllib.parse.unquote(target))
+        if m:
+            return m.group(1).lower()
+    return None
+
+
+def fetch_image_from_cj(brand: str, name: str, sku: str | None = None) -> str | None:
     """Search CJ for a product matching brand + name, return imageLink (or None).
 
     Tries multiple keyword variations because Sanity product names sometimes
@@ -353,6 +373,11 @@ def fetch_image_from_cj(brand: str, name: str) -> str | None:
             seen.add(kn)
             unique_keywords.append(k)
 
+    # When the Sanity link already points at an exact Mytheresa product page,
+    # an exact SKU hit in the CJ results is authoritative: no fuzzy matching.
+    if sku:
+        unique_keywords.append(sku)
+
     for kw in unique_keywords:
         try:
             results = search_product(kw, advertiser="us", limit=20)
@@ -361,6 +386,11 @@ def fetch_image_from_cj(brand: str, name: str) -> str | None:
             continue
         if not results:
             continue
+        if sku:
+            exact = [r for r in results
+                     if sku in (r.get("link") or "").lower() and r.get("imageLink")]
+            if exact:
+                return exact[0]["imageLink"]
         best, _ = best_match(results, brand=brand, name=name)
         if best and best.get("imageLink"):
             return best["imageLink"]
@@ -404,7 +434,8 @@ def run_image_pass(products: list[dict], dry_run: bool, limit: int | None) -> di
         log(f"  [{i+1}/{len(products)}] {p['_id']}: {brand} {name}")
 
         # 1. Find imageLink in CJ feed
-        image_url = fetch_image_from_cj(brand, name)
+        sku = mytheresa_sku(p)
+        image_url = fetch_image_from_cj(brand, name, sku=sku)
         if not image_url:
             log(f"      ✗ no CJ match (no_match)")
             stats["no_match"] += 1
