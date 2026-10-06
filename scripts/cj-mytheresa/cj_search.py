@@ -126,7 +126,8 @@ def graphql(query_str: str, max_retries: int = 3) -> dict:
 def search_product(keywords: str, advertiser: str = "us", limit: int = 20) -> list[dict]:
     advertiser_id = ADVERTISERS.get(advertiser, ADVERTISERS["us"])
     # CJ rejects queries with more than 10 keywords (HTTP 400).
-    kw = " ".join(keywords.replace('\n', ' ').split()[:10])
+    # CJ also splits on punctuation ("Ritz-Carlton" = 2), so normalise first.
+    kw = " ".join(re.sub(r"[^\w&]+", " ", keywords).split()[:10])
     kw = kw.replace('"', '\\"')
     query = f"""
     {{
