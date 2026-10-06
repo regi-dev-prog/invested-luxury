@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { client } from '@/sanity/lib/client';
 import { urlFor } from '@/sanity/lib/image';
+import { getCurrentlyCoveting } from '@/lib/currentlyCoveting';
 
 export const revalidate = 60;
 
@@ -67,68 +68,6 @@ async function getLatestArticles(limit: number = 6) {
     }
   }`;
   return await client.fetch(query);
-}
-
-async function getFeaturedProducts(limit: number = 6) {
-  // Currently Coveting eligibility:
-  //  1. featured == true (manually curated)
-  //  2. Has at least one image
-  //  3. Has at least one valid affiliate link (not placeholder, not empty)
-  //  4. Not explicitly hidden
-  // The product must also resolve a primary affiliate URL — products whose
-  // only links are placeholders or homepage URLs are filtered post-query.
-  //
-  // We fetch a wider pool (3x the limit, capped at 30) and then apply
-  // brand diversification client-side: max 2 products from any single
-  // brand. Prevents the section from looking monotonous when a single
-  // brand has many featured products (e.g. 6 Saint Laurents in a row).
-  const poolSize = Math.max(limit * 3, 18);
-  const query = `*[_type == "product"
-    && featured == true
-    && (!defined(hidden) || hidden == false)
-    && defined(images) && count(images) > 0
-    && count(affiliateLinks[
-        defined(url)
-        && url != ""
-        && url != "https://www.mytheresa.com/"
-        && url != "https://mytheresa.com/"
-    ]) > 0
-  ] | order(displayOrder asc, _createdAt desc) [0...${poolSize}] {
-    _id,
-    name,
-    price,
-    currency,
-    "slug": slug.current,
-    "brand": brand->name,
-    "image": images[0],
-    imageUrl,
-    "affiliateUrl": coalesce(
-      affiliateLinks[isPrimary == true && defined(url) && url != ""][0].url,
-      affiliateLinks[defined(url) && url != "" && url != "https://www.mytheresa.com/"][0].url
-    )
-  }`;
-  const pool = (await client.fetch(query)) ?? [];
-  // Defensive filter: drop rows where coalesce still resolved to no URL
-  const valid = pool.filter((p: any) => p?.affiliateUrl);
-  // Brand-diversified selection: 2 passes over the ordered pool, taking at
-  // most one product per brand each pass. Result is deterministic (same
-  // order on every render — cache-friendly) and the original displayOrder
-  // is preserved within each pass.
-  const MAX_PER_BRAND = 2;
-  const selected: any[] = [];
-  const brandCounts: Record<string, number> = {};
-  for (let pass = 0; pass < MAX_PER_BRAND && selected.length < limit; pass++) {
-    for (const p of valid) {
-      if (selected.length >= limit) break;
-      if (selected.includes(p)) continue;
-      const brand = (p.brand as string) || '__no_brand__';
-      const count = brandCounts[brand] ?? 0;
-      if (count > pass) continue; // already took one from this brand this pass
-      selected.push(p);
-      brandCounts[brand] = count + 1;
-    }
-  }
-  return selected;
 }
 
 // Fetch articles for a specific category independently — no global pool competition
@@ -222,7 +161,7 @@ export default async function Home() {
   const [heroArticle, latestArticles, featuredProducts, ...categoryResults] = await Promise.all([
     getHeroArticle(),
     getLatestArticles(7), // hero + 6 latest (we'll filter hero out below)
-    getFeaturedProducts(6),
+    getCurrentlyCoveting(),
     ...categoryDefinitions.map((cat) =>
       getCategoryArticles(cat.parent, cat.slug, 4)
     ),
@@ -350,9 +289,9 @@ export default async function Home() {
                   return (
                     <a
                       key={product._id}
-                      href={product.affiliateUrl || '#'}
+                      href={product.affiliateUrl}
                       target="_blank"
-                      rel="noopener noreferrer"
+                      rel="noopener noreferrer sponsored"
                       className="flex-shrink-0 w-[160px] md:w-auto group"
                     >
                       <div className="aspect-[3/4] bg-gray-50 mb-4 flex items-center justify-center overflow-hidden relative">
@@ -369,9 +308,11 @@ export default async function Home() {
                       </div>
 
                       <div className="space-y-1">
-                        <p className="text-xs font-medium uppercase tracking-wider text-black">
-                          {product.brand}
-                        </p>
+                        {product.brand && (
+                          <p className="text-xs font-medium uppercase tracking-wider text-black">
+                            {product.brand}
+                          </p>
+                        )}
                         <p className="text-sm text-charcoal leading-snug">
                           {product.name}
                         </p>
