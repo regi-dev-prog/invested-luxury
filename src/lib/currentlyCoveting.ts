@@ -1,7 +1,7 @@
 // lib/currentlyCoveting.ts
 // Selection logic for the homepage "Currently Coveting" strip.
 //
-// Rules:
+// Rules (Sailo boat charters are excluded, see EXCLUDED_AWIN_MIDS):
 //  1. Rotates every week (Monday 00:00 UTC). No cron needed: the week is
 //     computed at render time and the homepage already revalidates every 60s.
 //  2. Every product shown has a real tracked affiliate link (CJ or AWIN
@@ -26,6 +26,22 @@ const AFFILIATE_HOST_RE =
 
 // Ranking-only FX approximation. Displayed prices keep their own currency.
 const TO_USD: Record<string, number> = { USD: 1, EUR: 1.08, GBP: 1.27 }
+
+// Programs kept out of the rotation even though they're tracked affiliates.
+// Sailo (AWIN 92667): boat charters are listings, not products.
+const EXCLUDED_AWIN_MIDS = new Set(['92667'])
+const EXCLUDED_BRANDS = /^sailo$/i
+
+const isExcluded = (p: RawProduct) =>
+  (p.brand && EXCLUDED_BRANDS.test(p.brand.trim())) ||
+  (p.links || []).some((l) => {
+    try {
+      const u = new URL(l.url || '')
+      return /(^|\.)awin1\.com$/i.test(u.hostname) && EXCLUDED_AWIN_MIDS.has(u.searchParams.get('awinmid') || '')
+    } catch {
+      return false
+    }
+  })
 
 const PER_WEEK = 6
 const POOL_SIZE = 30 // 5-week cycle at 6 per week
@@ -128,6 +144,7 @@ export async function getCurrentlyCoveting(now = new Date()): Promise<CovetingPr
   // Keep only products with a tracked, in-stock affiliate link; use that URL.
   const eligible: CovetingProduct[] = []
   for (const p of raw) {
+    if (isExcluded(p)) continue
     const tracked = (p.links || []).filter((l) => isTracked(l.url) && l.inStock !== false)
     if (!tracked.length) continue
     const best = tracked.find((l) => l.isPrimary) || tracked[0]
