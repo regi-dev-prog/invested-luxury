@@ -29,8 +29,7 @@ import { useEffect } from 'react';
 /** Awin merchant IDs (awinmid) -> retailer name. */
 const AWIN_MERCHANTS: Record<string, string> = {
   '101701': 'clearlight',
-  // Sailo: copy your first Sailo link from Awin, read its awinmid, add it here.
-  // '00000': 'sailo',
+  '92667': 'sailo',
 };
 
 /** CJ redirect domains. CJ hides the merchant, so those links need data-il-retailer. */
