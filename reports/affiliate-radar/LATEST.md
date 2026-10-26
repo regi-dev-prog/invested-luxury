@@ -1,4 +1,4 @@
-# Affiliate Opportunity Radar — 2026-10-19
+# Affiliate Opportunity Radar — 2026-10-26
 
 _Read-only weekly scan. Applications remain manual by design._
 
