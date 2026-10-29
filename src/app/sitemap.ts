@@ -44,6 +44,7 @@ const CATEGORIES_QUERY = `*[_type == "category" && defined(slug.current)] {
 
 const ARTICLES_QUERY = `*[_type == "article" && status == "published" && defined(slug.current)] {
   "slug": slug.current,
+  "lastModified": coalesce(updatedAt, publishedAt, _updatedAt),
   "category": categories[0]->{
     "slug": slug.current,
     "parentCategory": parentCategory
@@ -54,17 +55,46 @@ const ARTICLES_QUERY = `*[_type == "article" && status == "published" && defined
 // SITEMAP GENERATOR
 // =============================================================================
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const currentDate = new Date().toISOString()
+  // lastModified must reflect real change dates. Emitting "now" on every URL at
+  // every regeneration (the previous behaviour) teaches Google that the value
+  // is meaningless, after which it is ignored sitewide. Static pages therefore
+  // carry no lastModified; articles carry their own date; category pages carry
+  // the newest date among their articles.
 
   // 1. STATIC PAGES
   const staticPages: MetadataRoute.Sitemap = STATIC_PAGES.map(page => ({
     url: `${BASE_URL}${page.path}`,
-    lastModified: currentDate,
     changeFrequency: page.changeFrequency,
     priority: page.priority,
   }))
 
-  // 2. DYNAMIC CATEGORIES (from Sanity)
+  // 2. ARTICLES FIRST (their dates feed the category pages)
+  type SitemapArticle = {
+    slug: string
+    lastModified: string | null
+    category: { slug: string; parentCategory: string } | null
+  }
+  let articles: SitemapArticle[] = []
+  try {
+    articles = await client.fetch(ARTICLES_QUERY)
+  } catch (error) {
+    console.error('Error fetching articles for sitemap:', error)
+  }
+
+  // Newest article date per category path and per parent category
+  const newestByPath = new Map<string, string>()
+  const bump = (key: string, date: string | null) => {
+    if (!date) return
+    const prev = newestByPath.get(key)
+    if (!prev || date > prev) newestByPath.set(key, date)
+  }
+  for (const a of articles) {
+    if (!a.category?.slug || typeof a.category.parentCategory !== 'string') continue
+    bump(`/${a.category.parentCategory}/${a.category.slug}`, a.lastModified)
+    bump(`/${a.category.parentCategory}`, a.lastModified)
+  }
+
+  // 3. DYNAMIC CATEGORIES (from Sanity)
   let categoryPages: MetadataRoute.Sitemap = []
 
   try {
@@ -81,9 +111,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         parentSlugs.add(cat.parentCategory)
 
+        const path = `/${cat.parentCategory}/${cat.slug}`
         return {
-          url: `${BASE_URL}/${cat.parentCategory}/${cat.slug}`,
-          lastModified: currentDate,
+          url: `${BASE_URL}${path}`,
+          ...(newestByPath.has(path) ? { lastModified: newestByPath.get(path) } : {}),
           changeFrequency: 'daily' as const,
           priority: 0.8,
         }
@@ -93,7 +124,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Build parent category pages (derived from unique parentCategory values)
     const parentCategoryPages: MetadataRoute.Sitemap = Array.from(parentSlugs).map(slug => ({
       url: `${BASE_URL}/${slug}`,
-      lastModified: currentDate,
+      ...(newestByPath.has(`/${slug}`) ? { lastModified: newestByPath.get(`/${slug}`) } : {}),
       changeFrequency: 'daily' as const,
       priority: 0.9,
     }))
@@ -103,18 +134,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Error fetching categories for sitemap:', error)
   }
 
-  // 3. DYNAMIC ARTICLES (from Sanity)
+  // 4. ARTICLE PAGES
   let articlePages: MetadataRoute.Sitemap = []
 
-  try {
-    const articles = await client.fetch(ARTICLES_QUERY)
+  {
     const seenUrls = new Set<string>()
 
     articlePages = articles
-      .map((article: {
-        slug: string
-        category: { slug: string; parentCategory: string } | null
-      }) => {
+      .map((article: SitemapArticle) => {
         if (!article.slug || !article.category?.slug || !article.category?.parentCategory || typeof article.category.parentCategory !== 'string') return null
 
         const url = `${BASE_URL}/${article.category.parentCategory}/${article.category.slug}/${article.slug}`
@@ -124,14 +151,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         return {
           url,
-          lastModified: currentDate,
+          ...(article.lastModified ? { lastModified: article.lastModified } : {}),
           changeFrequency: 'weekly' as const,
           priority: 0.7,
         }
       })
       .filter(Boolean) as MetadataRoute.Sitemap
-  } catch (error) {
-    console.error('Error fetching articles for sitemap:', error)
   }
 
   return [...staticPages, ...categoryPages, ...articlePages]

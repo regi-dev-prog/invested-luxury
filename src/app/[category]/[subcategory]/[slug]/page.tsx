@@ -563,7 +563,8 @@ export default async function ArticlePage({ params }: Props) {
     author: article.author ? {
       "@type": "Person",
       name: article.author.name,
-      url: `${siteUrl}/author/${article.author.slug?.current || ''}`,
+      // No /author/[slug] route exists; a url here pointed every article's
+      // schema at a 404. Omitted until an author page ships.
     } : {
       "@type": "Organization",
       name: "InvestedLuxury",
