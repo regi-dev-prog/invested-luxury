@@ -29,9 +29,9 @@ const BOT_UA_PATTERNS = [
   /petalbot/i,
   /sogou/i,
   /zoominfobot/i,
-  /gptbot/i,
-  /claudebot/i,
-  /ccbot/i,
+  // GPTBot, ClaudeBot and CCBot are deliberately NOT blocked (Oct 2026): the
+  // editorial strategy depends on being cited in AI answers, and these are the
+  // crawlers that feed them. Re-add here to opt out again.
   /wget/i,
   /curl\//i,
   /python-requests/i,
@@ -70,8 +70,22 @@ const ALLOWED_BOTS = [
 
 // Rate limiting
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
+// Oct 2026: raised from 30. Mobile carriers (CGNAT) and office networks put
+// thousands of readers behind one IP, and Next.js prefetches several routes per
+// page view, so 30/min was returning 429 to real readers. Prefetch requests are
+// excluded from the count entirely (see isPrefetch).
 const RATE_LIMIT_WINDOW_MS = 60 * 1000
-const RATE_LIMIT_MAX = 30
+const RATE_LIMIT_MAX = 120
+
+function isPrefetch(request: NextRequest): boolean {
+  const h = request.headers
+  return (
+    h.get('next-router-prefetch') === '1' ||
+    h.get('purpose') === 'prefetch' ||
+    h.get('sec-purpose')?.includes('prefetch') === true ||
+    h.get('x-middleware-prefetch') === '1'
+  )
+}
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now()
@@ -228,7 +242,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Rate limiting
-    if (ip !== 'unknown' && isRateLimited(ip)) {
+    if (ip !== 'unknown' && !isPrefetch(request) && isRateLimited(ip)) {
       console.log(`[RATE-LIMITED] ${ip}`)
       return new NextResponse('Too Many Requests', { status: 429 })
     }
