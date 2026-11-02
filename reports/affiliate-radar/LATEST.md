@@ -1,8 +1,8 @@
-# Affiliate Opportunity Radar — 2026-10-26
+# Affiliate Opportunity Radar — 2026-11-02
 
 _Read-only weekly scan. Applications remain manual by design._
 
-## Top opportunities (10 meet the $50/sale threshold)
+## Top opportunities (11 meet the $50/sale threshold)
 
 ### 1. Sunlighten  —  score 10290.0
 
@@ -86,7 +86,48 @@ hello@investedluxury.com
 ```
 </details>
 
-### 3. Clearlight Saunas  —  score 5200.0
+### 3. TheRealReal  —  score 5460.0
+
+- **Network:** Rakuten  |  **Vertical:** resale
+- **Economics:** ~5% commission, ~$1200 AOV → **~$60/sale**, 7-day cookie
+- **Site presence:** weight 91.0 (43 articles, 12 products)
+- **Articles:** best-designer-ballet-flats, best-designer-loafers-investment-2026, best-diamond-tennis-bracelet, best-investment-bags-2026, best-purse-brands-ranked, black-designer-sneakers-hide-scuffs …
+- **Products:** Bottega Veneta Intrecciato Veneta Hobo Medium (pre-owned), Bottega Veneta Knot Clutch, Cartier Juste un Clou Bracelet Small, Cartier Love Bracelet Classic Yellow Gold, Celine Luggage Micro, Phoebe Philo era (secondhand), Classic Flap Medium (Black Caviar) …
+- **Notes:** Resale authority. Already cited heavily in resale-value methodology articles — natural fit.
+
+<details><summary>Outreach draft (copy-paste)</summary>
+
+```text
+Subject: Publisher application — InvestedLuxury.com (resale editorial)
+
+Hi TheRealReal affiliate team,
+
+I run InvestedLuxury.com, an independent editorial site analyzing luxury
+purchases through cost-per-wear, resale value, and 10-year cost of
+ownership. Our readers are affluent (HHI $150K+, ages 28-55) across the
+US, UK, UAE, Singapore, and Hong Kong — researching exactly the
+considered, high-AOV purchases TheRealReal specializes in.
+
+TheRealReal is already referenced organically in 43 of our
+published articles (e.g. investedluxury.com/.../best-designer-ballet-flats), so approval would let us convert
+existing editorial mentions into tracked partnerships rather than starting
+from zero.
+
+Site: https://investedluxury.com
+Methodology: https://investedluxury.com/methodology
+Current partners include Farfetch, Mytheresa, and Booking.com.
+
+Happy to share traffic data or answer any questions.
+
+Best,
+Regi
+InvestedLuxury Editorial
+hello@investedluxury.com
+
+```
+</details>
+
+### 4. Clearlight Saunas  —  score 5200.0
 
 - **Network:** direct  |  **Vertical:** wellness
 - **Economics:** ~8% commission, ~$6500 AOV → **~$520/sale**, 90-day cookie
@@ -110,47 +151,6 @@ considered, high-AOV purchases Clearlight Saunas specializes in.
 
 Clearlight Saunas is already referenced organically in 4 of our
 published articles (e.g. investedluxury.com/.../best-home-sauna-2026), so approval would let us convert
-existing editorial mentions into tracked partnerships rather than starting
-from zero.
-
-Site: https://investedluxury.com
-Methodology: https://investedluxury.com/methodology
-Current partners include Farfetch, Mytheresa, and Booking.com.
-
-Happy to share traffic data or answer any questions.
-
-Best,
-Regi
-InvestedLuxury Editorial
-hello@investedluxury.com
-
-```
-</details>
-
-### 4. TheRealReal  —  score 4800.0
-
-- **Network:** Rakuten  |  **Vertical:** resale
-- **Economics:** ~5% commission, ~$1200 AOV → **~$60/sale**, 7-day cookie
-- **Site presence:** weight 80.0 (40 articles, 10 products)
-- **Articles:** best-designer-ballet-flats, best-designer-loafers-investment-2026, best-diamond-tennis-bracelet, best-investment-bags-2026, best-purse-brands-ranked, black-designer-sneakers-hide-scuffs …
-- **Products:** Bottega Veneta Knot Clutch, Cartier Juste un Clou Bracelet Small, Cartier Love Bracelet Classic Yellow Gold, Classic Flap Medium (Black Caviar), Freja Caroline Bag, Loro Piana Coste Crewneck Baby Cashmere (Women's) …
-- **Notes:** Resale authority. Already cited heavily in resale-value methodology articles — natural fit.
-
-<details><summary>Outreach draft (copy-paste)</summary>
-
-```text
-Subject: Publisher application — InvestedLuxury.com (resale editorial)
-
-Hi TheRealReal affiliate team,
-
-I run InvestedLuxury.com, an independent editorial site analyzing luxury
-purchases through cost-per-wear, resale value, and 10-year cost of
-ownership. Our readers are affluent (HHI $150K+, ages 28-55) across the
-US, UK, UAE, Singapore, and Hong Kong — researching exactly the
-considered, high-AOV purchases TheRealReal specializes in.
-
-TheRealReal is already referenced organically in 40 of our
-published articles (e.g. investedluxury.com/.../best-designer-ballet-flats), so approval would let us convert
 existing editorial mentions into tracked partnerships rather than starting
 from zero.
 
@@ -208,12 +208,12 @@ hello@investedluxury.com
 ```
 </details>
 
-### 6. Fashionphile  —  score 1800.0
+### 6. Fashionphile  —  score 2088.0
 
 - **Network:** direct  |  **Vertical:** resale
 - **Economics:** ~4% commission, ~$1800 AOV → **~$72/sale**, 30-day cookie
-- **Site presence:** weight 25.0 (7 articles, 6 products)
-- **Articles:** best-investment-bags-2026, best-purse-brands-ranked, chanel-bags-guide, prada-bags-guide, saint-laurent-resale-case-study, the-row-margaux-review …
+- **Site presence:** weight 29.0 (9 articles, 6 products)
+- **Articles:** best-investment-bags-2026, best-purse-brands-ranked, bottega-veneta-hobo-bag, celine-luggage-bag, chanel-bags-guide, prada-bags-guide …
 - **Products:** 2.55 Reissue Medium, Boy Bag Medium, Cartier Trinity Ring, Classic Flap Medium (Black Caviar), Mini Jodie, Mini Rectangular Classic Flap
 - **Notes:** Bags-focused resale. Featured in therealreal-vs-fashionphile comparison article already.
 
@@ -230,7 +230,7 @@ ownership. Our readers are affluent (HHI $150K+, ages 28-55) across the
 US, UK, UAE, Singapore, and Hong Kong — researching exactly the
 considered, high-AOV purchases Fashionphile specializes in.
 
-Fashionphile is already referenced organically in 7 of our
+Fashionphile is already referenced organically in 9 of our
 published articles (e.g. investedluxury.com/.../best-investment-bags-2026), so approval would let us convert
 existing editorial mentions into tracked partnerships rather than starting
 from zero.
@@ -372,7 +372,48 @@ hello@investedluxury.com
 ```
 </details>
 
-### 10. Chrono24  —  score 300.0
+### 10. 24S  —  score 450.0
+
+- **Network:** Rakuten  |  **Vertical:** fashion
+- **Economics:** ~10% commission, ~$900 AOV → **~$90/sale**, 30-day cookie
+- **Site presence:** weight 5.0 (1 articles, 1 products)
+- **Articles:** celine-luggage-bag
+- **Products:** Celine Small New Luggage, grained calfskin
+- **Notes:** LVMH-owned. Highest commission rate in luxury fashion. Carries Loro Piana, Celine, Dior.
+
+<details><summary>Outreach draft (copy-paste)</summary>
+
+```text
+Subject: Publisher application — InvestedLuxury.com (fashion editorial)
+
+Hi 24S affiliate team,
+
+I run InvestedLuxury.com, an independent editorial site analyzing luxury
+purchases through cost-per-wear, resale value, and 10-year cost of
+ownership. Our readers are affluent (HHI $150K+, ages 28-55) across the
+US, UK, UAE, Singapore, and Hong Kong — researching exactly the
+considered, high-AOV purchases 24S specializes in.
+
+24S is already referenced organically in 1 of our
+published articles (e.g. investedluxury.com/.../celine-luggage-bag), so approval would let us convert
+existing editorial mentions into tracked partnerships rather than starting
+from zero.
+
+Site: https://investedluxury.com
+Methodology: https://investedluxury.com/methodology
+Current partners include Farfetch, Mytheresa, and Booking.com.
+
+Happy to share traffic data or answer any questions.
+
+Best,
+Regi
+InvestedLuxury Editorial
+hello@investedluxury.com
+
+```
+</details>
+
+### 11. Chrono24  —  score 300.0
 
 - **Network:** direct/CJ  |  **Vertical:** watches
 - **Economics:** ~2.5% commission, ~$6000 AOV → **~$150/sale**, 30-day cookie
