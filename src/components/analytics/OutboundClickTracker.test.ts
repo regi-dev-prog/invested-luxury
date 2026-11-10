@@ -24,6 +24,18 @@ describe('resolveLink: impact.com links', () => {
     });
   });
 
+  it('labels a Performance Lab store deep link as performancelab', () => {
+    const url = new URL(
+      'https://performancelabltd.pxf.io/bkoaZm?u=https%3A%2F%2Fwww.performancelab.com%2Fproducts%2Fomega-3',
+    );
+    expect(resolveLink(url, anchor())).toEqual({
+      event: 'affiliate_link_click',
+      network: 'impact',
+      retailer: 'performancelab',
+      destination_domain: 'performancelab.com',
+    });
+  });
+
   it('falls back to the tracking host when the link has no deep-link target', () => {
     const url = new URL('https://mindlabpro.pxf.io/n4QLdA');
     expect(resolveLink(url, anchor())?.destination_domain).toBe('mindlabpro.pxf.io');
