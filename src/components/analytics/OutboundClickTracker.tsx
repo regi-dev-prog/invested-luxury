@@ -47,6 +47,17 @@ const CJ_HOSTS = new Set([
   'emjcd.com',
 ]);
 
+/**
+ * impact.com tracking hosts -> retailer name. impact.com gives each brand campaign
+ * its own subdomain, so the host identifies the merchant.
+ */
+const IMPACT_HOSTS: Record<string, string> = {
+  'mindlabpro.pxf.io': 'performancelab',
+};
+
+/** Any other impact.com tracking subdomain not yet listed in IMPACT_HOSTS. */
+const IMPACT_HOST_SUFFIX = '.pxf.io';
+
 /** Merchant domains linked directly. */
 const DIRECT_MERCHANTS: Record<string, string> = {
   'sailo.com': 'sailo',
@@ -100,6 +111,17 @@ export function resolveLink(url: URL, el: HTMLAnchorElement): Resolved | null {
       network: 'cj',
       retailer: manualRetailer || 'cj_unknown',
       destination_domain: host,
+    };
+  }
+
+  if (IMPACT_HOSTS[host] || host.endsWith(IMPACT_HOST_SUFFIX)) {
+    // Deep links carry the landing page in `u`; the bare vanity link has none.
+    const dest = url.searchParams.get('u') || '';
+    return {
+      event: 'affiliate_link_click',
+      network: 'impact',
+      retailer: manualRetailer || IMPACT_HOSTS[host] || 'impact_unknown',
+      destination_domain: hostOf(dest) || host,
     };
   }
 

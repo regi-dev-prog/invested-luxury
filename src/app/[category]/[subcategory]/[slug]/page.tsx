@@ -356,7 +356,7 @@ const portableTextComponents = {
   },
   marks: {
     link: ({ children, value }: any) => {
-      const AFFILIATE_HOSTS = /awin1\.com|anrdoezrs\.net|kqzyfj\.com|tkqlhce\.com|jdoqocy\.com|dpbolvw\.net|shareasale\.com|go\.skimresources|shop\.infraredsauna\.com/i
+      const AFFILIATE_HOSTS = /awin1\.com|anrdoezrs\.net|kqzyfj\.com|tkqlhce\.com|jdoqocy\.com|dpbolvw\.net|pxf\.io|shareasale\.com|go\.skimresources|shop\.infraredsauna\.com/i
       const isInternal = value?.href?.startsWith('/')
       const isAffiliate = !isInternal && AFFILIATE_HOSTS.test(value?.href || '')
       const rel = isInternal
