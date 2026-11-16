@@ -1,4 +1,4 @@
-# Affiliate Opportunity Radar — 2026-11-09
+# Affiliate Opportunity Radar — 2026-11-16
 
 _Read-only weekly scan. Applications remain manual by design._
 
@@ -475,17 +475,17 @@ These appear on the site but aren't in known_programs.json. Research whether the
 - **cartier.com** — weight 30.0 (e.g. best-entry-level-luxury-watches-investment, best-jewelry-brands, cartier-love-bracelet-small-celebrities)
 - **loropiana.com** — weight 30.0 (e.g. Baby Cashmere Jubilee Crewneck Sweater, Baby Cashmere Twelve Scarf, Loro Piana Baby Cashmere Sweater)
 - **sailo.com** — weight 27.0 (e.g. boat-rental-charleston-sc, cost-to-rent-a-boat-for-the-day, cost-to-rent-a-yacht-for-a-week)
+- **villiers.ai** — weight 27.0 (e.g. business-class-vs-first-class, empty-leg-flights-uk, empty-leg-private-jet)
 - **ringconcierge.com** — weight 25.0 (e.g. ring-concierge-reviews, tennis-necklace-guide)
 - **polene-paris.com** — weight 23.0 (e.g. freja-bag-review, polene-bags-guide)
 - **withings.com** — weight 21.0 (e.g. best-smart-scale, withings-body-scan-review)
-- **villiers.ai** — weight 21.0 (e.g. business-class-vs-first-class, empty-leg-flights-uk, empty-leg-private-jet)
 - **chloe.com** — weight 21.0 (e.g. Chloe Spin Tote, Chloe The Chloe Iconic Belt, Chloé Betty Rain Boot)
 - **khaite.com** — weight 21.0 (e.g. Khaite Arizona Ankle Boots, Khaite Benny Belt, Khaite Cashmere Crewneck)
 - **fendi.com** — weight 19.0 (e.g. fendi-baguette-restoration-cost)
+- **pxf.io** — weight 19.0 (e.g. biohacking-supplements-research-guide, mind-lab-pro-review)
 - **bottegaveneta.com** — weight 18.0 (e.g. Andiamo Medium, Bottega Veneta Puddle Boot, Cabat Tote)
+- **livemomentous.com** — weight 17.0 (e.g. biohacking-supplements-research-guide)
+- **nih.gov** — weight 16.0 (e.g. ayahuasca-retreat-cost, best-smart-scale, cold-plunge-benefits-women)
 - **maxmara.com** — weight 16.0 (e.g. max-mara-coat-review)
 - **ysl.com** — weight 16.0 (e.g. ysl-tote)
 - **prada.com** — weight 15.0 (e.g. Cleo Brushed Leather, Galleria Small Saffiano, Re-Edition 2005 Re-Nylon)
-- **phoebephilo.com** — weight 14.0 (e.g. phoebe-philo-gig-bag)
-- **aspinaloflondon.com** — weight 13.0 (e.g. aspinal-of-london-discount-code)
-- **nih.gov** — weight 13.0 (e.g. ayahuasca-retreat-cost, best-smart-scale, cold-plunge-benefits-women)
