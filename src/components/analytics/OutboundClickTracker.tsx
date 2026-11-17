@@ -53,6 +53,7 @@ const CJ_HOSTS = new Set([
  */
 const IMPACT_HOSTS: Record<string, string> = {
   'mindlabpro.pxf.io': 'performancelab',
+  'performancelabltd.pxf.io': 'performancelab',
 };
 
 /** Any other impact.com tracking subdomain not yet listed in IMPACT_HOSTS. */
