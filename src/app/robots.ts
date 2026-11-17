@@ -31,12 +31,12 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/studio/'],
       },
       {
-        // Block bad bots that scrape content
-        userAgent: ['AhrefsBot', 'SemrushBot', 'MJ12bot'],
-        disallow: '/', // Optional: Remove if you want these bots to crawl
+        // Link-index scrapers with no referral value. AhrefsBot is allowed so
+        // that Ahrefs Site Audit and the internal-link graph work for this site.
+        userAgent: ['SemrushBot', 'MJ12bot'],
+        disallow: '/',
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
-    host: baseUrl,
   }
 }
