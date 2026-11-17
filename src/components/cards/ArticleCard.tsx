@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Article } from '@/types';
-import { urlFor } from '@/sanity/client';
+import { urlFor } from '@/sanity/lib/image';
 
 interface ArticleCardProps {
   article: Article;

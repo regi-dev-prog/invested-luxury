@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import type { Product } from '@/types';
-import { urlFor } from '@/sanity/client';
+import { urlFor } from '@/sanity/lib/image';
 import { ExternalLink } from 'lucide-react';
 
 interface ProductCardProps {

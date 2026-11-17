@@ -8,14 +8,7 @@
 // =============================================================================
 
 import { permanentRedirect, notFound } from 'next/navigation'
-import { createClient } from '@sanity/client'
-
-const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '4b3ap7pf',
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  apiVersion: '2024-01-01',
-  useCdn: true,
-})
+import { client } from '@/sanity/lib/client'
 
 const canonicalQuery = `*[_type == "article" && slug.current == $slug && status == "published"][0]{
   "categorySlug": categories[0]->slug.current,
