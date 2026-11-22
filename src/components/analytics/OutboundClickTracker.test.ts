@@ -36,6 +36,18 @@ describe('resolveLink: impact.com links', () => {
     });
   });
 
+  it('labels an ALLU deep link as allu', () => {
+    const url = new URL(
+      'https://allu-official.pxf.io/enz4KO?u=https%3A%2F%2Fallu-official.com%2Fglobal%2F&subId1=chanel-bags-guide&subId2=body-p3',
+    );
+    expect(resolveLink(url, anchor())).toEqual({
+      event: 'affiliate_link_click',
+      network: 'impact',
+      retailer: 'allu',
+      destination_domain: 'allu-official.com',
+    });
+  });
+
   it('falls back to the tracking host when the link has no deep-link target', () => {
     const url = new URL('https://mindlabpro.pxf.io/n4QLdA');
     expect(resolveLink(url, anchor())?.destination_domain).toBe('mindlabpro.pxf.io');
