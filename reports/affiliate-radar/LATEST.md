@@ -1,4 +1,4 @@
-# Affiliate Opportunity Radar — 2026-11-16
+# Affiliate Opportunity Radar — 2026-11-23
 
 _Read-only weekly scan. Applications remain manual by design._
 
@@ -86,12 +86,12 @@ hello@investedluxury.com
 ```
 </details>
 
-### 3. TheRealReal  —  score 5580.0
+### 3. TheRealReal  —  score 5760.0
 
 - **Network:** Rakuten  |  **Vertical:** resale
 - **Economics:** ~5% commission, ~$1200 AOV → **~$60/sale**, 7-day cookie
-- **Site presence:** weight 93.0 (44 articles, 12 products)
-- **Articles:** best-designer-ballet-flats, best-designer-loafers-investment-2026, best-diamond-tennis-bracelet, best-investment-bags-2026, best-purse-brands-ranked, black-designer-sneakers-hide-scuffs …
+- **Site presence:** weight 96.0 (45 articles, 12 products)
+- **Articles:** apres-ski-outfit, best-designer-ballet-flats, best-designer-loafers-investment-2026, best-diamond-tennis-bracelet, best-investment-bags-2026, best-purse-brands-ranked …
 - **Products:** Bottega Veneta Intrecciato Veneta Hobo Medium (pre-owned), Bottega Veneta Knot Clutch, Cartier Juste un Clou Bracelet Small, Cartier Love Bracelet Classic Yellow Gold, Celine Luggage Micro, Phoebe Philo era (secondhand), Classic Flap Medium (Black Caviar) …
 - **Notes:** Resale authority. Already cited heavily in resale-value methodology articles — natural fit.
 
@@ -108,8 +108,8 @@ ownership. Our readers are affluent (HHI $150K+, ages 28-55) across the
 US, UK, UAE, Singapore, and Hong Kong — researching exactly the
 considered, high-AOV purchases TheRealReal specializes in.
 
-TheRealReal is already referenced organically in 44 of our
-published articles (e.g. investedluxury.com/.../best-designer-ballet-flats), so approval would let us convert
+TheRealReal is already referenced organically in 45 of our
+published articles (e.g. investedluxury.com/.../apres-ski-outfit), so approval would let us convert
 existing editorial mentions into tracked partnerships rather than starting
 from zero.
 
@@ -469,23 +469,23 @@ hello@investedluxury.com
 
 These appear on the site but aren't in known_programs.json. Research whether they run a program on AWIN/CJ/Rakuten/Partnerize, then add an entry to known_programs.json.
 
+- **villiers.ai** — weight 52.0 (e.g. business-class-vs-first-class, empty-leg-flights-uk, empty-leg-private-jet)
 - **therow.com** — weight 49.0 (e.g. the-row-dupes)
 - **tiffany.com** — weight 47.0 (e.g. best-jewelry-brands, tiffany-t-bracelet-guide, tiffany-t-vs-cartier-love)
 - **toteme-studio.com** — weight 40.0 (e.g. toteme-coat-review)
+- **pxf.io** — weight 31.0 (e.g. best-investment-bags-2026, biohacking-supplements-research-guide, cartier-love-bracelet-guide)
 - **cartier.com** — weight 30.0 (e.g. best-entry-level-luxury-watches-investment, best-jewelry-brands, cartier-love-bracelet-small-celebrities)
 - **loropiana.com** — weight 30.0 (e.g. Baby Cashmere Jubilee Crewneck Sweater, Baby Cashmere Twelve Scarf, Loro Piana Baby Cashmere Sweater)
 - **sailo.com** — weight 27.0 (e.g. boat-rental-charleston-sc, cost-to-rent-a-boat-for-the-day, cost-to-rent-a-yacht-for-a-week)
-- **villiers.ai** — weight 27.0 (e.g. business-class-vs-first-class, empty-leg-flights-uk, empty-leg-private-jet)
 - **ringconcierge.com** — weight 25.0 (e.g. ring-concierge-reviews, tennis-necklace-guide)
 - **polene-paris.com** — weight 23.0 (e.g. freja-bag-review, polene-bags-guide)
 - **withings.com** — weight 21.0 (e.g. best-smart-scale, withings-body-scan-review)
 - **chloe.com** — weight 21.0 (e.g. Chloe Spin Tote, Chloe The Chloe Iconic Belt, Chloé Betty Rain Boot)
 - **khaite.com** — weight 21.0 (e.g. Khaite Arizona Ankle Boots, Khaite Benny Belt, Khaite Cashmere Crewneck)
 - **fendi.com** — weight 19.0 (e.g. fendi-baguette-restoration-cost)
-- **pxf.io** — weight 19.0 (e.g. biohacking-supplements-research-guide, mind-lab-pro-review)
 - **bottegaveneta.com** — weight 18.0 (e.g. Andiamo Medium, Bottega Veneta Puddle Boot, Cabat Tote)
-- **livemomentous.com** — weight 17.0 (e.g. biohacking-supplements-research-guide)
 - **nih.gov** — weight 16.0 (e.g. ayahuasca-retreat-cost, best-smart-scale, cold-plunge-benefits-women)
 - **maxmara.com** — weight 16.0 (e.g. max-mara-coat-review)
 - **ysl.com** — weight 16.0 (e.g. ysl-tote)
+- **livemomentous.com** — weight 15.0 (e.g. biohacking-supplements-research-guide)
 - **prada.com** — weight 15.0 (e.g. Cleo Brushed Leather, Galleria Small Saffiano, Re-Edition 2005 Re-Nylon)
