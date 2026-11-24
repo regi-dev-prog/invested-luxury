@@ -45,7 +45,7 @@ const articleQuery = `*[_type == "article" && slug.current == $slug && status ==
   publishedAt,
   updatedAt,
   articleType,
-  "author": author->{name, slug, image, bio, credentials},
+  "author": author->{name, slug, image, bio, credentials, "entityType": coalesce(entityType, "person")},
   "categories": categories[]->{title, slug, parentCategory},
   "seo": seo,
   schemaMarkup,
@@ -568,14 +568,13 @@ export default async function ArticlePage({ params }: Props) {
       : ogImage,
     datePublished: article.publishedAt,
     dateModified: article.updatedAt || article.publishedAt,
-    author: article.author ? {
-      "@type": "Person",
-      name: article.author.name,
-      url: `${siteUrl}/author/${article.author.slug?.current || ''}`,
-    } : {
-      "@type": "Organization",
-      name: "InvestedLuxury",
-    },
+    // Editorial bylines are organizations, not people. There is no /author
+    // route, so no author url is emitted (the old /author/<slug> url 404'd).
+    author: article.author
+      ? article.author.entityType === "organization"
+        ? { "@type": "Organization", name: article.author.name, url: siteUrl }
+        : { "@type": "Person", name: article.author.name }
+      : { "@type": "Organization", name: "InvestedLuxury", url: siteUrl },
     publisher: {
       "@type": "Organization",
       name: "InvestedLuxury",

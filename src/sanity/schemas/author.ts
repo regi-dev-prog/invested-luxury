@@ -21,6 +21,20 @@ export default defineType({
       },
     }),
     defineField({
+      name: 'entityType',
+      title: 'Byline type',
+      description: 'Organization for editorial/team bylines (emitted as schema.org Organization); Person for a named writer.',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Person', value: 'person'},
+          {title: 'Organization (editorial byline)', value: 'organization'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'person',
+    }),
+    defineField({
       name: 'image',
       title: 'Profile Image',
       type: 'image',
