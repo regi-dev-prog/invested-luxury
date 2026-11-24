@@ -1,0 +1,42 @@
+name: Sweep check (read-only)
+
+# Runs on every PR that adds or edits a weekly sweep file. Checks each
+# proposed change against the live Sanity content and posts the result on
+# the PR, so it is clear what merging will do. Writes nothing to Sanity.
+on:
+  pull_request:
+    paths:
+      - "ops/sweeps/*.json"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+
+      - name: Check sweep files
+        env:
+          SANITY_TOKEN: ${{ secrets.SANITY_TOKEN }}
+        run: |
+          set -o pipefail
+          FILES=$(git diff --name-only --diff-filter=AM "origin/${{ github.base_ref }}...HEAD" -- 'ops/sweeps/*.json')
+          echo "Files: $FILES"
+          node scripts/apply-sweep.mjs --check $FILES
+
+      - name: Comment on PR
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [ -f sweep-report.md ] && gh pr comment ${{ github.event.pull_request.number }} --body-file sweep-report.md || true
