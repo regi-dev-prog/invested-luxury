@@ -72,8 +72,9 @@ const organizationSchema = {
   url: siteUrl,
   logo: `${siteUrl}/logo.png`,
   sameAs: [
-    "https://instagram.com/investedluxury",
-    "https://pinterest.com/investedluxury",
+    // Must match the real profiles linked in the footer
+    "https://www.instagram.com/invested_luxury/",
+    "https://pinterest.com/investedlux/",
   ],
   contactPoint: {
     "@type": "ContactPoint",

@@ -142,7 +142,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { canonicalUrl } = getCanonicalPath(article, params.category, params.subcategory)
 
   const ogImage = article.mainImage 
-    ? urlFor(article.mainImage).width(1200).height(630).url()
+    ? urlFor(article.mainImage).width(1200).height(675).url()
     : `${siteUrl}/og-image.jpg`
 
   const title = article.seo?.metaTitle || article.title
@@ -168,7 +168,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         {
           url: ogImage,
           width: 1200,
-          height: 630,
+          height: ogImage.startsWith(siteUrl) ? 630 : 675,
           alt: article.title,
         },
       ],
@@ -435,7 +435,7 @@ export default async function ArticlePage({ params }: Props) {
   const showAffiliateButtons = !!article.primaryProduct
   
   const ogImage = article.mainImage 
-    ? urlFor(article.mainImage).width(1200).height(630).url()
+    ? urlFor(article.mainImage).width(1200).height(675).url()
     : `${siteUrl}/og-image.jpg`
 
   // =============================================================================
@@ -557,7 +557,15 @@ export default async function ArticlePage({ params }: Props) {
     "@type": emitReview ? "Review" : "Article",
     headline: article.title,
     description: article.excerpt,
-    image: ogImage,
+    // Google recommends 16:9, 4:3 and 1:1 crops for Article images; Discover
+    // uses the 16:9 one, at least 1200px wide.
+    image: article.mainImage
+      ? [
+          urlFor(article.mainImage).width(1200).height(675).url(),
+          urlFor(article.mainImage).width(1200).height(900).url(),
+          urlFor(article.mainImage).width(1200).height(1200).url(),
+        ]
+      : ogImage,
     datePublished: article.publishedAt,
     dateModified: article.updatedAt || article.publishedAt,
     author: article.author ? {
