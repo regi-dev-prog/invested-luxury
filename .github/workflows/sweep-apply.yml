@@ -1,0 +1,43 @@
+name: Sweep apply (Sanity drafts)
+
+# When a sweep PR is merged, write its changes to Sanity as DRAFTS.
+# Nothing is published here: each draft waits in Studio for Regi to publish.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ops/sweeps/*.json"
+  workflow_dispatch:
+    inputs:
+      file:
+        description: "Sweep file to apply, e.g. ops/sweeps/2026-11-30.json"
+        required: true
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+
+      - name: Apply to drafts
+        env:
+          SANITY_TOKEN: ${{ secrets.SANITY_TOKEN }}
+        run: |
+          set -o pipefail
+          if [ -n "${{ github.event.inputs.file }}" ]; then
+            FILES="${{ github.event.inputs.file }}"
+          else
+            FILES=$(git diff --name-only --diff-filter=AM HEAD~1 HEAD -- 'ops/sweeps/*.json')
+          fi
+          [ -z "$FILES" ] && { echo "No sweep files changed"; exit 0; }
+          node scripts/apply-sweep.mjs --apply $FILES
