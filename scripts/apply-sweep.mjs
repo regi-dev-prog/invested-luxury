@@ -63,6 +63,12 @@ export function validateChange(c) {
   return errs
 }
 
+// "Already applied" is only trusted when the replacement text is distinctive
+// enough that finding it is not a coincidence (a short string like "x" or
+// "$249" appears all over an article).
+const MIN_ALREADY_LEN = 12
+const looksApplied = (text, replace) => replace.length >= MIN_ALREADY_LEN && countIn(text, replace) === 1
+
 function countIn(haystack, needle) {
   let n = 0
   let i = haystack.indexOf(needle)
@@ -89,7 +95,7 @@ export function replaceInDoc(doc, field, find, replace) {
     if (typeof val !== 'string') return {doc, status: 'missing', detail: `field ${field} is not a string`}
     const n = countIn(val, find)
     if (n === 0) {
-      return countIn(val, replace) > 0 && replace !== ''
+      return looksApplied(val, replace)
         ? {doc, status: 'already', detail: 'replacement text already present'}
         : {doc, status: 'missing', detail: 'text not found'}
     }
@@ -111,7 +117,7 @@ export function replaceInDoc(doc, field, find, replace) {
     if (fullText.includes(find)) {
       return {doc, status: 'split', detail: 'text crosses formatting (bold/link); edit by hand'}
     }
-    const already = replace !== '' && spans.some((s) => s.text.includes(replace))
+    const already = looksApplied(spans.map((s) => s.text).join('\n'), replace)
     return already
       ? {doc, status: 'already', detail: 'replacement text already present'}
       : {doc, status: 'missing', detail: 'text not found'}
