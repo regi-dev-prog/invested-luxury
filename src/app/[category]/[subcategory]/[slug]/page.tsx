@@ -431,6 +431,14 @@ export default async function ArticlePage({ params }: Props) {
   const subCategory = getSubCategory(params.subcategory)
   
   const isReview = article.articleType === 'review'
+
+  // Show "Updated" only when updatedAt (set by hand in Sanity for substantive
+  // refreshes) falls on a later calendar day than publishedAt.
+  const showUpdated =
+    !!article.updatedAt &&
+    !!article.publishedAt &&
+    formatDate(article.updatedAt) !== formatDate(article.publishedAt) &&
+    new Date(article.updatedAt) > new Date(article.publishedAt)
   const productData = transformProductData(article.primaryProduct)
   const showAffiliateButtons = !!article.primaryProduct
   
@@ -689,16 +697,30 @@ export default async function ArticlePage({ params }: Props) {
             )}
 
             {/* Meta */}
-            <div className="flex items-center gap-4 text-sm text-gray-500 mb-8">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500 mb-8">
               {article.author && (
                 <span>By {article.author.name}</span>
               )}
               {article.publishedAt && (
                 <>
                   <span className="w-1 h-1 bg-gray-400 rounded-full" />
-                  <time dateTime={article.publishedAt}>
-                    {formatDate(article.publishedAt)}
-                  </time>
+                  <span>
+                    {showUpdated && 'Published '}
+                    <time dateTime={article.publishedAt}>
+                      {formatDate(article.publishedAt)}
+                    </time>
+                  </span>
+                </>
+              )}
+              {showUpdated && (
+                <>
+                  <span className="w-1 h-1 bg-gray-400 rounded-full" />
+                  <span>
+                    Updated{' '}
+                    <time dateTime={article.updatedAt}>
+                      {formatDate(article.updatedAt)}
+                    </time>
+                  </span>
                 </>
               )}
             </div>
