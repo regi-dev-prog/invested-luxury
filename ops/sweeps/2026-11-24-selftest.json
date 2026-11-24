@@ -1,0 +1,8 @@
+{
+  "sweep": "2026-11-24-selftest",
+  "changes": [
+    {"type": "article_text", "article": "the-row-dupes", "find": "$1,090", "replace": "$1,091", "reason": "selftest: expect AMBIGUOUS", "source": "https://www.therow.com/products/gala-pant-black-1", "capturedAt": "2026-11-24"},
+    {"type": "article_text", "article": "the-row-dupes", "find": "this string does not exist zq", "replace": "x", "reason": "selftest: expect NOT FOUND", "source": "https://www.therow.com/", "capturedAt": "2026-11-24"},
+    {"type": "article_text", "article": "no-such-article-zq", "find": "a", "replace": "b", "reason": "selftest: expect missing article", "source": "https://www.therow.com/", "capturedAt": "2026-11-24"}
+  ]
+}
