@@ -279,6 +279,36 @@ function getRelatedArticleHref(related: any, currentCategory: string, currentSub
 // PortableText custom components
 const portableTextComponents = {
   types: {
+    imageRow: ({ value }: any) => {
+      const imgs = (value?.images || []).filter((i: any) => i?.asset)
+      if (!imgs.length) return null
+      const cols = imgs.length >= 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'
+      return (
+        <figure className="my-8">
+          <div className={`grid grid-cols-1 ${cols} gap-3`}>
+            {imgs.map((img: any) => (
+              <div key={img._key} className="relative w-full overflow-hidden bg-cream">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={urlFor(img).width(800).url()}
+                  alt={img.alt || ''}
+                  loading="lazy"
+                  className="w-full h-auto block"
+                />
+                {img.caption && !value.caption && (
+                  <p className="mt-2 text-center text-sm text-gray-500 italic">{img.caption}</p>
+                )}
+              </div>
+            ))}
+          </div>
+          {value.caption && (
+            <figcaption className="mt-2 text-center text-sm text-gray-500 italic">
+              {value.caption}
+            </figcaption>
+          )}
+        </figure>
+      )
+    },
     image: ({ value }: any) => {
       if (!value?.asset) return null
       return (

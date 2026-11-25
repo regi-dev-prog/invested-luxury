@@ -79,6 +79,37 @@ export default defineType({
         },
         {
           type: 'object',
+          name: 'imageRow',
+          title: 'Images side by side',
+          description: 'Two or three images shown next to each other on desktop, stacked on mobile.',
+          fields: [
+            {
+              name: 'images',
+              title: 'Images',
+              type: 'array',
+              validation: (Rule: any) => Rule.min(2).max(3),
+              of: [
+                {
+                  type: 'image',
+                  options: {hotspot: true},
+                  fields: [
+                    {name: 'alt', type: 'string', title: 'Alt Text'},
+                    {name: 'caption', type: 'string', title: 'Caption'},
+                  ],
+                },
+              ],
+            },
+            {name: 'caption', type: 'string', title: 'Shared caption (optional)'},
+          ],
+          preview: {
+            select: {media: 'images.0', caption: 'caption'},
+            prepare({media, caption}: {media?: any; caption?: string}) {
+              return {title: caption || 'Images side by side', media}
+            },
+          },
+        },
+        {
+          type: 'object',
           name: 'productEmbed',
           title: 'Product Embed',
           fields: [
