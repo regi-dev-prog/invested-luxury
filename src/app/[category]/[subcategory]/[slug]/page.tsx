@@ -14,7 +14,7 @@
 import { Metadata } from 'next'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { client } from '@/sanity/lib/client'
-import { urlFor } from '@/sanity/lib/image'
+import { urlFor, ogImageUrl } from '@/sanity/lib/image'
 import { PortableText } from '@portabletext/react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -141,8 +141,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // FIXED: Canonical URL computed from article data, not URL params
   const { canonicalUrl } = getCanonicalPath(article, params.category, params.subcategory)
 
-  const ogImage = article.mainImage 
-    ? urlFor(article.mainImage).width(1200).height(675).url()
+  const ogImage = article.mainImage
+    ? ogImageUrl(article.mainImage)
     : `${siteUrl}/og-image.jpg`
 
   const title = article.seo?.metaTitle || article.title
@@ -168,7 +168,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         {
           url: ogImage,
           width: 1200,
-          height: ogImage.startsWith(siteUrl) ? 630 : 675,
+          height: 630,
           alt: article.title,
         },
       ],

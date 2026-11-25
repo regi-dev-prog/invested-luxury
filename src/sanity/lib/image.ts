@@ -17,3 +17,10 @@ export const urlFor = (source: SanityImageSource) => {
 
 // Alias used by some components — keep behavior consistent
 export const urlForImage = urlFor
+
+// Share image (og:image / twitter:image) for social and messaging previews.
+// WhatsApp, Facebook and LinkedIn do not reliably render WebP/AVIF, and
+// auto('format') can hand their crawlers WebP, so this forces a JPEG at the
+// standard 1200x630, cropped around the image hotspot.
+export const ogImageUrl = (source: SanityImageSource) =>
+  builder.image(source).width(1200).height(630).fit('crop').format('jpg').quality(80).url()
