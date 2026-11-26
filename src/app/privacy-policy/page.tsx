@@ -68,6 +68,9 @@ export default function PrivacyPolicyPage() {
             <p>
               You can instruct your browser to refuse all cookies or indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our website.
             </p>
+            <p>
+              If you visit from the European Economic Area, the United Kingdom or Switzerland, we ask for your consent before setting analytics cookies, and Google Analytics runs without cookies until you accept. We do not use advertising cookies. You can change your choice at any time with the &ldquo;Cookie settings&rdquo; link in the footer. We also set a short-lived cookie with your country code only, so we know whether to ask.
+            </p>
 
             <h2>Third-Party Services</h2>
             <p>

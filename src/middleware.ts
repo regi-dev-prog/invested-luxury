@@ -174,7 +174,24 @@ async function lookupCanonicalPath(slug: string): Promise<CanonicalResult | null
 // MIDDLEWARE
 // ============================================================
 
+// ============================================================
+// GEO COOKIE (consent banner)
+// ============================================================
+// Sets `il_cc` to the visitor's country so the consent script in <head> can tell
+// whether to ask before analytics cookies (EEA, UK, CH). Country code only, no
+// personal data; read by src/lib/consent.ts.
+
 export async function middleware(request: NextRequest) {
+  const response = await handle(request)
+  const geo = (request as NextRequest & { geo?: { country?: string } }).geo
+  const country = (geo?.country || request.headers.get('x-vercel-ip-country') || '').toUpperCase()
+  if (/^[A-Z]{2}$/.test(country) && request.cookies.get('il_cc')?.value !== country) {
+    response.cookies.set('il_cc', country, { path: '/', maxAge: 60 * 60 * 24, sameSite: 'lax', secure: true })
+  }
+  return response
+}
+
+async function handle(request: NextRequest): Promise<NextResponse> {
   const { pathname, host } = request.nextUrl
 
   // ============================================================

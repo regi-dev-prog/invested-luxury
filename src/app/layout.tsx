@@ -5,6 +5,8 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ComingSoon from "@/components/ComingSoon";
 import OutboundClickTracker from "@/components/analytics/OutboundClickTracker";
+import ConsentBanner from "@/components/analytics/ConsentBanner";
+import { consentBootstrapScript } from "@/lib/consent";
 
 const siteUrl = "https://investedluxury.com";
 
@@ -115,13 +117,9 @@ export default function RootLayout({
           src="https://www.googletagmanager.com/gtag/js?id=G-1KKR1BB7GW"
           strategy="afterInteractive"
         />
+        {/* Consent Mode v2 defaults + config. Must run before gtag('config'): see src/lib/consent.ts */}
         <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-1KKR1BB7GW');
-          `}
+          {consentBootstrapScript}
         </Script>
         
         {/* Organization Schema */}
@@ -143,6 +141,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
         <OutboundClickTracker />
+        <ConsentBanner />
       </body>
     </html>
   );

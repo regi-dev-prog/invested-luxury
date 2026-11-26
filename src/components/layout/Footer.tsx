@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import FooterNewsletterForm from '@/components/FooterNewsletterForm';
+import CookieSettingsLink from '@/components/analytics/CookieSettingsLink';
 const footerLinks = {
   fashion: [
     { label: 'Bags', href: '/fashion/bags' },
@@ -147,6 +148,9 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <CookieSettingsLink className="text-sm text-white/70 hover:text-gold transition-colors text-left" />
+              </li>
             </ul>
           </div>
         </div>
