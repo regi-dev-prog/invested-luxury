@@ -169,6 +169,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: ogImage,
           width: 1200,
           height: 630,
+          type: 'image/jpeg',
           alt: article.title,
         },
       ],
