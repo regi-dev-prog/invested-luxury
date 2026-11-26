@@ -12,6 +12,7 @@
 
 
 import { Metadata } from 'next'
+import { retailerLabelFromUrl } from '@/lib/affiliateLinks'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { client } from '@/sanity/lib/client'
 import { urlFor, ogImageUrl } from '@/sanity/lib/image'
@@ -250,13 +251,13 @@ function transformProductData(product: any) {
     })) || [],
     allSpecs: product.specifications || [],
     retailers: retailers.map((link: any) => ({
-      name: link.retailerName || link.retailer || 'Shop Now',
+      name: link.retailerName || link.retailer || retailerLabelFromUrl(link.url) || 'Retailer',
       url: link.url,
       price: link.price ? formatPrice(link.price, product.currency) : undefined,
       isResale: false,
     })),
     resaleRetailers: resaleRetailers.map((link: any) => ({
-      name: link.retailerName || link.retailer || 'Shop Now',
+      name: link.retailerName || link.retailer || retailerLabelFromUrl(link.url) || 'Retailer',
       url: link.url,
       isResale: true,
     })),
@@ -529,7 +530,7 @@ export default async function ArticlePage({ params }: Props) {
         availability: "https://schema.org/InStock",
         seller: {
           "@type": "Organization",
-          name: link.retailerName || link.retailer || "Retailer",
+          name: link.retailerName || link.retailer || retailerLabelFromUrl(link.url) || "Retailer",
         },
       }))
 

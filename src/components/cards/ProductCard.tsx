@@ -49,6 +49,7 @@ export default function ProductCard({ product, variant = 'default' }: ProductCar
         {product.affiliateLink && (
           <a
             href={product.affiliateLink}
+                data-il-placement="product-card"
             target="_blank"
             rel="noopener sponsored"
             className="shrink-0 p-2 text-charcoal hover:text-gold transition-colors"
@@ -98,6 +99,7 @@ export default function ProductCard({ product, variant = 'default' }: ProductCar
             {product.affiliateLink && (
               <a
                 href={product.affiliateLink}
+                data-il-placement="product-card"
                 target="_blank"
                 rel="noopener sponsored"
                 className="btn-primary inline-flex items-center gap-2 self-start"
@@ -144,6 +146,7 @@ export default function ProductCard({ product, variant = 'default' }: ProductCar
           {product.affiliateLink && (
             <a
               href={product.affiliateLink}
+                data-il-placement="product-card"
               target="_blank"
               rel="noopener sponsored"
               className="text-sm font-medium uppercase tracking-wider text-charcoal hover:text-gold transition-colors flex items-center gap-1"

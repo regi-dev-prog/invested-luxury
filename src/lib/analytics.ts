@@ -2,6 +2,8 @@
 // InvestedLuxury.com — GA4 Event Tracking
 // =============================================================
 
+import { hostOf, normalizeRetailer, resolveLink } from '@/lib/affiliateLinks';
+
 function sendEvent(eventName: string, params: Record<string, unknown>) {
   if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
     window.gtag('event', eventName, params);
@@ -17,7 +19,10 @@ export function trackAffiliateClick({
   category,
   articleSlug,
   position,
+  href,
 }: {
+  /** The link being followed. Used to identify the merchant and network from the URL. */
+  href?: string;
   productName?: string;
   brand?: string;
   price?: string | number;
@@ -26,14 +31,29 @@ export function trackAffiliateClick({
   articleSlug?: string;
   position?: string; // "quick-buy" | "sticky-bar" | "specs-box" | "inline" | "more-retailers"
 }) {
+  // The URL is the source of truth for the merchant; the widget label is only a
+  // fallback, and UI text such as "Shop Now" is never reported as a retailer.
+  let resolved = null as ReturnType<typeof resolveLink>;
+  if (href) {
+    try {
+      resolved = resolveLink(new URL(href, 'https://investedluxury.com'), null);
+    } catch {
+      resolved = null;
+    }
+  }
+  const fromUrl = resolved && !/_unknown$|^none$/.test(resolved.retailer) ? resolved.retailer : '';
+
   sendEvent('affiliate_link_click', {
     product_name: productName || '',
     brand: brand || '',
     price: typeof price === 'string' ? price : price || 0,
-    retailer,
+    retailer: fromUrl || normalizeRetailer(retailer) || resolved?.retailer || 'unknown',
+    network: resolved?.network || 'unknown',
+    destination_domain: resolved?.destination_domain || hostOf(href),
     category: category || '',
-    article_slug: articleSlug || '',
+    article_slug: articleSlug || (typeof window !== 'undefined' ? window.location.pathname.split('/').filter(Boolean).pop() || 'home' : ''),
     click_position: position || 'unknown',
+    link_url: href ? href.slice(0, 500) : '',
   });
 }
 
