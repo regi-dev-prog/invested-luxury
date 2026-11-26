@@ -43,7 +43,9 @@ const articleQuery = `*[_type == "article" && slug.current == $slug && status ==
   excerpt,
   body,
   mainImage,
-  publishedAt,
+  // Safety net: an article published without publishedAt still shows a date
+  // and emits datePublished. Studio now stamps publishedAt on Publish.
+  "publishedAt": coalesce(publishedAt, _createdAt),
   updatedAt,
   articleType,
   "author": author->{name, slug, image, bio, credentials, "entityType": coalesce(entityType, "person")},

@@ -770,8 +770,14 @@ async function uploadArticle(schemaInfo) {
   const docType = schemaInfo.contentType || 'post';
   const bodyField = schemaInfo.bodyField || 'body';
   
-  // Build document
+  // Build document.
+  // Created as a DRAFT with status "published": nothing goes live until it is
+  // published in Studio, and the Studio Publish action then stamps
+  // publishedAt with the real publish time. publishedAt is never set here,
+  // and updatedAt is only for substantive updates, never on first upload.
   const document = {
+    _id: `drafts.article-${ARTICLE_DATA.slug}`,
+    status: 'published',
     _type: docType,
     title: ARTICLE_DATA.title,
     slug: {
@@ -779,8 +785,7 @@ async function uploadArticle(schemaInfo) {
       current: ARTICLE_DATA.slug
     },
     [bodyField]: ARTICLE_DATA.body,
-    publishedAt: new Date().toISOString(),
-    
+
     // SEO fields (may vary by schema)
     metaTitle: ARTICLE_DATA.metaTitle,
     metaDescription: ARTICLE_DATA.metaDescription,
@@ -838,6 +843,7 @@ async function uploadArticle(schemaInfo) {
     console.log('✅ SUCCESS!');
     console.log(`Document ID: ${result._id}`);
     console.log(`View in Studio: https://${CONFIG.projectId}.sanity.studio/desk/${docType};${result._id}`);
+    console.log('Created as a draft. Press Publish in Studio to make it live; publishedAt is set then.');
     
     return result;
     

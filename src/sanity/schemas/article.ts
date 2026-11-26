@@ -484,12 +484,34 @@ export default defineType({
       title: 'Published At',
       type: 'datetime',
       group: 'publishing',
+      description:
+        'Set automatically on Publish when Status is Published and this is empty. Never change it after the first publish.',
+      // A warning, not an error: an error would disable the Publish button,
+      // and Publish is what fills this field in.
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          const status = (context.document as {status?: string} | undefined)?.status
+          if (status === 'published' && !value) {
+            return 'Missing. Press Publish and it will be set to now.'
+          }
+          return true
+        }).warning(),
     }),
     defineField({
       name: 'updatedAt',
       title: 'Last Updated',
       type: 'datetime',
       group: 'publishing',
+      description:
+        'Set only for substantive updates (changed price, verdict or finding). Feeds the sitemap lastmod and the "Updated" label.',
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          const published = (context.document as {publishedAt?: string} | undefined)?.publishedAt
+          if (value && published && Date.parse(value) < Date.parse(published)) {
+            return 'Earlier than Published At.'
+          }
+          return true
+        }).warning(),
     }),
     defineField({
       name: 'lastSentInNewsletter',

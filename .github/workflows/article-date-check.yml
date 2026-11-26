@@ -1,0 +1,29 @@
+name: Article date check (read-only)
+
+# Daily: fails loudly (red run, GitHub failure email) if any published
+# article has no publishedAt, a future publishedAt, or updatedAt earlier
+# than publishedAt. Lists unpublished drafts with different dates as
+# warnings. Reads Sanity only; writes nothing.
+on:
+  schedule:
+    - cron: "17 5 * * *" # 07:17 Israel time (winter)
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+
+      - name: Check article dates
+        env:
+          SANITY_TOKEN: ${{ secrets.SANITY_TOKEN }}
+        run: node scripts/check-article-dates.mjs
