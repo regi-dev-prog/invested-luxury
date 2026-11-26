@@ -7,7 +7,10 @@
 
 import { MetadataRoute } from 'next'
 import { createClient } from '@sanity/client'
+import { latestDate, toUtcIso } from '@/lib/articleDates.mjs'
 
+// Hourly fallback. Publishing or re-dating an article also refreshes the
+// sitemap at once through the Sanity webhook (src/app/api/revalidate).
 export const revalidate = 3600
 
 const client = createClient({
@@ -65,7 +68,9 @@ type ArticleRow = {
   category: { slug: string; parentCategory: string } | null
 }
 
-const latest = (a?: string, b?: string) => (!a ? b : !b ? a : a > b ? a : b)
+// Compare as instants: Sanity holds a mix of "Z" and "+02:00" values, and a
+// plain string comparison picks the wrong one when both fall on the same day.
+const latest = (a?: string, b?: string): string | undefined => latestDate(a, b)
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 1. ARTICLES (fetched first: category and home dates derive from them)
@@ -83,7 +88,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const seenUrls = new Set<string>()
   const articlePages: MetadataRoute.Sitemap = []
 
-  for (const article of articles) {
+  for (const raw of articles) {
+    // Emit every lastmod in one format (UTC "Z")
+    const article = { ...raw, lastmod: toUtcIso(raw.lastmod) }
     const cat = article.category
     if (!article.slug || !cat?.slug || !cat?.parentCategory || typeof cat.parentCategory !== 'string') continue
 

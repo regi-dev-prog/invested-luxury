@@ -59,6 +59,17 @@ async function handle(req: NextRequest) {
     }
   }
 
+  // No fetch in the app is tagged, so revalidateTag('articles') on its own
+  // clears nothing. When article content changes (publish, date change,
+  // product change), refresh every route instead: the article page, home and
+  // category listings, and the sitemap, whose lastmod comes from article
+  // dates. Otherwise the sitemap would lag by up to an hour.
+  let fullRefresh = false
+  if (tags.includes('articles')) {
+    fullRefresh = true
+    paths.push('/sitemap.xml')
+  }
+
   // Deduplicate
   paths = Array.from(new Set(paths))
   tags = Array.from(new Set(tags))
@@ -81,10 +92,18 @@ async function handle(req: NextRequest) {
       results[`tag:${t}`] = `error: ${e?.message || e}`
     }
   }
+  if (fullRefresh) {
+    try {
+      revalidatePath('/', 'layout')
+      results['layout:/'] = 'ok'
+    } catch (e: any) {
+      results['layout:/'] = `error: ${e?.message || e}`
+    }
+  }
 
   return NextResponse.json({
     ok: true,
-    revalidated: { paths, tags },
+    revalidated: { paths, tags, fullRefresh },
     results,
     timestamp: new Date().toISOString(),
   })
