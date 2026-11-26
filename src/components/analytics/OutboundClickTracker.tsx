@@ -18,132 +18,16 @@
  *
  * Double counting: any anchor carrying data-retailer or data-il-tracked is skipped,
  * because a widget component already fires the event for it on click.
+ *
+ * SubIDs: every affiliate anchor (widgets included) gets the IL SubID for its
+ * network written into its href on pointerdown/click. Rules live in
+ * src/lib/affiliateLinks.ts.
  */
 
 import { useEffect } from 'react';
+import { placementOf, resolveLink, slugFromPath, withSubIds } from '@/lib/affiliateLinks';
 
-/* ------------------------------------------------------------------ */
-/* Configuration                                                       */
-/* ------------------------------------------------------------------ */
-
-/** Awin merchant IDs (awinmid) -> retailer name. */
-const AWIN_MERCHANTS: Record<string, string> = {
-  '101701': 'clearlight',
-  '92667': 'sailo',
-};
-
-/** CJ redirect domains. CJ hides the merchant, so those links need data-il-retailer. */
-const CJ_HOSTS = new Set([
-  'anrdoezrs.net',
-  'dpbolvw.net',
-  'jdoqocy.com',
-  'kqzyfj.com',
-  'tkqlhce.com',
-  'ftjcfx.com',
-  'lduhtrp.net',
-  'tqlkg.com',
-  'awltovhc.com',
-  'yceml.net',
-  'emjcd.com',
-]);
-
-/**
- * impact.com tracking hosts -> retailer name. impact.com gives each brand campaign
- * its own subdomain, so the host identifies the merchant.
- */
-const IMPACT_HOSTS: Record<string, string> = {
-  'mindlabpro.pxf.io': 'performancelab',
-  'performancelabltd.pxf.io': 'performancelab',
-  'allu-official.pxf.io': 'allu',
-};
-
-/** Any other impact.com tracking subdomain not yet listed in IMPACT_HOSTS. */
-const IMPACT_HOST_SUFFIX = '.pxf.io';
-
-/** Merchant domains linked directly. */
-const DIRECT_MERCHANTS: Record<string, string> = {
-  'sailo.com': 'sailo',
-  'mytheresa.com': 'mytheresa',
-  'clearlightsaunas.com': 'clearlight',
-  'cettire.com': 'cettire',
-};
-
-/* ------------------------------------------------------------------ */
-/* Helpers                                                             */
-/* ------------------------------------------------------------------ */
-
-type Resolved = {
-  event: 'affiliate_link_click' | 'outbound_click';
-  network: string;
-  retailer: string;
-  destination_domain: string;
-};
-
-const bareHost = (h: string) => h.replace(/^www\./i, '').toLowerCase();
-
-function hostOf(rawUrl: string): string {
-  try {
-    return bareHost(new URL(rawUrl).hostname);
-  } catch {
-    return '';
-  }
-}
-
-export function resolveLink(url: URL, el: HTMLAnchorElement): Resolved | null {
-  const host = bareHost(url.hostname);
-  if (!host || host === bareHost(window.location.hostname)) return null;
-
-  const manualRetailer = el.dataset.ilRetailer || el.dataset.retailer;
-  const manualNetwork = el.dataset.ilNetwork;
-
-  if (host === 'awin1.com') {
-    const mid = url.searchParams.get('awinmid') || '';
-    const dest = url.searchParams.get('ued') || url.searchParams.get('p') || '';
-    return {
-      event: 'affiliate_link_click',
-      network: 'awin',
-      retailer: manualRetailer || AWIN_MERCHANTS[mid] || (mid ? `awin_mid_${mid}` : 'awin_unknown'),
-      destination_domain: hostOf(decodeURIComponent(dest)) || 'awin1.com',
-    };
-  }
-
-  if (CJ_HOSTS.has(host)) {
-    return {
-      event: 'affiliate_link_click',
-      network: 'cj',
-      retailer: manualRetailer || 'cj_unknown',
-      destination_domain: host,
-    };
-  }
-
-  if (IMPACT_HOSTS[host] || host.endsWith(IMPACT_HOST_SUFFIX)) {
-    // Deep links carry the landing page in `u`; the bare vanity link has none.
-    const dest = url.searchParams.get('u') || '';
-    return {
-      event: 'affiliate_link_click',
-      network: 'impact',
-      retailer: manualRetailer || IMPACT_HOSTS[host] || 'impact_unknown',
-      destination_domain: hostOf(dest) || host,
-    };
-  }
-
-  const direct = DIRECT_MERCHANTS[host];
-  if (direct) {
-    return {
-      event: 'affiliate_link_click',
-      network: manualNetwork || 'direct',
-      retailer: manualRetailer || direct,
-      destination_domain: host,
-    };
-  }
-
-  return {
-    event: 'outbound_click',
-    network: manualNetwork || 'none',
-    retailer: manualRetailer || 'none',
-    destination_domain: host,
-  };
-}
+export { resolveLink };
 
 function send(name: string, params: Record<string, unknown>) {
   const w = window as unknown as { gtag?: (...a: unknown[]) => void; dataLayer?: unknown[] };
@@ -154,9 +38,23 @@ function send(name: string, params: Record<string, unknown>) {
   }
 }
 
-function slugFromPath(): string {
-  const parts = window.location.pathname.split('/').filter(Boolean);
-  return parts[parts.length - 1] || 'home';
+/**
+ * Writes the IL SubID into an affiliate link just before the browser follows it,
+ * so every network report can be joined back to page + placement. Runs for every
+ * affiliate anchor, including widget links that fire their own GA4 event.
+ */
+function tagSubIds(anchor: HTMLAnchorElement) {
+  const path = window.location.pathname;
+  // Client-side navigation can keep an anchor alive across pages: re-tag from the
+  // original href whenever the page changed since the last tag.
+  if (anchor.dataset.ilSubid === path) return;
+  const original = anchor.dataset.ilHref || anchor.href;
+  const tagged = withSubIds(original, slugFromPath(path), placementOf(anchor));
+  if (tagged) {
+    anchor.dataset.ilHref = original;
+    anchor.href = tagged;
+    anchor.dataset.ilSubid = path;
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -171,6 +69,9 @@ export default function OutboundClickTracker() {
       const target = event.target as Element | null;
       const anchor = target?.closest?.('a[href]') as HTMLAnchorElement | null;
       if (!anchor) return;
+
+      // SubIDs go on every affiliate link, before navigation reads the href.
+      tagSubIds(anchor);
 
       // Already tracked by a widget component's own onClick handler.
       if (anchor.closest('[data-retailer], [data-il-tracked]')) return;
@@ -193,17 +94,25 @@ export default function OutboundClickTracker() {
         retailer: resolved.retailer,
         network: resolved.network,
         destination_domain: resolved.destination_domain,
-        article_slug: slugFromPath(),
-        click_position: anchor.dataset.ilPlacement || (anchor.querySelector('img') ? 'inline-image' : 'inline-body'),
+        article_slug: slugFromPath(window.location.pathname),
+        click_position: placementOf(anchor),
         link_url: url.href.slice(0, 500),
         link_text: (anchor.textContent || '').trim().slice(0, 100),
         page_path: window.location.pathname,
       });
     };
 
+    // Middle-click and "open in new tab" read the href before any click event.
+    const onPointerDown = (event: PointerEvent) => {
+      const anchor = (event.target as Element | null)?.closest?.('a[href]') as HTMLAnchorElement | null;
+      if (anchor) tagSubIds(anchor);
+    };
+
+    document.addEventListener('pointerdown', onPointerDown, true);
     document.addEventListener('click', onClick, true);
     document.addEventListener('auxclick', onClick as EventListener, true);
     return () => {
+      document.removeEventListener('pointerdown', onPointerDown, true);
       document.removeEventListener('click', onClick, true);
       document.removeEventListener('auxclick', onClick as EventListener, true);
     };

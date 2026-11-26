@@ -38,13 +38,14 @@ export default function ProductSpecsBox({
     return null;
   }
 
-  const handleRetailerClick = (retailerName: string, isResale: boolean) => {
+  const handleRetailerClick = (retailerName: string, isResale: boolean, href?: string) => {
     trackAffiliateClick({
       productName,
       retailer: retailerName,
       category,
       articleSlug,
       position: isResale ? 'specs-box-resale' : 'specs-box',
+      href,
     });
   };
 
@@ -79,7 +80,8 @@ export default function ProductSpecsBox({
                 rel="noopener sponsored"
                 className="flex items-center justify-between px-4 py-3 bg-black text-white hover:bg-[#C9A227] transition-colors"
                 data-il-tracked="1"
-                onClick={() => handleRetailerClick(retailer.name, false)}
+                data-il-placement="specs-box"
+                onClick={() => handleRetailerClick(retailer.name, false, retailer.url)}
               >
                 <span className="font-medium">{retailer.name}</span>
                 <ExternalLink size={16} />
@@ -104,7 +106,8 @@ export default function ProductSpecsBox({
                 rel="noopener sponsored"
                 className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 hover:border-black hover:text-black transition-colors text-sm"
                 data-il-tracked="1"
-                onClick={() => handleRetailerClick(retailer.name, true)}
+                data-il-placement="specs-box-resale"
+                onClick={() => handleRetailerClick(retailer.name, true, retailer.url)}
               >
                 {retailer.name}
                 <ExternalLink size={14} />

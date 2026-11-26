@@ -38,7 +38,7 @@ export default function QuickBuyCard({
 }: QuickBuyCardProps) {
   const [showAllRetailers, setShowAllRetailers] = useState(false)
 
-  const handleRetailerClick = (retailerName: string, position: string) => {
+  const handleRetailerClick = (retailerName: string, position: string, href?: string) => {
     trackAffiliateClick({
       productName,
       price,
@@ -46,6 +46,7 @@ export default function QuickBuyCard({
       category,
       articleSlug,
       position,
+      href,
     })
   }
 
@@ -106,7 +107,8 @@ export default function QuickBuyCard({
               rel="noopener sponsored"
               className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 font-medium tracking-wide hover:bg-[#C9A227] transition-colors"
               data-il-tracked="1"
-              onClick={() => handleRetailerClick(primaryRetailer.name, 'quick-buy-primary')}
+              data-il-placement="quick-buy-primary"
+              onClick={() => handleRetailerClick(primaryRetailer.name, 'quick-buy-primary', primaryRetailer.url)}
             >
               <ShoppingBag className="w-4 h-4" />
               Shop at {primaryRetailer.name}
@@ -139,7 +141,8 @@ export default function QuickBuyCard({
                           : 'bg-gray-100 hover:bg-gray-200 text-black'
                       }`}
                       data-il-tracked="1"
-                      onClick={() => handleRetailerClick(retailer.name, 'quick-buy-more')}
+                      data-il-placement="quick-buy-more"
+                      onClick={() => handleRetailerClick(retailer.name, 'quick-buy-more', retailer.url)}
                     >
                       <span>
                         {retailer.name}

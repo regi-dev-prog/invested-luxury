@@ -55,6 +55,7 @@ const ProductCard = ({ product }: { product: FeaturedProduct }) => {
       {/* Product Image */}
       <Link 
         href={product.affiliateUrl}
+          data-il-placement="home-coveting"
         target="_blank"
         rel="noopener sponsored"
         data-il-retailer={product.retailer}
@@ -85,6 +86,7 @@ const ProductCard = ({ product }: { product: FeaturedProduct }) => {
         {/* Shop Now Button */}
         <Link
           href={product.affiliateUrl}
+          data-il-placement="home-coveting"
           target="_blank"
           rel="noopener sponsored"
           data-il-retailer={product.retailer}

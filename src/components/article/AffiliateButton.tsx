@@ -47,6 +47,7 @@ export default function AffiliateButton({
       category,
       articleSlug,
       position: position || variant,
+      href,
     });
   };
 
@@ -57,6 +58,7 @@ export default function AffiliateButton({
       rel="noopener sponsored"
       className={`${baseClasses} ${variantClasses[variant]} ${className}`}
       data-retailer={retailer}
+      data-il-placement={position || variant}
       onClick={handleClick}
     >
       {children}

@@ -290,6 +290,7 @@ export default async function Home() {
                     <a
                       key={product._id}
                       href={product.affiliateUrl}
+                      data-il-placement="home-products"
                       target="_blank"
                       rel="noopener noreferrer sponsored"
                       className="flex-shrink-0 w-[160px] md:w-auto group"

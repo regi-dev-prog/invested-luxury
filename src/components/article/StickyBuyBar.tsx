@@ -53,6 +53,7 @@ export default function StickyBuyBar({
         category,
         articleSlug,
         position: 'sticky-bar',
+        href: primaryLink.url,
       });
     }
   };
@@ -76,6 +77,7 @@ export default function StickyBuyBar({
               rel="noopener sponsored"
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-black text-white text-sm font-medium hover:bg-[#C9A227] transition-colors"
               data-il-tracked="1"
+              data-il-placement="sticky-bar"
               onClick={handleShopClick}
             >
               <ShoppingBag size={16} />
@@ -111,6 +113,7 @@ export default function StickyBuyBar({
             rel="noopener sponsored"
             className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-black text-white text-sm font-medium hover:bg-[#C9A227] transition-colors"
             data-il-tracked="1"
+              data-il-placement="sticky-bar"
             onClick={handleShopClick}
           >
             <ShoppingBag size={16} />
