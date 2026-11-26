@@ -37,6 +37,12 @@ describe('/api/revalidate auth', () => {
     expect(revalidatePath).toHaveBeenCalledWith('/', 'layout')
   })
 
+  it('ignores a trailing newline in the env value', async () => {
+    process.env.SANITY_REVALIDATE_SECRET = WEBHOOK_SECRET + '\n'
+    const res = await POST(await signed(JSON.stringify({_type: 'article'})))
+    expect(res.status).toBe(200)
+  })
+
   it('rejects a signature made with the wrong secret', async () => {
     const res = await POST(await signed(JSON.stringify({_type: 'article'}), 'wrong'))
     expect(res.status).toBe(401)
