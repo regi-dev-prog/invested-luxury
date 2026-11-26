@@ -23,7 +23,9 @@ async function isAuthorized(req: NextRequest, rawBody: string, secret: string | 
   const querySecret = process.env.REVALIDATE_SECRET
   if (querySecret && secret === querySecret) return true
 
-  const webhookSecret = process.env.SANITY_REVALIDATE_SECRET
+  // Trimmed: a value pasted into Vercel can carry a trailing newline (for
+  // example from `openssl rand | pbcopy`), while Sanity strips it.
+  const webhookSecret = process.env.SANITY_REVALIDATE_SECRET?.trim()
   const signature = req.headers.get(SIGNATURE_HEADER_NAME)
   if (webhookSecret && signature && rawBody) {
     try {
